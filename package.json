@@ -1,0 +1,44 @@
+{
+  "name": "nodegit-lfs",
+  "version": "0.0.1",
+  "description": "A wrapper for NodeGit to facilitate LFS Support",
+  "main": "index.js",
+  "scripts": {
+    "compile": "\"node_modules/.bin/webpack\" --config webpack.config.js",
+    "watch": "\"node_modules/.bin/webpack\" --config webpack.config.js --watch",
+    "eslint": "\"node_modules/.bin/eslint\" src test",
+    "debug-test": "yarn eslint && yarn compile && node-debug --debug-brk node_modules/.bin/mocha test",
+    "test": "yarn eslint && \"node_modules/.bin/mocha\" test",
+    "test-watch": "mocha test --watch"
+  },
+  "repository": "git@github.com:Axosoft/nodegit-lfs.git",
+  "author": "Axosoft, LLC",
+  "license": "ISC",
+  "keywords": [
+    "node",
+    "git",
+    "lfs",
+    "nodegit"
+  ],
+  "bugs": {
+    "url": "https://github.com/Axosoft/nodegit-lfs/issues"
+  },
+  "homepage": "https://github.com/Axosoft/nodegit-lfs#readme",
+  "peerDependencies": {
+    "nodegit": ">=0.18.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.0.2",
+    "eslint": "^4.2.0",
+    "fs-extra": "^3.0.1",
+    "jsdoc-to-markdown": "^3.0.0",
+    "mocha": "^3.4.2",
+    "webpack": "^3.1.0"
+  },
+  "dependencies": {
+    "ramda": "^0.24.1"
+  }
+}
