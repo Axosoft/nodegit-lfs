@@ -1,5 +1,5 @@
-const NodeGit = require('nodegit');
-const initialize = require('./initialize');
+import NodeGit from 'nodegit';
+import initialize from './initialize';
 
 const LFS = {
   initialize,
@@ -12,4 +12,4 @@ NodeGit.FilterRegistry.register('test', {
   check: () => 0,
 }, 0);
 
-module.exports = NodeGit;
+export default NodeGit;

@@ -1,6 +1,6 @@
-const { exec } = require('./utils/execHelpers');
-const promisify = require('promisify-node');
-const path = require('path');
+import promisify from 'promisify-node';
+import path from 'path';
+import { exec } from './utils/execHelpers';
 
 const fse = promisify('fs-extra');
 const ENOENT = 34;
@@ -22,4 +22,4 @@ const initialize = (workingDir) => {
     .then(() => createGitattributes(workingDir));
 };
 
-module.exports = initialize;
+export default initialize;

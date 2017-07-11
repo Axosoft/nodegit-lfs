@@ -1,5 +1,5 @@
-const nodegit = require('../src');
-const expect = require('chai').expect;
+import { expect } from 'chai';
+import nodegit from '../src';
 
 describe('LFS', () => {
   it('LFS exists', () => {

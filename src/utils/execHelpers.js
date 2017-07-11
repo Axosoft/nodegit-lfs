@@ -1,4 +1,4 @@
-const child = require('child_process');
+import child from 'child_process';
 
 const exec = (command, opts) => new Promise(
   (resolve, reject) => {
@@ -11,6 +11,6 @@ const exec = (command, opts) => new Promise(
     });
   });
 
-module.exports = {
+export default {
   exec,
 };
