@@ -9,8 +9,8 @@
     "eslint": "\"node_modules/.bin/eslint\" src test",
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
     "debug-test": "yarn eslint && yarn compile && node-debug --debug-brk node_modules/.bin/mocha test",
-    "test": "yarn eslint && \"node_modules/.bin/mocha\" test",
-    "test-watch": "mocha test --watch"
+    "test": "yarn eslint && \"node_modules/.bin/mocha\" --expose-gc test/**/*.spec.js",
+    "test-watch": "mocha --expose-gc --watch test/**/*.spec.js"
   },
   "repository": "git@github.com:Axosoft/nodegit-lfs.git",
   "author": "Axosoft, LLC",
@@ -43,6 +43,7 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
+    "promisify-node": "^0.4.0",
     "ramda": "^0.24.1"
   }
 }

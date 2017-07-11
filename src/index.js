@@ -1,3 +1,15 @@
-const init = () => 0;
+const NodeGit = require('nodegit');
+const initialize = require('./initialize');
 
-module.exports = init;
+const LFS = {
+  initialize,
+};
+
+NodeGit.LFS = LFS;
+
+NodeGit.FilterRegistry.register('test', {
+  apply: () => 0,
+  check: () => 0,
+}, 0);
+
+module.exports = NodeGit;
