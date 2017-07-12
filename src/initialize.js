@@ -11,7 +11,7 @@ const createGitattributes = (workingDir) => {
 };
 
 const initialize = (workingDir) => {
-  const lfsDir = path.join(workingDir, './git/lfs');
+  const lfsDir = path.join(workingDir, '.git', 'lfs');
   return fse.stat(lfsDir)
     .catch((err) => {
       if (err.code !== ENOENT) {
