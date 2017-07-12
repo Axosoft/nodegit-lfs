@@ -1,13 +1,20 @@
 import { expect } from 'chai';
-import nodegit from '../src';
+
+const NodeGit = require('nodegit');
+const NodeGitLfs = require('../build/src');
 
 describe('LFS', () => {
   it('LFS exists', () => {
-    expect(nodegit.LFS).not.to.be.an('undefined');
+    NodeGitLfs(NodeGit).then((nodegit) => {
+      expect(nodegit).not.to.be.an('undefined');
+    });
   });
 
   it('initialize exists on LFS', () => {
-    expect(nodegit.LFS.initialize).not.to.be.an('undefined');
-    expect(nodegit.LFS.initialize).to.be.a('function');
+    NodeGitLfs(NodeGit).then((nodegit) => {
+      expect(nodegit.LFS.initialize).not.to.be.an('undefined');
+      expect(nodegit.LFS.initialize).to.be.a('function');
+      done();
+    });
   });
 });

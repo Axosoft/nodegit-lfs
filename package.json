@@ -10,6 +10,7 @@
     "eslint": "\"node_modules/.bin/eslint\" src test",
     "pretest": "yarn eslint",
     "test": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
+    "test-debug": "\"node_modules/.bin/mocha\" --debug-brk --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
     "watch-src": "\"node_modules/.bin/babel\" src -d -w build/src",
     "watch-test": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc --watch test/*.js test/**/*.js"
   },
