@@ -11,7 +11,7 @@ const _setLfs = R.assoc('LFS');
 
 /**
  * Wrapper to unregister nodegit LFS filter and append status to NodeGit module
- * @param {NodeGit} nodegit 
+ * @param {NodeGit} nodegit
  * @return Promise
  */
 const unregister = nodegit => new Promise((resolve, reject) => {

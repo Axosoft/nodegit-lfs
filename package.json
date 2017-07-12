@@ -9,7 +9,7 @@
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
     "eslint": "\"node_modules/.bin/eslint\" src test",
     "pretest": "yarn eslint",
-    "test": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
+    "test": "\"node_modules/.bin/nyc\" \"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
     "test-debug": "\"node_modules/.bin/mocha\" --debug-brk --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
     "watch-src": "\"node_modules/.bin/babel\" src -d -w build/src",
     "watch-test": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc --watch test/*.js test/**/*.js"
@@ -47,10 +47,12 @@
     "fs-extra": "^3.0.1",
     "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.4.2",
+    "nyc": "^11.0.3",
     "webpack": "^3.1.0",
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
+    "fs": "^0.0.1-security",
     "promisify-node": "^0.4.0",
     "ramda": "^0.24.1"
   }
