@@ -1,4 +1,4 @@
-import NodeGit from 'nodegit';
+// import NodeGit from 'nodegit';
 import * as R from 'ramda';
 
 const _getLfs = R.propOr({}, 'LFS');
@@ -7,8 +7,8 @@ const _Lfs = R.lens(_getLfs, _setLfsFlag);
 
 const _setLfs = R.assoc('LFS');
 
-const register = (ng) => new Promise((resolve, reject) => {
-  if(ng.FilterRegistry){
+const register = ng => new Promise((resolve, reject) => {
+  if (ng.FilterRegistry) {
     ng.FilterRegistry.register('nodegit_lfs', {
       apply: () => 0,
       check: () => 0,
@@ -18,7 +18,7 @@ const register = (ng) => new Promise((resolve, reject) => {
       resolve(_setLfs(registerResult, ng));
     });
   } else {
-    reject(new Error('Error: pass valid NodeGit object to register'));
+    reject(new Error('Error: pass valid NodeGit object to register LFS filter'));
   }
 });
 

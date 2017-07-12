@@ -2,9 +2,9 @@
   "name": "nodegit-lfs",
   "version": "0.0.1",
   "description": "A wrapper for NodeGit to facilitate LFS Support",
-  "main": "index.js",
+  "main": "build/src/index.js",
   "scripts": {
-    "compile": "\"node_modules/.bin/babel\" src -d build/src",
+    "compile": "yarn eslint && \"node_modules/.bin/babel\" src -d build/src",
     "debug-test": "yarn eslint && yarn compile && node-debug --debug-brk node_modules/.bin/mocha test",
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
     "eslint": "\"node_modules/.bin/eslint\" src test",
@@ -22,6 +22,10 @@
     "lfs",
     "nodegit"
   ],
+  "directories": {
+    "build": "./build",
+    "test": "./test"
+  },
   "bugs": {
     "url": "https://github.com/Axosoft/nodegit-lfs/issues"
   },

@@ -1,27 +1,30 @@
-import NodeGit from 'nodegit';
+// import NodeGit from 'nodegit';
 import initialize from './initialize';
 import register from './utils/registerLfsFilter';
-import * as R from 'ramda';
 
-/* const _getNodeGit = R.propOr({}, 'LFS');
-const _setLFS = R.assoc('isLfsRegistered');
-const _LFS = R.lens(_getLFS, _setLFS); */
-let NodeGitLfs = NodeGit;
+// let NodeGitLfs = NodeGit;
 
 const LFS = {
   initialize,
 };
 
-NodeGitLfs.LFS = LFS;
+// NodeGitLfs.LFS = LFS;
 
-async function registerLfsFilter() {
-  NodeGitLfs = await register(NodeGitLfs);
-  console.log('now: ', NodeGitLfs);
-}
-/* 
-const register(NodeGitLfs).then((result) => {
-  console.info('Registering LFS Filter: ', result.LFS);
-  return result;
-}).catch(err => console.log("error: ", err)); */
+/* const NodeGitLFS = (ng) => {
+  const _NodeGit = ng;
+  _NodeGit.LFS = LFS;
+  register(_NodeGit).then((result) => {
+    console.info('Registering LFS Filter: ', result.LFS);
+    return result;
+  }).catch(err => console.log('error: ', err));
+};*/
 
-export default NodeGitLFS;
+module.exports = (ng) => {
+  // TODO: NodeGit check
+  const _NodeGit = ng;
+  _NodeGit.LFS = LFS;
+  return register(_NodeGit).then((result) => {
+    console.info('Registering LFS Filter: ', result.LFS);
+    return result;
+  }).catch(err => console.log('error: ', err));
+};
