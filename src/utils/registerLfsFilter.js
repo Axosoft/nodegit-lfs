@@ -21,6 +21,7 @@ const register = nodegit => new Promise((resolve, reject) => {
       apply,
       check,
       initialize,
+      attribute: 'filter=lfs',
     }, 0).then((result) => {
       const LFS = R.view(_Lfs, nodegit);
       const registerResult = R.set(_Lfs, result === 0, LFS);
