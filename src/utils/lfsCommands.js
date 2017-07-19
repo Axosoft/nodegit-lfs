@@ -1,0 +1,17 @@
+import { exec } from './execHelpers';
+
+module.exports = {
+  checkout: (args = '') => exec(`git lfs checkout ${args}`),
+  clone: (args = '') => exec(`git lfs clone ${args}`),
+  fetch: (args = '') => exec(`git lfs fetch ${args}`),
+  fsck: () => exec('git lfs fsck'),
+  install: (args = '') => exec(`git lfs install ${args}`),
+  logs: (args = '') => exec(`git lfs logs ${args}`),
+  ls: (args = '') => exec(`git lfs ls-files ${args}`),
+  pull: (args = '') => exec(`git lfs pull ${args}`),
+  push: (args = '') => exec(`git lfs push ${args}`),
+  status: (args = '') => exec(`git lfs status ${args}`),
+  track: (args = '') => exec(`git lfs track ${args}`),
+  update: (args = '') => exec(`git lfs update ${args}`),
+  version: () => exec('git lfs version'),
+};

@@ -1,13 +1,12 @@
 import { expect } from 'chai';
-import register from '../../src/utils/registerLfsFilter';
+
+const NodeGit = require('nodegit');
+const NodeGitLfs = require('../../build/src');
 
 describe('Register LFS filter for nodegit-lfs', () => {
   it('Attempt to register lfs filter', () => {
-    const result = register();
-    expect(result).to.be.a('Promise');
-    result.then((res) => {
-      expect(res).to.equal(true);
-      done();
+    NodeGitLfs(NodeGit).then((nodegit) => {
+      expect(nodegit.LFS.isLfsRegistered).to.equal(true);
     });
   });
 });
