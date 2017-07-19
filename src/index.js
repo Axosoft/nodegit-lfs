@@ -2,8 +2,10 @@
 import initialize from './initialize';
 import register from './utils/registerLfsFilter';
 import unregister from './utils/unregisterLfsFilter';
+import { addAttribute } from './utils/addAttributeToGitAttributes';
 
 const LFS = {
+  addAttribute,
   initialize,
 };
 // attach all methods related to LFS here
@@ -16,5 +18,10 @@ module.exports = (nodegit) => {
   // TODO: NodeGit check
   const _NodeGit = nodegit;
   _NodeGit.LFS = _LfsWithUnregister;
-  return register(_NodeGit).catch(err => console.log('error: ', err));
+  return register(_NodeGit)
+    .then((NodeGitLFS) => {
+      module.exports = NodeGitLFS;
+      return NodeGitLFS;
+    })
+    .catch(err => console.log('Error registering LFS filter for NodeGit\n\n', err));
 };
