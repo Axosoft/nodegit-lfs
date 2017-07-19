@@ -1,6 +1,6 @@
 import promisify from 'promisify-node';
 import path from 'path';
-import { exec } from './utils/execHelpers';
+import { install as lfsInstaller } from './utils/lfsCommands';
 
 const fse = promisify('fs-extra');
 const ENOENT = 34;
@@ -17,7 +17,7 @@ const initialize = (workingDir) => {
       if (err.code !== ENOENT) {
         return Promise.resolve();
       }
-      return exec('git lfs install');
+      return lfsInstaller();
     })
     .then(() => createGitattributes(workingDir));
 };

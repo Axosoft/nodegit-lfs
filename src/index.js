@@ -1,4 +1,5 @@
 // import NodeGit from 'nodegit';
+import * as R from 'ramda';
 import initialize from './initialize';
 import register from './utils/registerLfsFilter';
 import unregister from './utils/unregisterLfsFilter';
