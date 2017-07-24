@@ -4,15 +4,15 @@
   "description": "A wrapper for NodeGit to facilitate LFS Support",
   "main": "build/src/index.js",
   "scripts": {
-    "compile": "yarn eslint && \"node_modules/.bin/babel\" src -d build/src",
-    "debug-test": "yarn eslint && yarn compile && node-debug --debug-brk node_modules/.bin/mocha test",
-    "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
+    "build": "yarn eslint && yarn compile",
+    "compile": "\"node_modules/.bin/babel\" src -d build/src",
     "eslint": "\"node_modules/.bin/eslint\" src test",
+    "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
     "pretest": "yarn eslint",
-    "test": "\"node_modules/.bin/nyc\" \"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
-    "test-debug": "\"node_modules/.bin/mocha\" --debug-brk --compilers js:babel-core/register --expose-gc test/*.js test/**/*.js",
-    "watch-src": "\"node_modules/.bin/babel\" src -d -w build/src",
-    "watch-test": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc --watch test/*.js test/**/*.js"
+    "src-watch": "\"node_modules/.bin/babel\" src -d -w build/src",
+    "test": "\"node_modules/.bin/nyc\" \"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/tests/*",
+    "test-debug": "\"node_modules/.bin/mocha\" --debug-brk --compilers js:babel-core/register --expose-gc test/tests/*",
+    "test-watch": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc --watch test/tests/*"
   },
   "repository": "git@github.com:Axosoft/nodegit-lfs.git",
   "author": "Axosoft, LLC",

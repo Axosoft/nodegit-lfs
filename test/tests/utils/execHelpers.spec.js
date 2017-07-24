@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { exec } from '../../src/utils/execHelpers';
+import { exec } from '../../../src/utils/execHelpers';
 
 describe('Exec Helpers', () => {
   describe('exec', () => {

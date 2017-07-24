@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 const NodeGit = require('nodegit');
-const NodeGitLfs = require('../build/src');
+const NodeGitLfs = require('../../build/src');
 
 describe('LFS', () => {
   it('LFS exists', () => {
