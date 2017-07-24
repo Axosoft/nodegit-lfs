@@ -3,6 +3,31 @@ import path from 'path';
 
 const fse = promisify('fs-extra');
 
+/**
+ * @function generateNormalizedVersionNumber
+ * @param  Array<string> versionArray array of version number eg: ['1', '8', '3'] => 1.8.3
+ * @return Number normalized version number
+ */
+const generateNormalizedVersionNumber = (versionArray) => {
+  if (versionArray && versionArray.length > 0) {
+    let normalizedVersionNumber = 0;
+    const minorScale = 1000;
+    const majorScale = minorScale * 1000;
+    /* Major */
+    normalizedVersionNumber += parseInt(versionArray[0] * majorScale, 10);
+    /* Minor */
+    if (versionArray.length > 1) {
+      normalizedVersionNumber += parseInt(versionArray[1] * minorScale, 10);
+    }
+    /* Patch */
+    if (versionArray.length > 2) {
+      normalizedVersionNumber += parseInt(versionArray[2], 10);
+    }
+    return normalizedVersionNumber;
+  }
+  return null;
+};
+
 const isAtleastGitVersion = (actualVersion, minVersion) => {
   const gitVersionRegex = /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/g;
 
@@ -18,36 +43,37 @@ const isAtleastGitVersion = (actualVersion, minVersion) => {
     filteredActualVersion.shift();
     filteredMinVersion.shift();
   } catch (e) {
-    console.log('Git version number provided is inconsistent');
+    console.log('Git version number is inconsistent');
     throw e;
   }
 
-  const minorScale = 1000;
-  const majorScale = minorScale * 1000;
+  const actualVersionNormalized = generateNormalizedVersionNumber(filteredActualVersion);
+  const minVersionNormailzed = generateNormalizedVersionNumber(filteredMinVersion);
 
-  let actualVersionNormalized = 0;
-  let minVersionNormailzed = 0;
-  /* Major */
-  actualVersionNormalized += parseInt(filteredActualVersion[0] * majorScale, 10);
-  /* Minor */
-  if (filteredActualVersion.length > 1) {
-    actualVersionNormalized += parseInt(filteredActualVersion[1] * minorScale, 10);
-  }
-  /* Patch */
-  if (filteredActualVersion.length > 2) {
-    actualVersionNormalized += parseInt(filteredActualVersion[2], 10);
+  return actualVersionNormalized >= minVersionNormailzed;
+};
+
+const isAtleastLfsVersion = (actualVersion, minVersion) => {
+  const lfsVersionRegex = /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/g;
+
+  let filteredActualVersion;
+  let filteredMinVersion;
+
+  try {
+    const minVersionMatch = lfsVersionRegex.exec(minVersion);
+    const actualVersionMatch = lfsVersionRegex.exec(actualVersion);
+    filteredActualVersion = actualVersionMatch.filter(match => !isNaN(parseInt(match, 10)));
+    filteredMinVersion = minVersionMatch.filter(match => !isNaN(parseInt(match, 10)));
+    // remove the full string match
+    filteredActualVersion.shift();
+    filteredMinVersion.shift();
+  } catch (e) {
+    console.log('Git LFS version number is inconsistent');
+    throw e;
   }
 
-  /* Major */
-  minVersionNormailzed += parseInt(filteredMinVersion[0] * majorScale, 10);
-  /* Minor */
-  if (filteredActualVersion.length > 1) {
-    minVersionNormailzed += parseInt(filteredMinVersion[1] * minorScale, 10);
-  }
-  /* Patch */
-  if (filteredActualVersion.length > 2) {
-    minVersionNormailzed += parseInt(filteredMinVersion[2], 10);
-  }
+  const actualVersionNormalized = generateNormalizedVersionNumber(filteredActualVersion);
+  const minVersionNormailzed = generateNormalizedVersionNumber(filteredMinVersion);
 
   return actualVersionNormalized >= minVersionNormailzed;
 };
@@ -56,5 +82,6 @@ const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.git', 'l
 
 module.exports = {
   isAtleastGitVersion,
+  isAtleastLfsVersion,
   isLfsRepo,
 };
