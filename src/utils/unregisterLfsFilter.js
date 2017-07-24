@@ -17,11 +17,11 @@ const _setLfs = R.assoc('LFS');
 const unregister = nodegit => new Promise((resolve, reject) => {
   if (nodegit.FilterRegistry) {
     nodegit.FilterRegistry.unregister('nodegit_lfs')
-        .then((result) => {
-          const LFS = R.view(_Lfs, nodegit);
-          const unregisterResult = R.set(_Lfs, result !== 0, LFS);
-          resolve(_setLfs(unregisterResult, nodegit));
-        });
+      .then((result) => {
+        const LFS = R.view(_Lfs, nodegit);
+        const unregisterResult = R.set(_Lfs, result !== 0, LFS);
+        resolve(_setLfs(unregisterResult, nodegit));
+      });
   } else {
     reject(new Error('Error: pass valid NodeGit object to unregister LFS filter'));
   }
