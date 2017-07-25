@@ -36,3 +36,6 @@ node_modules
 
 # Editor Preferences
 .vscode/*
+
+# Generated test files
+test/home
