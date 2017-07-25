@@ -1,6 +1,6 @@
 import { exec } from './execHelpers';
 
-export default {
+const core = {
   checkout: (args = '') => exec(`git lfs checkout ${args}`),
   clone: (args = '') => exec(`git lfs clone ${args}`),
   fetch: (args = '') => exec(`git lfs fetch ${args}`),
@@ -17,3 +17,5 @@ export default {
   update: (args = '') => exec(`git lfs update ${args}`),
   version: () => exec('git lfs version'),
 };
+
+export { core };

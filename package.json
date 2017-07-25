@@ -10,7 +10,7 @@
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test --fix",
     "pretest": "yarn eslint",
     "src-watch": "\"node_modules/.bin/babel\" src -d -w build/src",
-    "test": "\"node_modules/.bin/nyc\" \"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc test/tests/*",
+    "test": "\"node_modules/.bin/nyc\" \"node_modules/.bin/mocha\" test/runner --compilers js:babel-core/register --expose-gc test/tests/*",
     "test-debug": "\"node_modules/.bin/mocha\" --debug-brk --compilers js:babel-core/register --expose-gc test/tests/*",
     "test-watch": "\"node_modules/.bin/mocha\" --compilers js:babel-core/register --expose-gc --watch test/tests/*"
   },
