@@ -1,8 +1,7 @@
-import promisify from 'promisify-node';
+import fse from 'fs-extra';
 import path from 'path';
 import { install as lfsInstaller } from './utils/lfsCommands';
 
-const fse = promisify('fs-extra');
 const ENOENT = 34;
 
 const createGitattributes = (workingDir) => {

@@ -1,7 +1,6 @@
-import promisify from 'promisify-node';
-import path from 'path';
 
-const fse = promisify('fs-extra');
+import fse from 'fs-extra'
+import path from 'path';
 
 /**
  * @function generateNormalizedVersionNumber
