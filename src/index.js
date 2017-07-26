@@ -4,11 +4,11 @@ import initialize from './initialize';
 import register from './utils/registerLfsFilter';
 import unregister from './utils/unregisterLfsFilter';
 import { addAttribute } from './utils/addAttributeToGitAttributes';
-import { default as commands } from './utils/lfsCommands';
+import { core } from './utils/lfsCommands';
 
 const LFS = {
   addAttribute,
-  commands,
+  core,
   initialize,
 };
 // attach all methods related to LFS here
