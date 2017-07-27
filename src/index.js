@@ -7,10 +7,8 @@ function LFS(nodegit) {
   this.NodeGit = nodegit;
 }
 
-const LFS = {
-  addAttribute,
-  core,
 LFS.prototype = {
+  addAttribute,
   core,
   initialize,
 };
