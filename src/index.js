@@ -1,12 +1,14 @@
 import initialize from './initialize';
 import register from './register';
 import unregister from './unregister';
+import { core } from './commands/lfsCommands';
 
 function LFS(nodegit) {
   this.NodeGit = nodegit;
 }
 
 LFS.prototype = {
+  core,
   initialize,
 };
 
