@@ -8,7 +8,6 @@ function LFS(nodegit) {
 }
 
 LFS.prototype = {
-  addAttribute,
   core,
   initialize,
 };
