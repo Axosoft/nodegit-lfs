@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import * as checker from '../../../src/utils/checkDependencies';
 import { regex, BAD_VERSION } from '../../../src/constants';
+import { core } from '../../../src/commands/lfsCommands';
 
 describe('Depenendency Helpers', () => {
   describe('parseVersion', () => {
@@ -48,22 +49,22 @@ describe('Depenendency Helpers', () => {
       expect(checker.isAtleastLfsVersion('git-lfs/1.1.1')).to.be.false; // eslint-disable-line
     });
   });
-  
-  //eslint-disable-next-line
-  describe.only('checkDependencies', function() {
+
+  describe('checkDependencies', () => {
     //eslint-disable-next-line
-    it('check git version number is atleast 1.8.0', function() {
+    it('check git version number is at least the minimum version', () => {
       return core.git('--version')
-        .catch(error => console.log('Error executing git --version\n', error))
-        .then(({ stdout }) => isAtleastGitVersion(stdout, '1.8.0'))
-        .then(result => expect(result).to.equal(true));
+        .then(({ stdout }) => checker.isAtleastGitVersion(stdout))
+        .then(result => expect(result).to.equal(true))
+        .catch(() => expect.fail('sould not have done this'));
     });
+
     //eslint-disable-next-line
-    it('check LFS version number is atleast 1.0.0', function() {
+    it('check LFS version number is at least the minimum version', function() {
       return core.git('lfs version')
-        .catch(error => console.log('Error executing git --version\n', error))
-        .then(({ stdout }) => isAtleastLfsVersion(stdout, '1.0.0'))
-        .then(result => expect(result).to.equal(true));
+        .then(({ stdout }) => checker.isAtleastLfsVersion(stdout))
+        .then(result => expect(result).to.equal(true))
+        .catch(() => expect.fail('sould not have done this'));
     });
   });
 });
