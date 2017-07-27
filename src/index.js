@@ -2,6 +2,9 @@ import initialize from './initialize';
 import register from './register';
 import unregister from './unregister';
 import { core } from './commands/lfsCommands';
+import checkout from './commands/checkout';
+import push from './commands/push';
+import version from './commands/version';
 
 function LFS(nodegit) {
   this.NodeGit = nodegit;
@@ -10,7 +13,10 @@ function LFS(nodegit) {
 // LFS.prototype.constructor = LFS;
 LFS.prototype = {
   core,
+  checkout,
   initialize,
+  push,
+  version,
 };
 
 module.exports = (nodegit) => {

@@ -5,7 +5,7 @@ import { default as initialize } from '../../build/src/initialize';
 
 const local = path.join.bind(path, __dirname);
 
-describe.only('initialize', () => {
+describe('initialize', () => {
   it('initialize is a promise', () => {
     const workdirPath = local('../repos/workdir');
     const result = initialize(workdirPath);
