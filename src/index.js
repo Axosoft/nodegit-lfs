@@ -18,7 +18,7 @@ module.exports = (nodegit) => {
   LFS.prototype.register = register(_NodeGit);
   LFS.prototype.unregister = unregister(_NodeGit);
 
-  _NodeGit.prototype.LFS = new LFS(_NodeGit);
+  Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
   module.exports = _NodeGit;
   return _NodeGit;
 };
