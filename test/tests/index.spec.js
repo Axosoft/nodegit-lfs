@@ -1,21 +1,27 @@
 import { expect } from 'chai';
-
-const NodeGitLfs = require('../../build/src');
+import NodeGit from 'nodegit';
+import { default as LFS } from '../../build/src';
 
 describe('LFS', () => {
   it('LFS exists', () => {
-    const NodeGit = {};
-    NodeGitLfs(NodeGit).then((nodegit) => {
-      expect(nodegit).not.to.be.an('undefined');
-    });
+    const NodeGitLFS = LFS(NodeGit);
+    expect(NodeGitLFS).to.have.property('LFS');
   });
 
-  it('initialize exists on LFS', () => {
-    const NodeGit = {};
-    NodeGitLfs(NodeGit).then((nodegit) => {
-      expect(nodegit.LFS.initialize).not.to.be.an('undefined');
-      expect(nodegit.LFS.initialize).to.be.a('function');
-      done();
-    });
+  it('initialize exists', () => {
+    const NodeGitLFS = LFS(NodeGit);
+    expect(NodeGitLFS.LFS).to.have.property('initialize');
+  });
+
+  it('register exists', () => {
+    const NodeGitLFS = LFS(NodeGit);
+    expect(NodeGitLFS.LFS).to.have.property('register');
+    expect(NodeGitLFS.LFS.register).to.be.a('function');
+  });
+
+  it('unregister exists', () => {
+    const NodeGitLFS = LFS(NodeGit);
+    expect(NodeGitLFS.LFS).to.have.property('unregister');
+    expect(NodeGitLFS.LFS.unregister).to.be.a('function');
   });
 });
