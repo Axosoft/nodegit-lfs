@@ -24,7 +24,7 @@ const apply = (to, from, source) => {
     filterPromise = smudge(to, from, source);
   }
 
-  //TODO import the actual error codes
+  // TODO import the actual error codes
   return filterPromise
     .then(() => 0)
     .catch(() => -31);

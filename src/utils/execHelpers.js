@@ -6,7 +6,6 @@ const exec = (command, opts) => new Promise(
       if (err) {
         reject(err);
       } else {
-        console.log('FILTER STDOUT: ', stdout);
         resolve({ proc, stdout, stderr });
       }
     });

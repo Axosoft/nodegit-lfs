@@ -1,6 +1,6 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { install as lfsInstaller } from './utils/lfsCommands';
+import { install as lfsInstaller } from './commands/lfsCommands';
 
 const ENOENT = 34;
 
