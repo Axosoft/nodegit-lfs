@@ -1,4 +1,5 @@
 import minimatch from 'minimatch';
+import { Error } from 'nodegit';
 
 import { loadGitattributeFiltersFromRepo } from '../helpers';
 
@@ -9,12 +10,12 @@ const check = src => loadGitattributeFiltersFromRepo(src.repo())
     for (let i = 0; i < filters.length; i++) { // eslint-disable-line no-plusplus
       const f = filters[i];
       if (minimatch(file, f)) {
-        return 0;
+        return Error.CODE.OK;
       }
     }
 
-    return -31;
+    return Error.CODE.PASSTHROUGH;
   })
-  .catch(() => -31 /* GIT_PASSTHROUGH */);
+  .catch(() => Error.CODE.PASSTHROUGH);
 
 export { check };

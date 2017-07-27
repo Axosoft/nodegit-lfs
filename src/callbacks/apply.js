@@ -1,4 +1,5 @@
 import path from 'path';
+import { Error } from 'nodegit';
 import { exec } from '../utils/execHelpers';
 
 const clean = (to, from, source) => {
@@ -26,8 +27,8 @@ const apply = (to, from, source) => {
 
   // TODO import the actual error codes
   return filterPromise
-    .then(() => 0)
-    .catch(() => -31);
+    .then(() => Error.CODE.OK)
+    .catch(() => Error.CODE.PASSTHROUGH);
 };
 
 export { apply };

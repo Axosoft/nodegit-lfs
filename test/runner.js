@@ -2,7 +2,7 @@
 const path = require('path');
 const promisify = require('promisify-node');
 const exec = require('../build/src/utils/execHelpers').exec;
-const git = require('../build/src/commands/lfsCommands').core.git;
+const git = require('../build/src/utils/lfsCommands').core.git;
 
 const fse = promisify('fs-extra');
 const local = path.join.bind(path, __dirname);
