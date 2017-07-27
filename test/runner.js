@@ -16,7 +16,8 @@ console.log(workdirPath);
 console.log(git); */
 
 //eslint-disable-next-line
-before(function() {     
+before(function() {
+  this.timeout(40000);
   const url = 'https://github.com/mohseenrm/nodegit-lfs-test-repo';
   return fse.remove(testRepoPath)
     .then(() => fse.remove(homePath))
@@ -33,7 +34,9 @@ before(function() {
 
 //eslint-disable-next-line
 beforeEach(function() {
+  this.timeout(4000);
   return exec('git clean -xdf', { cwd: workdirPath })
-  .then(() => exec('git checkout test', { cwd: workdirPath }))
-  .then(() => exec('git reset --hard', { cwd: workdirPath }));
+    .then(() => exec('git checkout test', { cwd: workdirPath }))
+    .then(() => exec('git reset --hard', { cwd: workdirPath }))
+    .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
 });

@@ -10,9 +10,9 @@
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test/tests --fix",
     "pretest": "yarn eslint",
     "src-watch": "\"node_modules/.bin/babel\" src -d -w build/src",
-    "test": "nyc mocha --compilers js:babel-core/register --expose-gc test/tests/**/*.spec.js",
-    "test-debug": "mocha --debug-brk --compilers js:babel-core/register --expose-gc test/tests/**/*.spec.js",
-    "test-watch": "mocha --compilers js:babel-core/register --expose-gc --watch test/tests/**/*.spec.js"
+    "test": "nyc mocha --compilers js:babel-core/register --expose-gc test/runner test/tests/**.spec.js test/tests/**/*.spec.js",
+    "test-debug": "mocha --debug-brk --compilers js:babel-core/register --expose-gc test/runner test/tests/**.spec.js test/tests/**/*.spec.js",
+    "test-watch": "mocha --compilers js:babel-core/register --expose-gc --watch test/runner test/tests/**.spec.js test/tests/**/*.spec.js"
   },
   "repository": "git@github.com:Axosoft/nodegit-lfs.git",
   "author": "Axosoft, LLC",
