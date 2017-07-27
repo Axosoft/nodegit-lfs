@@ -34,7 +34,7 @@ before(function() {
 
 //eslint-disable-next-line
 beforeEach(function() {
-  this.timeout(4000);expect(result).to.be.a('number');
+  this.timeout(4000);
   return exec('git clean -xdf', { cwd: workdirPath })
     .then(() => exec('git checkout test', { cwd: workdirPath }))
     .then(() => exec('git reset --hard', { cwd: workdirPath }))
