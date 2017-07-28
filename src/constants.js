@@ -5,6 +5,7 @@ export const LFS_FILTER_NAME = 'nodegit_lfs';
 export const regex = {
   LFS: /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
   GIT: /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
+  TRACK: /([a-zA-Z*.]+(?="))/g,
 };
 
 export const BAD_VERSION = '0';
