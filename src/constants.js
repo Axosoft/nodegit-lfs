@@ -9,6 +9,8 @@ export const regex = {
 
 export const BAD_VERSION = '0';
 
+export const BAD_CORE_RESPONSE = '-1';
+
 export const minimumVersions = {
   GIT: '2.0.0',
   LFS: '2.0.0',
