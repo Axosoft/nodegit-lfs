@@ -9,10 +9,10 @@ export const regex = {
 };
 
 export const BAD_VERSION = '0';
-
+// TODO: response code
 export const BAD_CORE_RESPONSE = '-1';
 
 export const minimumVersions = {
-  GIT: '2.0.0',
+  GIT: '1.8.5',
   LFS: '2.0.0',
 };
