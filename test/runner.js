@@ -3,7 +3,7 @@ const fse = require('fs-extra');
 const path = require('path');
 
 const exec = require('../build/src/utils/execHelpers').exec;
-const git = require('../build/src/utils/lfsCommands').core.git;
+const git = require('../build/src/commands/lfsCommands').core.git;
 
 const local = path.join.bind(path, __dirname);
 const testRepoPath = local('..', 'test', 'repos');
