@@ -1,3 +1,4 @@
+import path from 'path';
 import { core } from './lfsCommands';
 import { parseVersion } from '../utils/checkDependencies';
 import {
@@ -6,10 +7,12 @@ import {
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
-const version = () => {
+const version = (repo) => {
   //eslint-disable-next-line
   let response = generateResponse();
-  return core.version()
+  // repo.path() leads into workdir/.git
+  const repoPath = path.join(repo.path(), '..');
+  return core.version({ cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;

@@ -1,17 +1,21 @@
+import path from 'path';
 import { core } from './lfsCommands';
 import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
-const pointer = (filePath, pointerPath) => {
+const pointer = (repo, filePath, pointerPath) => {
   let args = '';
   if (filePath) { args += `--file=${filePath} `; }
   if (pointerPath) { args += `--file=${pointerPath} `; }
 
   //eslint-disable-next-line
   let response = generateResponse();
-  return core.pointer(args)
+  // repo.path() leads into workdir/.git
+  const repoPath = path.join(repo.path(), '..');
+
+  return core.pointer(args, { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;

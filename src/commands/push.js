@@ -1,3 +1,4 @@
+import path from 'path';
 import { core } from './lfsCommands';
 import { BAD_CORE_RESPONSE } from '../constants';
 import generateResponse from '../utils/generateResponse';
@@ -5,9 +6,11 @@ import generateResponse from '../utils/generateResponse';
 function push(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
   let response = generateResponse();
+  // repo.path() leads into workdir/.git
+  const repoPath = path.join(repo.path(), '..');
 
   if (repo && branchArg && remoteArg) {
-    return core.push(`${remoteArg} ${branchArg}`, { cwd: repo.path() }).then(({ stdout, stderr }) => {
+    return core.push(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
       return response;

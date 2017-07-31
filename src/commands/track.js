@@ -1,4 +1,5 @@
 import R from 'ramda';
+import path from 'path';
 import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
 import {
@@ -14,14 +15,16 @@ const extractGlobs = (input, regex) => {
   return matches;
 };
 
-const track = (globs) => {
+const track = (repo, globs) => {
   if (!globs) { return; }
 
   const filteredGlobs = R.filter(isString, globs);
   //eslint-disable-next-line
   let response = generateResponse();
+  // repo.path() leads into workdir/.git
+  const repoPath = path.join(repo.path(), '..');
 
-  return core.track(R.join(' ', filteredGlobs))
+  return core.track(R.join(' ', filteredGlobs), { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
