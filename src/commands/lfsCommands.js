@@ -9,6 +9,7 @@ const core = {
   install: (args = '') => exec(`git lfs install ${args}`),
   logs: (args = '') => exec(`git lfs logs ${args}`),
   ls: (args = '') => exec(`git lfs ls-files ${args}`),
+  pointer: (args = '') => exec(`git lfs pointer ${args}`),
   prune: (args = '') => exec(`git lfs prune ${args}`),
   pull: (args = '') => exec(`git lfs pull ${args}`),
   push: (args = '') => exec(`git lfs push ${args}`),

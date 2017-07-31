@@ -17,7 +17,7 @@ function push(repo) {
       remoteRef = RemoteRef;
       console.log(RemoteRef.name());
       // return this.NodeGit.Branch.name(reference);
-      return remoteRef.peel()
+      return remoteRef.peel();
     })
     .then((branchName) => {
       branch = branchName;
