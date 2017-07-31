@@ -1,45 +1,58 @@
-// import { core } from './lfsCommands';
+import { core } from './lfsCommands';
+import { BAD_CORE_RESPONSE } from '../constants';
+import generateResponse from '../utils/generateResponse';
 
-function push(repo) {
+function push(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
-  let reference, remoteRef, branch;
-  // let branch;
-  console.log('this: ', this.NodeGit.Repository);
+  let response = generateResponse();
+
+  if (repo && branchArg && remoteArg) {
+    return core.push(`${remoteArg} ${branchArg}`, { cwd: repo.path() }).then(({ stdout, stderr }) => {
+      response.raw = stdout;
+      response.stderr = stderr;
+      return response;
+    }).catch((error) => {
+      response.success = false;
+      response.error = error.errno || BAD_CORE_RESPONSE;
+      response.raw = error;
+      return response;
+    });
+  }
+
+  let remoteRef;
+  //eslint-disable-next-line
+  let branch;
+  let remoteName;
+
   return repo.getCurrentBranch()
     .then((Reference) => {
-      reference = Reference;
-      // console.log('Ref name: ', Reference.name());
-      // TODO: pester Tyler later about reference
-      // return this.NodeGit.Remote.lookup(repo, reference);
-      return this.NodeGit.Branch.upstream(Reference);
+      //eslint-disable-next-line
+      let promises = [];
+      promises.push(this.NodeGit.Branch.upstream(Reference));
+      promises.push(this.NodeGit.Branch.name(Reference));
+      return Promise.all(promises);
     })
-    .then((RemoteRef) => {
-      remoteRef = RemoteRef;
-      console.log(RemoteRef.name());
-      // return this.NodeGit.Branch.name(reference);
-      return remoteRef.peel();
+    .then((results) => {
+      remoteRef = results[0];
+      branch = branchArg || results[1];
+      //eslint-disable-next-line
+      return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
     })
-    .then((branchName) => {
-      branch = branchName;
-      console.log('Branch: ', branchName);
-      console.log('TEST: ', remoteRef.name());
-      return this.NodeGit.Reference.peel(repo, remoteRef);
-      // return this.NodeGit.Remote.lookup(repo, remoteRef.name());
+    .then((name) => {
+      remoteName = remoteArg || name;
+      return core.push(`${remoteName} ${branch}`, { cwd: repo.path() });
     })
-    .then((remote) => {
-      console.log('New ref: ', remote);
+    .then(({ stdout, stderr }) => {
+      response.raw = stdout;
+      response.stderr = stderr;
+      return response;
+    })
+    .catch((error) => {
+      response.success = false;
+      response.error = error.errno || BAD_CORE_RESPONSE;
+      response.raw = error;
+      return response;
     });
 }
-
-/* const push = (repo) => {
-  // get the default remote / branch
-  /* const remote = 'origin';
-  const branch = 'master';
-  const args = `${remote} ${branch}`;
-  core.push(args) */
-  /* console.log('Push called');
-  return repo.getCurrentBranch()
-    .then(reference => console.log(reference));
-}; */
 
 export default push;

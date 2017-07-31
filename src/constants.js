@@ -6,6 +6,12 @@ export const regex = {
   LFS: /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
   GIT: /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
   TRACK: /([a-zA-Z*.]+(?="))/g,
+  PUSH: {
+    SKIPPED_BYTES: /[\d]+\s+B\s+(?=skipped)/g,
+    SKIPPED_FILES: /[\d]\s+(?=skipped)/g,
+    TOTAL_BYTES: /[\d]+\sB(?=,\s+[\d]+\s+B\s+skipped)/g,
+    TOTAL_FILES: /[\d]\s+(?=files)/g,
+  },
 };
 
 export const BAD_VERSION = '0';
