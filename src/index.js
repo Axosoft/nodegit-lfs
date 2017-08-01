@@ -24,22 +24,20 @@ LFS.prototype = {
   fetch,
   initialize,
   list,
+  register,
   testPointer,
   track,
   prune,
   pull,
   push,
   version,
+  unregister,
 };
 
 // LFS.prototype.push = push;
 
 module.exports = (nodegit) => {
   const _NodeGit = nodegit;
-
-  LFS.prototype.register = register(_NodeGit);
-  LFS.prototype.unregister = unregister(_NodeGit);
-  // LFS.prototype.NodeGit = _NodeGit;
 
   Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
 

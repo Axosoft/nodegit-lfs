@@ -12,9 +12,10 @@ const filter = {
 
 /**
  * Wrapper to register nodegit lfs filter and append status to LFS in nodegit
- * @param {NodeGit} nodegit
  * @return Promise
  */
-const register = nodegit => () => nodegit.FilterRegistry.register(LFS_FILTER_NAME, filter, 0);
+function register() {
+  return this.NodeGit.FilterRegistry.register(LFS_FILTER_NAME, filter, 0);
+}
 
 export default register;
