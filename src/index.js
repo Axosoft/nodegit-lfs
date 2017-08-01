@@ -6,6 +6,12 @@ import checkout from './commands/checkout';
 import push from './commands/push';
 import track from './commands/track';
 import version from './commands/version';
+import fetch from './commands/fetch';
+import prune from './commands/prune';
+import list from './commands/ls';
+import testPointer from './commands/pointer';
+import pull from './commands/pull';
+
 
 function LFS(nodegit) {
   this.NodeGit = nodegit;
@@ -15,8 +21,13 @@ function LFS(nodegit) {
 LFS.prototype = {
   core,
   checkout,
+  fetch,
   initialize,
+  list,
+  testPointer,
   track,
+  prune,
+  pull,
   push,
   version,
 };
