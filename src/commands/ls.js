@@ -5,21 +5,16 @@ import {
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
-const pointer = (repo, filePath, pointerPath) => {
-  let args = '';
-  if (filePath) { args += `--file=${filePath} `; }
-  if (pointerPath) { args += `--file=${pointerPath} `; }
-
+const ls = (repo, args) => {
   //eslint-disable-next-line
   let response = generateResponse();
   // repo.path() leads into workdir/.git
   const repoPath = path.join(repo.path(), '..');
 
-  return core.pointer(args, { cwd: repoPath })
+  return core.ls(args, { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
-      response.buffer = Buffer.from(stdout);
       return response;
     })
     .catch((error) => {
@@ -30,4 +25,4 @@ const pointer = (repo, filePath, pointerPath) => {
     });
 };
 
-export default pointer;
+export default ls;
