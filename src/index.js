@@ -2,6 +2,7 @@ import initialize from './initialize';
 import register from './register';
 import unregister from './unregister';
 import { core } from './commands/lfsCommands';
+import { loadGitattributeFiltersFromRepo } from './helpers';
 import checkout from './commands/checkout';
 import push from './commands/push';
 import track from './commands/track';
@@ -22,6 +23,7 @@ LFS.prototype = {
   core,
   checkout,
   fetch,
+  filters: loadGitattributeFiltersFromRepo,
   initialize,
   list,
   register,
