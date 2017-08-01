@@ -9,14 +9,14 @@ export const regex = {
   PUSH: {
     SKIPPED_BYTES: /[\d]+\s+B\s+(?=skipped)/g,
     SKIPPED_FILES: /[\d]\s+(?=skipped)/g,
-    TOTAL_BYTES: /[\d]+\sB(?=,\s+[\d]+\s+B\s+skipped)/g,
+    TOTAL_BYTES: /[\d]+\s+B/g,
     TOTAL_FILES: /[\d]\s+(?=files)/g,
   },
 };
 
 export const BAD_VERSION = '0';
-// TODO: response code
 export const BAD_CORE_RESPONSE = '-1';
+export const BAD_REGEX_PARSE_RESULT = '-2';
 
 export const minimumVersions = {
   GIT: '1.8.5',

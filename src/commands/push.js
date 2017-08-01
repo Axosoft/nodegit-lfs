@@ -1,7 +1,67 @@
 import path from 'path';
+import R from 'ramda';
 import { core } from './lfsCommands';
-import { BAD_CORE_RESPONSE } from '../constants';
+import {
+  regex,
+  BAD_CORE_RESPONSE,
+  BAD_REGEX_PARSE_RESULT,
+ } from '../constants';
 import generateResponse from '../utils/generateResponse';
+
+/**
+ * Note to future maintainers, I do not like this; at all. But at the moment this is the
+ * best we got, inorder to parse the result from git core. Any slight change to the LFS output
+ * in subsequent versions of CORE for LFS, will surely break this. Until we migrate off
+ * git core dependency, we will have to regex the output. Godspeed.
+ */
+
+const isValidLine = str => str !== '';
+const regexResult = (input, regularExpression) => input.match(regularExpression);
+
+const generatePushStats = (raw) => {
+  if (raw && typeof raw === 'string') {
+    //eslint-disable-next-line
+    let stats = {};
+
+    const outputLines = raw.split('Git LFS:');
+    const filteredLines = R.filter(isValidLine, outputLines);
+    const statLine = filteredLines.pop();
+
+    const byteResults = regexResult(statLine, regex.PUSH.TOTAL_BYTES);
+    // stats.total_bytes_transferred = byteResults[0].trim() || BAD_REGEX_PARSE_RESULT;
+    stats.total_bytes_transferred =
+      byteResults !== null ?
+        byteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+    // stats.total_bytes = byteResults[1].trim() || BAD_REGEX_PARSE_RESULT;
+    stats.total_bytes =
+      byteResults !== null ?
+        byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
+
+    const fileResults = regexResult(statLine, regex.PUSH.TOTAL_FILES);
+    // stats.total_files_transferred = fileResults[0].trim() || BAD_REGEX_PARSE_RESULT;
+
+    stats.total_files_transferred =
+      fileResults !== null ?
+        fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+
+    const skippedByteResults = regexResult(statLine, regex.PUSH.SKIPPED_BYTES);
+    // stats.total_bytes_skipped = skippedByteResults[0].trim() || BAD_REGEX_PARSE_RESULT;
+
+    stats.total_bytes_skipped =
+      skippedByteResults !== null ?
+        skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+
+    const skippedFileResults = regexResult(statLine, regex.PUSH.SKIPPED_FILES);
+    // stats.total_files_skipped = skippedFileResults[0].trim() || BAD_REGEX_PARSE_RESULT;
+
+    stats.total_files_skipped =
+      skippedFileResults !== null ?
+        skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+
+    return stats;
+  }
+  return {};
+};
 
 function push(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
@@ -13,6 +73,7 @@ function push(repo, remoteArg, branchArg) {
     return core.push(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
+      response.push = generatePushStats(stdout);
       return response;
     }).catch((error) => {
       response.success = false;
@@ -48,6 +109,7 @@ function push(repo, remoteArg, branchArg) {
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
+      response.push = generatePushStats(stdout);
       return response;
     })
     .catch((error) => {
