@@ -16,7 +16,7 @@ import generateResponse from '../utils/generateResponse';
  */
 
 const isValidLine = str => str !== '';
-const regexResult = (input, regularExpression) => input.match(regularExpression);
+export const regexResult = (input, regularExpression) => input.match(regularExpression);
 
 const generatePushStats = (raw) => {
   if (raw && typeof raw === 'string') {
@@ -27,7 +27,7 @@ const generatePushStats = (raw) => {
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
 
-    const byteResults = regexResult(statLine, regex.PUSH.TOTAL_BYTES);
+    const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
     // stats.total_bytes_transferred = byteResults[0].trim() || BAD_REGEX_PARSE_RESULT;
     stats.total_bytes_transferred =
       byteResults !== null ?
@@ -37,21 +37,21 @@ const generatePushStats = (raw) => {
       byteResults !== null ?
         byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const fileResults = regexResult(statLine, regex.PUSH.TOTAL_FILES);
+    const fileResults = regexResult(statLine, regex.TOTAL_FILES);
     // stats.total_files_transferred = fileResults[0].trim() || BAD_REGEX_PARSE_RESULT;
 
     stats.total_files_transferred =
       fileResults !== null ?
         fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedByteResults = regexResult(statLine, regex.PUSH.SKIPPED_BYTES);
+    const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
     // stats.total_bytes_skipped = skippedByteResults[0].trim() || BAD_REGEX_PARSE_RESULT;
 
     stats.total_bytes_skipped =
       skippedByteResults !== null ?
         skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedFileResults = regexResult(statLine, regex.PUSH.SKIPPED_FILES);
+    const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
     // stats.total_files_skipped = skippedFileResults[0].trim() || BAD_REGEX_PARSE_RESULT;
 
     stats.total_files_skipped =
