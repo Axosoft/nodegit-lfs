@@ -6,7 +6,7 @@ import { default as LFS } from '../../../build/src';
 describe('Clone', function() {
   this.timeout(5000);
   //eslint-disable-next-line
-  it.only('should generate clone repsonse', function() {
+  it('should generate clone repsonse', function() {
     const emptyrepoPath = path.join(__dirname, '../../repos/empty');
     const NodeGitLFS = LFS(NodeGit);
     const url = 'https://github.com/mohseenrm/nodegit-lfs-test-repo';

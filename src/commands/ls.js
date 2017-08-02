@@ -8,21 +8,30 @@ import generateResponse from '../utils/generateResponse';
 
 const isValidFileOutput = str => str.includes('*') || str.includes('-');
 
-const extractOnlyFileNames = (str) => {
-  if (str.includes('*')) { return str.split('*')[1].trim(); }
-  return str.split('-')[1].trim();
+const reduceResults = (acc, value) => {
+  let shaAndFileName;
+  if (value.includes('*')) {
+    shaAndFileName = value.split('*');
+    acc[shaAndFileName[0].trim()] = shaAndFileName[1].trim();
+  } else {
+    shaAndFileName = value.split('-');
+    acc[shaAndFileName[0].trim()] = shaAndFileName[1].trim();
+  }
+  return acc;
 };
 
 const extractFileNames = (raw) => {
   if (raw && typeof raw === 'string') {
     const outputLines = raw.split('\n');
     const filteredLines = R.filter(isValidFileOutput, outputLines);
-    return R.map(extractOnlyFileNames, filteredLines);
+    // creating the object in which sha's point to the file name
+    return R.reduce(reduceResults, {}, filteredLines);
   }
   return null;
 };
 
-const ls = (repo, args) => {
+// arg `-l` is for full length sha
+const ls = (repo, args = '-l') => {
   //eslint-disable-next-line
   let response = generateResponse();
   // repo.path() leads into workdir/.git
@@ -30,7 +39,6 @@ const ls = (repo, args) => {
 
   return core.ls(args, { cwd: repoPath })
     .then(({ stdout, stderr }) => {
-      // let files = [];
       response.raw = stdout;
       response.stderr = stderr;
       response.files = extractFileNames(stdout);
