@@ -4,7 +4,7 @@ import {
   regex,
   BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
- } from '../constants';
+} from '../constants';
 import generateResponse from '../utils/generateResponse';
 // FIXME: refactor this to util
 import { regexResult } from './push';
@@ -47,6 +47,10 @@ const generateCloneStats = (raw) => {
     stats.total_files_skipped =
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+
+    if (statLine.includes('error:')) {
+      stats.clone_error = statLine.split('error:')[1].trim();
+    }
 
     return stats;
   }

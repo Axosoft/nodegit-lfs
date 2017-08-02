@@ -5,7 +5,7 @@ import {
   regex,
   BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
- } from '../constants';
+} from '../constants';
 import generateResponse from '../utils/generateResponse';
 
 /**
@@ -57,6 +57,10 @@ const generatePushStats = (raw) => {
     stats.total_files_skipped =
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+
+    if (statLine.includes('error:')) {
+      stats.push_error = statLine.split('error:')[1].trim();
+    }
 
     return stats;
   }
