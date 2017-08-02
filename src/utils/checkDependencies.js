@@ -2,11 +2,15 @@
 import fse from 'fs-extra';
 import path from 'path';
 import R from 'ramda';
+import { default as LFSVersion } from '../commands/version';
+import generateResponse from './generateResponse';
+import { core } from '../commands/lfsCommands';
 
 import {
   regex as versionRegexes,
-  BAD_VERSION,
   minimumVersions,
+  BAD_VERSION,
+  BAD_CORE_RESPONSE,
 } from '../constants';
 
 /**
@@ -38,3 +42,24 @@ export const isAtleastLfsVersion = lfsInput =>
   parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
 
 export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.git', 'lfs');
+
+export const dependencyCheck = () => {
+  //eslint-disable-next-line
+  let response = generateResponse();
+  return LFSVersion().then((responseObject) => {
+    response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
+    response.lfs_raw = responseObject.raw;
+    return core.git('--version');
+  })
+    .then(({ stdout }) => {
+      response.git_meets_version = isAtleastGitVersion(stdout);
+      response.git_raw = stdout;
+      return response;
+    })
+    .catch((error) => {
+      response.success = false;
+      response.error = error.errno || BAD_CORE_RESPONSE;
+      response.raw = error;
+      return response;
+    });
+};
