@@ -10,6 +10,8 @@ export const regex = {
   SKIPPED_FILES: /[\d]\s+(?=skipped)/g,
   TOTAL_BYTES: /[\d]+\s+B/g,
   TOTAL_FILES: /[\d]\s+(?=files)/g,
+  USERNAME: /username/i,
+  PASSWORD: /password/i,
 };
 
 export const BAD_VERSION = '0';

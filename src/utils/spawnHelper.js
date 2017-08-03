@@ -1,42 +1,53 @@
 import child from 'child_process';
+import { regex } from '../constants';
 
-const exec = (command, opts) => new Promise(
+const sanitizeStringForStdin = str => `${str}\r\n`;
+
+const exec = (command, opts, callback) => new Promise(
   (resolve, reject) => {
-    /* const proc = child.exec(command, opts, (err, stdout, stderr) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ proc, stdout, stderr });
-      }
-    }); */
     let stdout = '';
     let stderr = '';
-
+    let process;
     if (command.includes(' ')) {
       //eslint-disable-next-line
       let argList = command.split(' ');
       const bin = argList.shift();
       const args = argList;
-      const process = child.spawn(bin, args, opts);
-      process.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
-      process.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-      process.on('close', code => resolve({ code, stdout, stderr }));
-      process.on('error', code => reject(code));
+      process = child.spawn(bin, args, opts);
     } else {
-      const process = child.spawn(command, opts);
+      process = child.spawn(command, opts);
+    }
+
+    if (callback && typeof callback === 'function') {
+      let credentials = {};
+
+      process.stdout.on('data', (data) => {
+        const output = data.toString();
+        stdout += output;
+        console.log('[DEBUG]output: ', output);
+        if (output.match(regex.USERNAME)) {
+          //eslint-disable-next-line
+          const innerCb = (username, password) => {
+            credentials = { username, password };
+            process.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
+          };
+
+          callback(innerCb);
+        } else if (output.match(regex.PASSWORD)) {
+          const password = sanitizeStringForStdin(credentials.password) || '\r\n';
+          process.stdin.write(Buffer.from(password));
+        }
+      });
+    } else {
       process.stdout.on('data', (data) => {
         stdout += data.toString();
       });
-      process.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-      process.on('close', code => resolve({ code, stdout, stderr }));
-      process.on('error', code => reject(code));
     }
+    process.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+    process.on('close', code => resolve({ code, stdout, stderr }));
+    process.on('error', code => reject(code));
   });
 
 export {

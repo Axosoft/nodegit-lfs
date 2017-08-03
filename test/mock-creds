@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+const prompt = require('prompt');
+
+prompt.start();
+
+prompt.get(['username', 'password'], (error, result) => {
+  console.log('Entered user: ', result.username);
+  console.log('Entered pass: ', result.password);
+
+  console.log('this stuff is done');
+  process.exit();
+});
