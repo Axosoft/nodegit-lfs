@@ -1,4 +1,4 @@
-import { exec } from '../utils/execHelpers';
+import { exec } from '../utils/spawnHelper';
 
 const core = {
   checkout: (args = '', options) => exec(`git lfs checkout ${args}`, options),
