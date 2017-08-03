@@ -1,24 +1,34 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { install as lfsInstaller } from './commands/lfsCommands';
+import R from 'ramda';
+import { install } from './commands/lfsCommands';
 
-const ENOENT = 34;
-
-const createGitattributes = (workingDir) => {
-  const gitattrpath = path.join(workingDir, '.gitattributes');
+const createGitattributes = (workdir) => {
+  const gitattrpath = path.join(workdir, '.gitattributes');
   return fse.ensureFile(gitattrpath);
 };
 
-const initialize = (workingDir) => {
-  const lfsDir = path.join(workingDir, '.git', 'lfs');
-  return fse.stat(lfsDir)
-    .catch((err) => {
-      if (err.code !== ENOENT) {
+const builldArgs = (options) => {
+  const opts = (options || {});
+  const args = [];
+  if (opts.local) {
+    args.push('--local');
+  }
+  return R.join(' ', args);
+};
+
+const initialize = (repo, options) => {
+  const workdir = repo.workdir();
+  const lfsDir = path.join(workdir, '.git', 'lfs');
+
+  return fse.pathExists(lfsDir)
+    .then((exists) => {
+      if (exists) {
         return Promise.resolve();
       }
-      return lfsInstaller();
+      return install(builldArgs(options));
     })
-    .then(() => createGitattributes(workingDir));
+    .then(() => createGitattributes(workdir));
 };
 
 export default initialize;
