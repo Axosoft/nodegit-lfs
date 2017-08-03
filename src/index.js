@@ -13,6 +13,7 @@ import list from './commands/ls';
 import testPointer from './commands/pointer';
 import pull from './commands/pull';
 import clone from './commands/clone';
+import { dependencyCheck } from './utils/checkDependencies';
 
 
 function LFS(nodegit) {
@@ -24,6 +25,7 @@ LFS.prototype = {
   core,
   checkout,
   clone,
+  dependencyCheck,
   fetch,
   filters: loadGitattributeFiltersFromRepo,
   initialize,
