@@ -46,7 +46,6 @@
     "eslint-plugin-mocha": "^4.11.0",
     "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.4.2",
-    "nyc": "^11.0.3"
     "nyc": "^11.0.3",
     "prompt": "^1.0.0"
   },
