@@ -15,6 +15,7 @@ const core = {
   push: (args = '', options) => exec(`git lfs push ${args}`, options),
   status: (args = '', options) => exec(`git lfs status ${args}`, options),
   track: (args = '', options) => exec(`git lfs track ${args}`, options),
+  untrack: (args = '', options) => exec(`git lfs untrack ${args}`, options),
   update: (args = '', options) => exec(`git lfs update ${args}`, options),
   version: options => exec('git lfs version', options),
 };
