@@ -1,22 +1,34 @@
-import path from 'path';
 import { Error } from 'nodegit';
 import { exec } from '../utils/execHelpers';
 
 const clean = (to, from, source) => {
-  const realPath = path.join(source.repo().workdir(), source.path());
-  const command = `cat ${realPath} | git lfs clean`;
+  const workdir = source.repo().workdir();
+  const command = `cat ${source.path()} | git lfs clean`;
 
-  return exec(command)
+  return exec(command, { cwd: workdir })
     .then(({ stdout }) => {
       const sha = new Buffer(stdout);
       return to.set(sha, sha.length).then(() => 0);
     });
 };
-// TODO: test this to see if it works
-const smudge = (to, from, source) => exec(`git lfs smudge ${source.path()}`);
+
+const smudge = (to, from, source) => {
+  console.log('smudging ', source.path());
+  const workdir = source.repo().workdir();
+  const command = `cat ${source.path()} | git lfs smudge`;
+
+  return exec(command, { cwd: workdir })
+    .then(({ stdout }) => {
+      console.log('STDOUT ', stdout.toString());
+      const sha = new Buffer(stdout);
+      return to.set(sha, sha.length).then(() => 0);
+    });
+};
 
 const apply = (to, from, source) => {
   const mode = source.mode();
+  console.log('applying mode for smudge ', mode);
+  console.log(source);
   let filterPromise;
   if (mode === 1) {
     filterPromise = clean(to, from, source);
@@ -24,7 +36,6 @@ const apply = (to, from, source) => {
     filterPromise = smudge(to, from, source);
   }
 
-  // TODO import the actual error codes
   return filterPromise
     .then(() => Error.CODE.OK)
     .catch(() => Error.CODE.PASSTHROUGH);
