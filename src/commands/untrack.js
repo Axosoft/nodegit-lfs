@@ -1,5 +1,4 @@
 import R from 'ramda';
-import path from 'path';
 import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
 import {
@@ -21,8 +20,7 @@ const untrack = (repo, globs) => {
   const filteredGlobs = R.filter(isString, globs);
   //eslint-disable-next-line
   let response = generateResponse();
-  // repo.path() leads into workdir/.git
-  const repoPath = path.join(repo.path(), '..');
+  const repoPath = repo.workdir();
 
   return core.untrack(R.join(' ', filteredGlobs), { cwd: repoPath })
     .then(({ stdout, stderr }) => {

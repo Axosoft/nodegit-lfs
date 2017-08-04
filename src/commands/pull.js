@@ -1,5 +1,4 @@
 import R from 'ramda';
-import path from 'path';
 import { core } from './lfsCommands';
 import {
   regex,
@@ -62,10 +61,9 @@ const generatePullStats = (raw) => {
 function pull(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
   let response = generateResponse();
-  // repo.path() leads into workdir/.git
-  const repoPath = path.join(repo.path(), '..');
+  const repoPath = repo.workdir();
 
-  if (repo && branchArg && remoteArg) {
+  if (branchArg && remoteArg) {
     return core.pull(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
@@ -100,7 +98,7 @@ function pull(repo, remoteArg, branchArg) {
     })
     .then((name) => {
       remoteName = remoteArg || name;
-      return core.pull(`${remoteName} ${branch}`, { cwd: repo.path() });
+      return core.pull(`${remoteName} ${branch}`, { cwd: repoPath });
     })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;

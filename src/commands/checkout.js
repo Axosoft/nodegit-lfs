@@ -1,5 +1,4 @@
 import R from 'ramda';
-import path from 'path';
 import { core } from './lfsCommands';
 import {
   regex,
@@ -62,10 +61,9 @@ const generateCheckoutStats = (raw) => {
 function checkout(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
   let response = generateResponse();
-  // repo.path() leads into workdir/.git
-  const repoPath = path.join(repo.path(), '..');
+  const repoPath = repo.workdir();
 
-  if (repo && branchArg && remoteArg) {
+  if (branchArg && remoteArg) {
     return core.checkout(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
@@ -100,7 +98,7 @@ function checkout(repo, remoteArg, branchArg) {
     })
     .then((name) => {
       remoteName = remoteArg || name;
-      return core.checkout(`${remoteName} ${branch}`, { cwd: repo.path() });
+      return core.checkout(`${remoteName} ${branch}`, { cwd: repoPath });
     })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;

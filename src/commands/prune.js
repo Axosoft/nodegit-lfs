@@ -1,4 +1,3 @@
-import path from 'path';
 import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
 import { BAD_CORE_RESPONSE } from '../constants';
@@ -6,8 +5,8 @@ import { BAD_CORE_RESPONSE } from '../constants';
 const prune = (repo, args) => {
   //eslint-disable-next-line
   let response = generateResponse();
-  // repo.path() leads into workdir/.git
-  const repoPath = path.join(repo.path(), '..');
+  const repoPath = repo.workdir();
+
   return core.prune(args, { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;

@@ -1,4 +1,3 @@
-import path from 'path';
 import R from 'ramda';
 import { core } from './lfsCommands';
 import {
@@ -70,10 +69,9 @@ const generatePushStats = (raw) => {
 function push(repo, remoteArg, branchArg) {
   //eslint-disable-next-line
   let response = generateResponse();
-  // repo.path() leads into workdir/.git
-  const repoPath = path.join(repo.path(), '..');
+  const repoPath = repo.workdir();
 
-  if (repo && branchArg && remoteArg) {
+  if (branchArg && remoteArg) {
     return core.push(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
@@ -108,7 +106,7 @@ function push(repo, remoteArg, branchArg) {
     })
     .then((name) => {
       remoteName = remoteArg || name;
-      return core.push(`${remoteName} ${branch}`, { cwd: repo.path() });
+      return core.push(`${remoteName} ${branch}`, { cwd: repoPath });
     })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;

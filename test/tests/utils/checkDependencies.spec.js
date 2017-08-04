@@ -71,8 +71,8 @@ describe('Depenendency Helpers', () => {
   describe('Dependency Check', function() {
     //eslint-disable-next-line
     it('generate valid response', function() {
-      console.log(checker);
-      return checker.dependencyCheck();
+      return checker.dependencyCheck()
+        .then(response => console.log(response));
     });
   });
 });

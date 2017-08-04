@@ -12,12 +12,11 @@ const clean = (to, from, source) => {
       return to.set(sha, sha.length).then(() => 0);
     });
 };
-
+// TODO: test this to see if it works
 const smudge = (to, from, source) => exec(`git lfs smudge ${source.path()}`);
 
 const apply = (to, from, source) => {
   const mode = source.mode();
-
   let filterPromise;
   if (mode === 1) {
     filterPromise = clean(to, from, source);

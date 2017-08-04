@@ -48,11 +48,19 @@ export const dependencyCheck = () => {
   let response = generateResponse();
   return LFSVersion().then((responseObject) => {
     response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
+    response.lfs_exists = parseVersion(
+      responseObject.version,
+      versionRegexes.LFS,
+    ) !== BAD_VERSION;
     response.lfs_raw = responseObject.raw;
     return core.git('--version');
   })
     .then(({ stdout }) => {
       response.git_meets_version = isAtleastGitVersion(stdout);
+      response.git_exists = parseVersion(
+        stdout,
+        versionRegexes.GIT,
+      ) !== BAD_VERSION;
       response.git_raw = stdout;
       return response;
     })
