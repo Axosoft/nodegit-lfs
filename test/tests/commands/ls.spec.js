@@ -3,7 +3,7 @@ import path from 'path';
 import { default as LFS } from '../../../build/src';
 import ls from '../../../build/src/commands/ls';
 
-describe('ls-files', () => {
+describe.only('ls-files', () => {
   it('does generate ls response', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
