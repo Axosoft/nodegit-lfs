@@ -58,60 +58,32 @@ const generatePullStats = (raw) => {
   return {};
 };
 
-function pull(repo, remoteArg, branchArg) {
+function pull(repo, remoteName, branchName) {
   //eslint-disable-next-line
   let response = generateResponse();
   const repoPath = repo.workdir();
 
-  if (branchArg && remoteArg) {
-    return core.pull(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
-      response.raw = stdout;
-      response.stderr = stderr;
-      response.pull = generatePullStats(stdout);
-      return response;
-    }).catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
-      return response;
-    });
+  const args = [];
+  if (remoteName) {
+    args.push(remoteName);
   }
+  if (branchName) {
+    args.push(branchName);
+  }
+  const argsString = R.join(' ', args);
 
-  let remoteRef;
-  //eslint-disable-next-line
-  let branch;
-  let remoteName;
+  return core.pull(argsString, { cwd: repoPath, shell: true }).then(({ stdout, stderr }) => {
+    response.raw = stdout;
 
-  return repo.getCurrentBranch()
-    .then((Reference) => {
-      //eslint-disable-next-line
-      let promises = [];
-      promises.push(this.NodeGit.Branch.upstream(Reference));
-      promises.push(this.NodeGit.Branch.name(Reference));
-      return Promise.all(promises);
-    })
-    .then((results) => {
-      remoteRef = results[0];
-      branch = branchArg || results[1];
-      //eslint-disable-next-line
-      return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
-    })
-    .then((name) => {
-      remoteName = remoteArg || name;
-      return core.pull(`${remoteName} ${branch}`, { cwd: repoPath });
-    })
-    .then(({ stdout, stderr }) => {
-      response.raw = stdout;
+    if (stderr > '') {
       response.stderr = stderr;
-      response.pull = generatePullStats(stdout);
-      return response;
-    })
-    .catch((error) => {
       response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
-      return response;
-    });
+      response.errno = BAD_CORE_RESPONSE;
+    }
+
+    response.pull = generatePullStats(stdout);
+    return response;
+  });
 }
 
 export default pull;

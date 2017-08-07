@@ -58,58 +58,33 @@ const generateFetchStats = (raw) => {
   return {};
 };
 
-function fetch(repo, remoteArg, branchArg) {
+function fetch(repo, remoteName, branchName) {
   //eslint-disable-next-line
   let response = generateResponse();
   const repoPath = repo.workdir();
 
-  if (branchArg && remoteArg) {
-    return core.fetch(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
-      response.raw = stdout;
-      response.stderr = stderr;
-      response.fetch = generateFetchStats(stdout);
-      return response;
-    }).catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
-      return response;
-    });
+  const args = [];
+  if (remoteName) {
+    args.push(remoteName);
   }
 
-  let remoteRef;
-  //eslint-disable-next-line
-  let branch;
-  let remoteName;
+  if (branchName) {
+    args.push(branchName);
+  }
 
-  return repo.getCurrentBranch()
-    .then((Reference) => {
-      //eslint-disable-next-line
-      let promises = [];
-      promises.push(this.NodeGit.Branch.upstream(Reference));
-      promises.push(this.NodeGit.Branch.name(Reference));
-      return Promise.all(promises);
-    })
-    .then((results) => {
-      remoteRef = results[0];
-      branch = branchArg || results[1];
-      //eslint-disable-next-line
-      return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
-    })
-    .then((name) => {
-      remoteName = remoteArg || name;
-      return core.fetch(`${remoteName} ${branch}`, { cwd: repoPath });
-    })
+  const argsString = R.join(' ', args);
+  return core.fetch(argsString, { cwd: repoPath, shell: true })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;
+
+      if (stderr > '') {
+        response.success = false;
+        response.raw = stderr;
+        response.stderr = stderr;
+      }
+
       response.fetch = generateFetchStats(stdout);
-      return response;
-    })
-    .catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
       return response;
     });
 }
