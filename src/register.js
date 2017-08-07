@@ -7,7 +7,7 @@ const filter = {
   apply,
   check,
   initialize,
-  attribute: 'filter=lfs',
+  attribute: 'filter=lfs diff=lfs merge=lfs -text',
 };
 
 /**

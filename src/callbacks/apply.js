@@ -8,7 +8,7 @@ const clean = (to, from, source) => {
   return exec(command, { cwd: workdir })
     .then(({ stdout }) => {
       const sha = new Buffer(stdout);
-      return to.set(sha, sha.length).then(() => 0);
+      return to.set(sha, sha.length).then(() => Error.CODE.OK);
     });
 };
 
@@ -21,7 +21,7 @@ const smudge = (to, from, source) => {
     .then(({ stdout }) => {
       console.log('STDOUT ', stdout.toString());
       const sha = new Buffer(stdout);
-      return to.set(sha, sha.length).then(() => 0);
+      return to.set(sha, sha.length).then(() => Error.CODE.OK);
     });
 };
 
