@@ -20,12 +20,14 @@ before_install:
     fi
 
 env:
-  - GOPATH=$TRAVIS_BUILD_DIR
+  - GOPATH=$TRAVIS_BUILD_DIR/test/server
 
 install:
   - yarn
 
+before_script:
+  - node test/server/lfs-server.js
+
 script:
   - echo $GOPATH
-  - pwd
-  - go version
+  - $TRAVIS_BUILD_DIR/test/server/run.sh
