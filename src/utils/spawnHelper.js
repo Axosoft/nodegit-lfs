@@ -8,6 +8,7 @@ const exec = (command, opts, callback) => new Promise(
     let stdout = '';
     let stderr = '';
     let process;
+    if (opts && !opts.shell) { opts.shell = true; }
     if (command.includes(' ')) {
       //eslint-disable-next-line
       let argList = command.split(' ');

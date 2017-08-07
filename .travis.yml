@@ -19,8 +19,13 @@ before_install:
       sleep 3;
     fi
 
+env:
+  - GOPATH=$TRAVIS_BUILD_DIR
+
 install:
   - yarn
 
 script:
+  - echo $GOPATH
   - pwd
+  - go version
