@@ -29,5 +29,4 @@ before_script:
   - node test/server/lfs-server.js
 
 script:
-  - echo $GOPATH
-  - $TRAVIS_BUILD_DIR/test/server/run.sh
+  - $TRAVIS_BUILD_DIR/test/server/run.sh & yarn test
