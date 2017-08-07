@@ -1,6 +1,8 @@
 /* global before */
 const fse = require('fs-extra');
 const path = require('path');
+const NodeGit = require('nodegit');
+const LFS = require('../build/src');
 
 const exec = require('../build/src/utils/execHelpers').exec;
 const git = require('../build/src/commands/lfsCommands').core.git;
@@ -39,4 +41,14 @@ beforeEach(function() {
     .then(() => exec('git checkout test', { cwd: workdirPath }))
     .then(() => exec('git reset --hard', { cwd: workdirPath }))
     .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
+});
+
+//eslint-disable-next-line
+afterEach(function() {
+  const NodeGitLFS = LFS(NodeGit);
+  return NodeGitLFS.LFS.unregister()
+    .catch((error) => {
+      // -3 implies LFS filter was not registered
+      if (error.errno !== -3) { throw error; }
+    });
 });
