@@ -24,3 +24,4 @@ install:
 
 script:
   - pwd
+  - go version
