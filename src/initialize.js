@@ -1,7 +1,7 @@
 import fse from 'fs-extra';
 import path from 'path';
 import R from 'ramda';
-import { install } from './commands/lfsCommands';
+import { core } from './commands/lfsCommands';
 
 const createGitattributes = (workdir) => {
   const gitattrpath = path.join(workdir, '.gitattributes');
@@ -26,7 +26,7 @@ const initialize = (repo, options) => {
       if (exists) {
         return Promise.resolve();
       }
-      return install(builldArgs(options));
+      return core.install(builldArgs(options));
     })
     .then(() => createGitattributes(workdir));
 };

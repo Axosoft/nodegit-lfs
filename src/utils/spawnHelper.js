@@ -17,7 +17,11 @@ const exec = (command, opts, callback) => new Promise(
     } else {
       process = child.spawn(command, opts);
     }
-
+    /**
+     * If provided with a callback, we will create a new callback which will take user
+     * credentials and use the credentials in this scope.
+     * Caller would need to hookup right credentials to the inner callback.
+     */
     if (callback && typeof callback === 'function') {
       let credentials = {};
 
