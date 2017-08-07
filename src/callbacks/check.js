@@ -1,4 +1,4 @@
-import minimatch from 'minimatch';
+import ignore from 'ignore';
 import { Error } from 'nodegit';
 
 import { loadGitattributeFiltersFromRepo } from '../helpers';
@@ -6,12 +6,11 @@ import { loadGitattributeFiltersFromRepo } from '../helpers';
 const check = src => loadGitattributeFiltersFromRepo(src.repo())
   .then((filters) => {
     const file = src.path();
+    const filterIgnore = ignore().add(filters);
 
-    for (let i = 0; i < filters.length; i++) { // eslint-disable-line no-plusplus
-      const f = filters[i];
-      if (minimatch(file, f)) {
-        return Error.CODE.OK;
-      }
+    // these ignore rules are the closest to the .gitignore rules I have found
+    if (filterIgnore.ignores(file)) {
+      return Error.CODE.OK;
     }
 
     return Error.CODE.PASSTHROUGH;

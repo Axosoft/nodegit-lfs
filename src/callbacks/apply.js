@@ -1,3 +1,4 @@
+import cp from 'child_process';
 import { Error } from 'nodegit';
 import { exec } from '../utils/execHelpers';
 
@@ -13,22 +14,18 @@ const clean = (to, from, source) => {
 };
 
 const smudge = (to, from, source) => {
-  console.log('smudging ', source.path());
   const workdir = source.repo().workdir();
-  const command = `cat ${source.path()} | git lfs smudge`;
 
-  return exec(command, { cwd: workdir })
-    .then(({ stdout }) => {
-      console.log('STDOUT ', stdout.toString());
-      const sha = new Buffer(stdout);
-      return to.set(sha, sha.length).then(() => Error.CODE.OK);
-    });
+  // for some reason I have not gotten this to work with async
+  const stdout = cp.execSync('git lfs smudge', { cwd: workdir, input: from.ptr() });
+  const sha = new Buffer(stdout);
+
+  return to.set(sha, sha.length).then(() => Error.CODE.OK);
 };
 
 const apply = (to, from, source) => {
   const mode = source.mode();
-  console.log('applying mode for smudge ', mode);
-  console.log(source);
+
   let filterPromise;
   if (mode === 1) {
     filterPromise = clean(to, from, source);

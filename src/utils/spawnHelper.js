@@ -24,7 +24,6 @@ const exec = (command, opts, callback) => new Promise(
       process.stdout.on('data', (data) => {
         const output = data.toString();
         stdout += output;
-        console.log('[DEBUG]output: ', output);
         if (output.match(regex.USERNAME)) {
           //eslint-disable-next-line
           const innerCb = (username, password) => {

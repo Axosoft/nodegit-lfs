@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "fs-extra": "^3.0.1",
-    "minimatch": "^3.0.4",
+    "ignore": "^3.3.3",
     "ramda": "^0.24.1"
   }
 }
