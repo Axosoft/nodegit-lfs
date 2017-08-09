@@ -26,7 +26,7 @@ const initialize = (repo, options) => {
       if (exists) {
         return Promise.resolve();
       }
-      return core.install(builldArgs(options));
+      return core.install(builldArgs(options), { cwd: workdir });
     })
     .then(() => createGitattributes(workdir));
 };
