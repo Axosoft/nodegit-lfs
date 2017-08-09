@@ -41,3 +41,5 @@ node_modules
 test/home
 test/repos/workdir/*
 test/repos/empty/*
+test/server/*
+!test/server/lfs-server.js

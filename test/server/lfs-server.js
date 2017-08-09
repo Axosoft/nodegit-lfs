@@ -26,10 +26,6 @@ const lfsConfig = `
 	sslverify = false
 `;
 
-cp.execSync(`echo "${lfsConfig}" > .lfsconfig`, { 
-  cwd: __dirname,
-  shell: true
-});
 cp.execSync(`echo "${runScript}" > run.sh && chmod +x run.sh`, { 
   cwd: __dirname,
   shell: true
