@@ -33,3 +33,5 @@ export const loadGitattributeFiltersFromRepo = (repo) => {
       return lfsFilters;
     });
 };
+
+export const regexResult = (input, regularExpression) => input.match(regularExpression);

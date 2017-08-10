@@ -6,16 +6,13 @@ import {
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-// FIXME: refactor this to util
-import { regexResult } from './push';
+import { regexResult } from '../helpers';
 
 const isValidLine = str => str !== '';
 
 const generateCloneStats = (raw) => {
   if (raw && typeof raw === 'string') {
-    //eslint-disable-next-line
-    let stats = {};
-
+    const stats = {};
     const outputLines = raw.split('Git LFS:');
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
@@ -57,24 +54,32 @@ const generateCloneStats = (raw) => {
   return {};
 };
 
-function clone(cwd, url) {
-  //eslint-disable-next-line
-  let response = generateResponse();
+function clone(url, cwd, options) {
+  if (!url || !cwd) {
+    throw new Error('A valid URL and working directory are required');
+  }
 
-  if (cwd && url) {
-    return core.clone(`${url}`, { cwd }).then(({ stdout, stderr }) => {
+  const {
+    branch,
+    callback,
+  } = (options || {});
+  const args = branch ? `-b ${branch}` : '';
+
+  const response = generateResponse();
+  return core.clone(`${url} ${args}`, { cwd }, callback)
+    .then(({ stdout, stderr }) => {
       response.raw = stdout;
-      response.stderr = stderr;
+
+      if (stderr) {
+        response.stderr = stderr;
+        response.success = false;
+        response.errno = BAD_CORE_RESPONSE;
+        return response;
+      }
+
       response.clone = generateCloneStats(stdout);
       return response;
-    }).catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
-      return response;
     });
-  }
-  return null;
 }
 
 export default clone;

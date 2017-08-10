@@ -7,16 +7,13 @@ import {
 } from '../constants';
 
 import generateResponse from '../utils/generateResponse';
-// FIXME: refactor this to util
-import { regexResult } from './push';
+import { regexResult } from '../helpers';
 
 const isValidLine = str => str !== '';
 
 const generateCheckoutStats = (raw) => {
   if (raw && typeof raw === 'string') {
-    //eslint-disable-next-line
-    let stats = {};
-
+    const stats = {};
     const outputLines = raw.split('Git LFS:');
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
@@ -58,58 +55,53 @@ const generateCheckoutStats = (raw) => {
   return {};
 };
 
-function checkout(repo, remoteArg, branchArg) {
-  //eslint-disable-next-line
-  let response = generateResponse();
+function checkout(repo, options) {
+  const response = generateResponse();
   const repoPath = repo.workdir();
 
-  if (branchArg && remoteArg) {
-    return core.checkout(`${remoteArg} ${branchArg}`, { cwd: repoPath }).then(({ stdout, stderr }) => {
-      response.raw = stdout;
-      response.stderr = stderr;
-      response.checkout = generateCheckoutStats(stdout);
-      return response;
-    }).catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
-      return response;
-    });
+  const {
+    remoteName,
+    branchName,
+    callback,
+  } = (options || {});
+
+  let branch = branchName;
+  let remote = remoteName;
+  let getRemoteAndBranchPromise = Promise.resolve();
+
+  if (!remote || !branch) {
+    let remoteRef;
+    getRemoteAndBranchPromise = repo.getCurrentBranch()
+      .then((Reference) => {
+        const promises = [];
+        promises.push(this.NodeGit.Branch.upstream(Reference));
+        promises.push(this.NodeGit.Branch.name(Reference));
+        return Promise.all(promises);
+      })
+      .then((results) => {
+        remoteRef = results[0];
+        branch = branch || results[1];
+        return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
+      })
+      .then((name) => {
+        remote = remote || name;
+        return Promise.resolve();
+      });
   }
 
-  let remoteRef;
-  //eslint-disable-next-line
-  let branch;
-  let remoteName;
-
-  return repo.getCurrentBranch()
-    .then((Reference) => {
-      //eslint-disable-next-line
-      let promises = [];
-      promises.push(this.NodeGit.Branch.upstream(Reference));
-      promises.push(this.NodeGit.Branch.name(Reference));
-      return Promise.all(promises);
-    })
-    .then((results) => {
-      remoteRef = results[0];
-      branch = branchArg || results[1];
-      //eslint-disable-next-line
-      return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
-    })
-    .then((name) => {
-      remoteName = remoteArg || name;
-      return core.checkout(`${remoteName} ${branch}`, { cwd: repoPath });
-    })
+  return getRemoteAndBranchPromise
+    .then(() => core.checkout(`${remote} ${branch}`, { cwd: repoPath }, callback))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
-      response.stderr = stderr;
+
+      if (stderr) {
+        response.stderr = stderr;
+        response.errno = BAD_CORE_RESPONSE;
+        response.success = false;
+        return response;
+      }
+
       response.checkout = generateCheckoutStats(stdout);
-      return response;
-    })
-    .catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
       return response;
     });
 }

@@ -6,17 +6,13 @@ import {
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-
-// FIXME: refactor this to util
-import { regexResult } from './push';
+import { regexResult } from '../helpers';
 
 const isValidLine = str => str !== '';
 
 const generatePullStats = (raw) => {
   if (raw && typeof raw === 'string') {
-    //eslint-disable-next-line
-    let stats = {};
-
+    const stats = {};
     const outputLines = raw.split('Git LFS:');
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
@@ -58,12 +54,17 @@ const generatePullStats = (raw) => {
   return {};
 };
 
-function pull(repo, remoteName, branchName) {
-  //eslint-disable-next-line
-  let response = generateResponse();
+function pull(repo, options) {
+  const response = generateResponse();
   const repoPath = repo.workdir();
 
   const args = [];
+  const {
+    remoteName,
+    branchName,
+    callback,
+  } = (options || {});
+
   if (remoteName) {
     args.push(remoteName);
   }
@@ -72,18 +73,20 @@ function pull(repo, remoteName, branchName) {
   }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, { cwd: repoPath, shell: true }).then(({ stdout, stderr }) => {
-    response.raw = stdout;
+  return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
+    .then(({ stdout, stderr }) => {
+      response.raw = stdout;
 
-    if (stderr > '') {
-      response.stderr = stderr;
-      response.success = false;
-      response.errno = BAD_CORE_RESPONSE;
-    }
+      if (stderr) {
+        response.stderr = stderr;
+        response.success = false;
+        response.errno = BAD_CORE_RESPONSE;
+        return response;
+      }
 
-    response.pull = generatePullStats(stdout);
-    return response;
-  });
+      response.pull = generatePullStats(stdout);
+      return response;
+    });
 }
 
 export default pull;

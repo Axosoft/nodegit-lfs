@@ -1,23 +1,26 @@
 import child from 'child_process';
+import { EOL } from 'os';
 import { regex } from '../constants';
 
 const sanitizeStringForStdin = str => `${str}\r\n`;
 
 const exec = (command, opts, callback) => new Promise(
   (resolve, reject) => {
+    const options = Object.assign({}, opts, { shell: true });
+
+    let args = [];
+    let cmd = command;
+    if (command.includes(' ')) {
+      const argList = command.split(' ');
+      cmd = argList.shift();
+      args = argList;
+    }
+
     let stdout = '';
     let stderr = '';
-    let process;
-    if (opts && !opts.shell) { opts.shell = true; }
-    if (command.includes(' ')) {
-      //eslint-disable-next-line
-      let argList = command.split(' ');
-      const bin = argList.shift();
-      const args = argList;
-      process = child.spawn(bin, args, opts);
-    } else {
-      process = child.spawn(command, opts);
-    }
+    let processChunk = chunk => chunk.toString();
+    const process = child.spawn(cmd, args, options);
+
     /**
      * If provided with a callback, we will create a new callback which will take user
      * credentials and use the credentials in this scope.
@@ -25,28 +28,28 @@ const exec = (command, opts, callback) => new Promise(
      */
     if (callback && typeof callback === 'function') {
       let credentials = {};
+      const innerCb = (username, password) => {
+        credentials = { username, password };
+        process.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
+      };
 
-      process.stdout.on('data', (data) => {
-        const output = data.toString();
-        stdout += output;
+      processChunk = (chunk) => {
+        const output = chunk.toString();
+
         if (output.match(regex.USERNAME)) {
-          //eslint-disable-next-line
-          const innerCb = (username, password) => {
-            credentials = { username, password };
-            process.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
-          };
-
           callback(innerCb);
         } else if (output.match(regex.PASSWORD)) {
-          const password = sanitizeStringForStdin(credentials.password) || '\r\n';
+          const password = sanitizeStringForStdin(credentials.password) || EOL;
           process.stdin.write(Buffer.from(password));
         }
-      });
-    } else {
-      process.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
+
+        return output;
+      };
     }
+
+    process.stdout.on('data', (chunk) => {
+      stdout += processChunk(chunk);
+    });
     process.stderr.on('data', (data) => {
       stderr += data.toString();
     });

@@ -18,21 +18,21 @@ const untrack = (repo, globs) => {
   if (!globs) { return; }
 
   const filteredGlobs = R.filter(isString, globs);
-  //eslint-disable-next-line
-  let response = generateResponse();
+  const response = generateResponse();
   const repoPath = repo.workdir();
 
   return core.untrack(R.join(' ', filteredGlobs), { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
-      response.stderr = stderr;
+
+      if (stderr) {
+        response.success = false;
+        response.errno = BAD_CORE_RESPONSE;
+        response.stderr = stderr;
+        return response;
+      }
+
       response.untracked_globs = extractGlobs(stdout, Regex.TRACK);
-      return response;
-    })
-    .catch((error) => {
-      response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
       return response;
     });
 };

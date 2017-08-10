@@ -44,8 +44,7 @@ export const isAtleastLfsVersion = lfsInput =>
 export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.git', 'lfs');
 
 export const dependencyCheck = () => {
-  //eslint-disable-next-line
-  let response = generateResponse();
+  const response = generateResponse();
   return LFSVersion().then((responseObject) => {
     response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
     response.lfs_exists = parseVersion(
@@ -53,21 +52,23 @@ export const dependencyCheck = () => {
       versionRegexes.LFS,
     ) !== BAD_VERSION;
     response.lfs_raw = responseObject.raw;
+
     return core.git('--version');
   })
-    .then(({ stdout }) => {
-      response.git_meets_version = isAtleastGitVersion(stdout);
-      response.git_exists = parseVersion(
-        stdout,
-        versionRegexes.GIT,
-      ) !== BAD_VERSION;
-      response.git_raw = stdout;
-      return response;
-    })
-    .catch((error) => {
+  .then(({ stdout, stderr }) => {
+    if (stderr) {
       response.success = false;
-      response.error = error.errno || BAD_CORE_RESPONSE;
-      response.raw = error;
+      response.errno = BAD_CORE_RESPONSE;
+      response.stderr = stderr;
       return response;
-    });
+    }
+
+    response.git_meets_version = isAtleastGitVersion(stdout);
+    response.git_exists = parseVersion(
+      stdout,
+      versionRegexes.GIT,
+    ) !== BAD_VERSION;
+    response.git_raw = stdout;
+    return response;
+  });
 };
