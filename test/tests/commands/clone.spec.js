@@ -2,7 +2,7 @@ import path from 'path';
 import NodeGit from 'nodegit';
 import { default as LFS } from '../../../build/src';
 
-describe('Clone', () => {
+describe('Clone', function () {
   this.timeout(5000);
 
   it('should generate clone repsonse', () => {

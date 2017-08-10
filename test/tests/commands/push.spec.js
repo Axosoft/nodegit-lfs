@@ -2,11 +2,11 @@ import path from 'path';
 import NodeGit from 'nodegit';
 import { default as LFS } from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
-//eslint-disable-next-line
-describe('Push', function() {
+
+describe('Push', function () {
   this.timeout(5000);
-  //eslint-disable-next-line
-  it('should generate push repsonse', function() {
+
+  it('should generate push repsonse', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

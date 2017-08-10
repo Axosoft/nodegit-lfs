@@ -13,13 +13,8 @@ const workdirPath = local('..', 'test', 'repos', 'workdir');
 const emptyrepoPath = local('..', 'test', 'repos', 'empty');
 const homePath = local('..', 'test', 'home');
 
-/* console.log(emptyrepoPath);
-console.log(workdirPath);
-console.log(git); */
-
-//eslint-disable-next-line
-before(function() {
-  this.timeout(40000);
+before(function () {
+  this.timeout(300000);
   const url = 'https://github.com/mohseenrm/nodegit-lfs-test-repo';
   return fse.remove(testRepoPath)
     .then(() => fse.remove(homePath))
@@ -30,21 +25,18 @@ before(function() {
     .then(() => git(`clone -b test ${url} ${workdirPath}`))
     .then(() => fse.mkdir(homePath))
     .then(() => fse.writeFile(path.join(homePath, '.gitconfig'),
-        '[user]\n  name = John Doe\n  email = johndoe@example.com'))
-    .catch(err => console.log('Error initializing test suite\n', err));
+        '[user]\n  name = John Doe\n  email = johndoe@example.com'));
 });
 
-//eslint-disable-next-line
-beforeEach(function() {
-  this.timeout(4000);
+beforeEach(function () {
+  this.timeout(300000);
   return exec('git clean -xdf', { cwd: workdirPath })
     .then(() => exec('git checkout test', { cwd: workdirPath }))
     .then(() => exec('git reset --hard', { cwd: workdirPath }))
     .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
 });
 
-//eslint-disable-next-line
-afterEach(function() {
+afterEach(() => {
   const NodeGitLFS = LFS(NodeGit);
   return NodeGitLFS.LFS.unregister()
     .catch((error) => {
