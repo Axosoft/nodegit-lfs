@@ -2,12 +2,12 @@ import child from 'child_process';
 import { EOL } from 'os';
 import { regex } from '../constants';
 
-const sanitizeStringForStdin = str => `${str}\r\n`;
+const sanitizeStringForStdin = str => `${str}${EOL}`;
 
 const exec = (command, opts, callback) => new Promise(
   (resolve, reject) => {
     const options = Object.assign({}, opts, { shell: true });
-
+    debugger;
     let args = [];
     let cmd = command;
     if (command.includes(' ')) {
@@ -28,7 +28,12 @@ const exec = (command, opts, callback) => new Promise(
      */
     if (callback && typeof callback === 'function') {
       let credentials = {};
-      const innerCb = (username, password) => {
+      const innerCb = (username, password, cancel) => {
+        if (cancel) {
+          // we are done here, hopefully this works
+          process.kill();
+        }
+
         credentials = { username, password };
         process.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
       };
@@ -53,8 +58,18 @@ const exec = (command, opts, callback) => new Promise(
     process.stderr.on('data', (data) => {
       stderr += data.toString();
     });
-    process.on('close', code => resolve({ code, stdout, stderr }));
-    process.on('error', code => reject(code));
+    process.on('close', code => {
+      resolve({ code, stdout, stderr });
+    });
+    process.on('error', code =>  {
+      reject(code);
+    });
+    process.on('end', code =>  {
+      reject(code);
+    });
+    process.on('SIGINT', code =>  {
+      reject(code);
+    });
   });
 
 export {

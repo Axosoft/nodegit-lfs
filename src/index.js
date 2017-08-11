@@ -2,7 +2,7 @@ import initialize from './initialize';
 import register from './register';
 import unregister from './unregister';
 import { core } from './commands/lfsCommands';
-import { loadGitattributeFiltersFromRepo } from './helpers';
+import { loadGitattributeFiltersFromRepo, hasLfsFilters } from './helpers';
 import checkout from './commands/checkout';
 import push from './commands/push';
 import track from './commands/track';
@@ -20,7 +20,6 @@ function LFS(nodegit) {
   this.NodeGit = nodegit;
 }
 
-// LFS.prototype.constructor = LFS;
 LFS.prototype = {
   core,
   checkout,
@@ -28,6 +27,7 @@ LFS.prototype = {
   dependencyCheck,
   fetch,
   filters: loadGitattributeFiltersFromRepo,
+  hasLfsFilters,
   initialize,
   list,
   register,
@@ -39,8 +39,6 @@ LFS.prototype = {
   version,
   unregister,
 };
-
-// LFS.prototype.push = push;
 
 module.exports = (nodegit) => {
   const _NodeGit = nodegit;

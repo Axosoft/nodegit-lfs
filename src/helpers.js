@@ -34,4 +34,8 @@ export const loadGitattributeFiltersFromRepo = (repo) => {
     });
 };
 
+export const hasLfsFilters = repo => loadGitattributeFiltersFromRepo(repo)
+  .then(filters => filters.length > 0)
+  .catch(() => false);
+
 export const regexResult = (input, regularExpression) => input.match(regularExpression);
