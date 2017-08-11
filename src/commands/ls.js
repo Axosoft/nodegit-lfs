@@ -1,4 +1,3 @@
-import { EOL } from 'os';
 import R from 'ramda';
 import { core } from './lfsCommands';
 import {
@@ -9,7 +8,7 @@ import generateResponse from '../utils/generateResponse';
 const isValidFileOutput = str => str.includes('*') || str.includes('-');
 
 const reduceResults = (acc, value) => {
-  const separatorRegex = /[*\\-]/;
+  const separatorRegex = /[*-]/;
   const match = value.match(separatorRegex);
   if (!match || !match[0]) {
     return acc;
@@ -24,7 +23,7 @@ const reduceResults = (acc, value) => {
 const extractFileNames = (raw) => {
   const output = (raw || '');
 
-  const outputLines = output.toString().split(EOL);
+  const outputLines = output.toString().split('\n');
   const filteredLines = R.filter(isValidFileOutput, outputLines);
   // creating the object in which sha's point to the file name
   return R.reduce(reduceResults, {}, filteredLines);
