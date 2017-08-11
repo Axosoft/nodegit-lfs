@@ -1,12 +1,16 @@
 import cp from 'child_process';
 import { Error } from 'nodegit';
+import fse from 'fs-extra';
+import path from 'path';
 
 const clean = (to, from, source) => {
   const workdir = source.repo().workdir();
-  const command = `cat ${source.path()} | git lfs clean ${source.path()}`;
+  const filePath = path.join(workdir, source.path());
+  const command = `git lfs clean ${source.path()}`;
 
   // also does not work with async
-  const stdout = cp.execSync(command, { cwd: workdir });
+  const buf = fse.readFileSync(filePath);
+  const stdout = cp.execSync(command, { cwd: workdir, input: buf });
   const sha = new Buffer(stdout);
   return to.set(sha, sha.length).then(() => Error.CODE.OK);
 };
