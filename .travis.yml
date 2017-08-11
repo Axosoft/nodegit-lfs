@@ -10,6 +10,16 @@ os:
   - osx
   - linux
 
+addons:
+  addons:
+  apt:
+    packages:
+    - build-essential
+    - git
+    - libgnome-keyring-dev
+    - libxkbfile-dev
+    - libxss-dev
+
 before_install:
   - git clean -xdff
   - npm i -g yarn@latest
@@ -20,7 +30,12 @@ before_install:
     fi
 
 env:
-  - GOPATH=$TRAVIS_BUILD_DIR/test/server
+  - GOPATH=$TRAVIS_BUILD_DIR/test/server CC=clang CXX=clang++ npm_config_clang=1
+
+before_install:
+  - cd .. && git clone -b fix/asyncify_methods https://github.com/cjhoward92/nodegit.git
+  - cd nodegit && npm i && yarn link && cd ../nodegit-lfs
+  - yarn link nodegit
 
 install:
   - yarn
