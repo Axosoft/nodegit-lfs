@@ -7,7 +7,6 @@ const sanitizeStringForStdin = str => `${str}${EOL}`;
 const exec = (command, opts, callback) => new Promise(
   (resolve, reject) => {
     const options = Object.assign({}, opts, { shell: true });
-    debugger;
     let args = [];
     let cmd = command;
     if (command.includes(' ')) {
@@ -58,18 +57,8 @@ const exec = (command, opts, callback) => new Promise(
     process.stderr.on('data', (data) => {
       stderr += data.toString();
     });
-    process.on('close', code => {
-      resolve({ code, stdout, stderr });
-    });
-    process.on('error', code =>  {
-      reject(code);
-    });
-    process.on('end', code =>  {
-      reject(code);
-    });
-    process.on('SIGINT', code =>  {
-      reject(code);
-    });
+    process.on('close', code => resolve({ code, stdout, stderr }));
+    process.on('error', code => reject(code));
   });
 
 export {
