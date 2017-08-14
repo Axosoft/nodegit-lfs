@@ -1,52 +1,57 @@
-/* global before */
 const fse = require('fs-extra');
 const path = require('path');
 const NodeGit = require('nodegit');
 const LFS = require('../build/src');
 
 const exec = require('../build/src/utils/execHelpers').exec;
-const git = require('../build/src/commands/lfsCommands').core.git;
+const gitExec = require('../build/src/commands/lfsCommands').core.git;
 
 const testLFSServer = require('./server/server');
 
-const local = path.join.bind(path, __dirname);
-const testRepoPath = local('..', 'test', 'repos');
-const workdirPath = local('..', 'test', 'repos', 'workdir');
-const emptyrepoPath = local('..', 'test', 'repos', 'empty');
-const homePath = local('..', 'test', 'home');
+const testReposPath = path.join('test', 'repos');
+const workdirPath = path.join(testReposPath, 'workdir');
+const emptyrepoPath = path.join(testReposPath, 'empty');
 
-before(function () {
+const git = (...args) =>
+  gitExec(...args)
+    .then(({ stderr }) =>
+      stderr
+        ? Promise.reject(stderr)
+        : Promise.resolve());
+
+before(function () { // eslint-disable-line prefer-arrow-callback
   this.timeout(300000);
-  const url = 'https://github.com/jgrosso/nodegit-lfs-test-repo';
-  testLFSServer.start();
-  return fse.remove(testRepoPath)
-    .then(() => fse.remove(homePath))
-    .then(() => fse.mkdir(local('repos')))
+
+  const testRepoUrl = 'https://github.com/jgrosso/nodegit-lfs-test-repo';
+  return testLFSServer.start()
+    .then(() => fse.remove(testReposPath))
+    .then(() => fse.mkdir(testReposPath))
     .then(() => fse.mkdir(workdirPath))
     .then(() => fse.mkdir(emptyrepoPath))
     .then(() => git(`init ${emptyrepoPath}`))
-    .then(() => git(`clone ${url} ${workdirPath}`))
-    .then(() => fse.mkdir(homePath))
-    .then(() => fse.writeFile(
-      path.join(homePath, '.gitconfig'),
-`[user]
-    name = John Doe
-    email = johndoe@example.com`
-    ));
+    .then(() => git(`clone ${testRepoUrl} ${workdirPath}`, {
+      env: {
+        GIT_SSL_NO_VERIFY: 1
+      }
+    }))
+    .then(() => fse.appendFile(
+      path.join(workdirPath, '.git', 'config'),
+`[http]
+  sslverify = false`
+    ))
+    .catch((err) => { throw new Error(err); });
 });
 
-beforeEach(function () {
-  return exec('git clean -xdf', { cwd: workdirPath })
-    .then(() => exec('git checkout test', { cwd: workdirPath }))
-    .then(() => exec('git reset --hard', { cwd: workdirPath }))
+beforeEach(() => {
+  return exec('git clean -xdf && git reset --hard', { cwd: workdirPath })
     .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
 });
 
-after(function () {
+after(() => {
   testLFSServer.stop();
 });
 
-afterEach(function () {
+afterEach(() => {
   const NodeGitLFS = LFS(NodeGit);
   return NodeGitLFS.LFS.unregister()
     .catch((error) => {

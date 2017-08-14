@@ -1,12 +1,13 @@
 import child from 'child_process';
 import { EOL } from 'os';
+import R from 'ramda';
 import { regex } from '../constants';
 
 const sanitizeStringForStdin = str => `${str}${EOL}`;
 
 const exec = (command, opts, callback) => new Promise(
   (resolve, reject) => {
-    const options = Object.assign({}, opts, { shell: true });
+    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
     let args = [];
     let cmd = command;
     if (command.includes(' ')) {
@@ -18,7 +19,7 @@ const exec = (command, opts, callback) => new Promise(
     let stdout = '';
     let stderr = '';
     let processChunk = chunk => chunk.toString();
-    const process = child.spawn(cmd, args, options);
+    const spawnedProcess = child.spawn(cmd, args, options);
 
     /**
      * If provided with a callback, we will create a new callback which will take user
@@ -30,11 +31,11 @@ const exec = (command, opts, callback) => new Promise(
       const innerCb = (username, password, cancel) => {
         if (cancel) {
           // we are done here, hopefully this works
-          process.kill();
+          spawnedProcess.kill();
         }
 
         credentials = { username, password };
-        process.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
+        spawnedProcess.stdin.write(Buffer.from(sanitizeStringForStdin(credentials.username)));
       };
 
       processChunk = (chunk) => {
@@ -44,17 +45,17 @@ const exec = (command, opts, callback) => new Promise(
           callback(innerCb);
         } else if (output.match(regex.PASSWORD)) {
           const password = sanitizeStringForStdin(credentials.password) || EOL;
-          process.stdin.write(Buffer.from(password));
+          spawnedProcess.stdin.write(Buffer.from(password));
         }
 
         return output;
       };
     }
 
-    process.stdout.on('data', (chunk) => {
+    spawnedProcess.stdout.on('data', (chunk) => {
       stdout += processChunk(chunk);
     });
-    process.stderr.on('data', (data) => {
+    spawnedProcess.stderr.on('data', (data) => {
       stderr += data.toString();
     });
     process.on('close', code => resolve({ code, stdout, stderr }));
