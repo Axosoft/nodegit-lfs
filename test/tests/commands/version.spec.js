@@ -6,7 +6,7 @@ import version from '../../../build/src/commands/version';
 
 describe('Version', () => {
   it('does provide version number', () => {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
     return NodeGitLFS.Repository.open(workdirPath)

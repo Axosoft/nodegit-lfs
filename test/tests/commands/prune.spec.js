@@ -6,7 +6,7 @@ import prune from '../../../build/src/commands/prune';
 
 describe('Prune', () => {
   it('does generate prune response', () => {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
     return NodeGitLFS.Repository.open(workdirPath)

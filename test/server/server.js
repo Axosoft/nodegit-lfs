@@ -27,11 +27,11 @@ module.exports = {
         // Handle Go errors
         const err = data.toString().match(/ err=(.*)/);
         if (err) {
-          return reject(err[1]);
+          throw new Error(err[1]);
         }
       });
       server.stderr.on('data', (err) => {
-        return reject(err.toString());
+        throw new Error(err.toString());
       });
     });
   },

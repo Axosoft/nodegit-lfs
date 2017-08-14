@@ -37,7 +37,5 @@ node_modules
 .vscode
 
 # Generated test files
-test/home
-test/repos/workdir
-test/repos/empty
+test/repos
 test/server/lfs-test-server

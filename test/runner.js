@@ -3,32 +3,32 @@ const path = require('path');
 const NodeGit = require('nodegit');
 const LFS = require('../build/src');
 
-const exec = require('../build/src/utils/execHelpers').exec;
+const exec = require('../build/src/utils/execHelper').default;
 const git = require('../build/src/commands/lfsCommands').core.git;
 
 const testLFSServer = require('./server/server');
 
-const testReposPath = path.join('test', 'repos');
-const workdirPath = path.join(testReposPath, 'workdir');
-const emptyrepoPath = path.join(testReposPath, 'empty');
+const testReposPath = path.join(__dirname, 'repos');
+const lfsRepoPath = path.join(testReposPath, 'lfs-test-repository');
+const emptyRepoPath = path.join(testReposPath, 'empty');
 
 before(function () { // eslint-disable-line prefer-arrow-callback
-  this.timeout(300000);
+  this.timeout(30000);
 
   const testRepoUrl = 'https://github.com/jgrosso/nodegit-lfs-test-repo';
   return testLFSServer.start()
     .then(() => fse.remove(testReposPath))
     .then(() => fse.mkdir(testReposPath))
-    .then(() => fse.mkdir(workdirPath))
-    .then(() => fse.mkdir(emptyrepoPath))
-    .then(() => git(`init ${emptyrepoPath}`))
-    .then(() => git(`clone ${testRepoUrl} ${workdirPath}`, {
+    .then(() => fse.mkdir(lfsRepoPath))
+    .then(() => fse.mkdir(emptyRepoPath))
+    .then(() => git(`init ${emptyRepoPath}`))
+    .then(() => git(`clone ${testRepoUrl} ${lfsRepoPath}`, {
       env: {
         GIT_SSL_NO_VERIFY: 1
       }
     }))
     .then(() => fse.appendFile(
-      path.join(workdirPath, '.git', 'config'),
+      path.join(lfsRepoPath, '.git', 'config'),
 `[http]
   sslverify = false`
     ))
@@ -36,8 +36,8 @@ before(function () { // eslint-disable-line prefer-arrow-callback
 });
 
 beforeEach(() => {
-  return exec('git clean -xdf && git reset --hard', { cwd: workdirPath })
-    .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
+  return exec('git clean -xdf && git reset --hard', { cwd: lfsRepoPath })
+    .then(() => exec('git clean -xdff', { cwd: emptyRepoPath }));
 });
 
 after(() => {

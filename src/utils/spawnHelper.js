@@ -5,7 +5,7 @@ import { regex } from '../constants';
 
 const sanitizeStringForStdin = str => `${str}${EOL}`;
 
-const exec = (command, opts, callback) => new Promise(
+const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {
     const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
     let args = [];
@@ -52,16 +52,14 @@ const exec = (command, opts, callback) => new Promise(
       };
     }
 
-    spawnedProcess.stdout.on('data', (chunk) => {
-      stdout += processChunk(chunk);
+    spawnedProcess.stdout.on('data', (data) => {
+      stdout += processChunk(data);
     });
     spawnedProcess.stderr.on('data', (data) => {
       stderr += data.toString();
     });
-    process.on('close', code => resolve({ code, stdout, stderr }));
-    process.on('error', code => reject(code));
+    spawnedProcess.on('close', code => resolve({ code, stdout, stderr }));
+    spawnedProcess.on('error', code => reject(code));
   });
 
-export {
-  exec
-};
+export default spawn;

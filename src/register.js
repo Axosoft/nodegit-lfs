@@ -11,7 +11,7 @@ const filter = {
 };
 
 /**
- * Wrapper to register nodegit lfs filter and append status to LFS in nodegit
+ * Wrapper to register nodegit LFS filter and append status to LFS in nodegit
  * @return Promise
  */
 function register() {

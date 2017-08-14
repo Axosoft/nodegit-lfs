@@ -2,7 +2,7 @@ import path from 'path';
 import NodeGit from 'nodegit';
 import { todo } from '../../utils';
 import LFS from '../../../build/src';
-import { exec } from '../../../build/src/utils/execHelpers';
+import exec from '../../../build/src/utils/execHelper';
 import track from '../../../build/src/commands/track';
 
 const commitFile = (repo, fileName, commitMessage) => {
@@ -38,7 +38,7 @@ const commitFile = (repo, fileName, commitMessage) => {
 
 describe('Apply', () => {
   it('Clean', () => {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 
@@ -54,7 +54,7 @@ describe('Apply', () => {
   });
 
   it('Smudge', () => {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 

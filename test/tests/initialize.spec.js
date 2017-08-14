@@ -4,12 +4,10 @@ import NodeGit from 'nodegit';
 import { expect } from 'chai';
 import LFS from '../../build/src';
 
-const local = path.join.bind(path, __dirname);
-
 describe('Initialize', () => {
   it('initialize is a promise', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const workdirPath = local('../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then((repo) => {
@@ -20,7 +18,7 @@ describe('Initialize', () => {
 
   it('creates .gitattributes for empty repo', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const emptydirPath = local('../repos/empty');
+    const emptydirPath = path.resolve(__dirname, '..', 'repos', 'empty');
     expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.false;
 
     return NodeGitLFS.Repository.open(emptydirPath)
