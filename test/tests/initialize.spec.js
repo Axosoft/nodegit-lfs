@@ -6,8 +6,8 @@ import { default as LFS } from '../../build/src';
 
 const local = path.join.bind(path, __dirname);
 
-describe('Initialize', function () {
-  it('initialize is a promise', function () {
+describe('Initialize', () => {
+  it('initialize is a promise', () => {
     const NodeGitLFS = LFS(NodeGit);
     const workdirPath = local('../repos/workdir');
 
@@ -18,7 +18,7 @@ describe('Initialize', function () {
       });
   });
 
-  it('creates .gitattributes for empty repo', function () {
+  it('creates .gitattributes for empty repo', () => {
     const NodeGitLFS = LFS(NodeGit);
     const emptydirPath = local('../repos/empty');
     expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.false;

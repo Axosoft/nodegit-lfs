@@ -4,8 +4,8 @@ import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import track from '../../../build/src/commands/track';
 
-describe('Track', function () {
-  it('does generate track response', function () {
+describe('Track', () => {
+  it('does generate track response', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

@@ -1,7 +1,7 @@
 import { todo } from '../../utils';
 
-describe('generateResponse', function () {
-  it('does generate response', function () {
+describe('generateResponse', () => {
+  it('does generate response', () => {
     todo();
   });
 });

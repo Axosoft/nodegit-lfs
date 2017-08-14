@@ -4,8 +4,8 @@ import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import version from '../../../build/src/commands/version';
 
-describe('Version', function () {
-  it('does provide version number', function () {
+describe('Version', () => {
+  it('does provide version number', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

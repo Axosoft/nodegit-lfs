@@ -15,7 +15,6 @@
     "chai-friendly/no-unused-expressions": 2,
     "func-names": 0,
     "import/no-named-default": 0,
-    "prefer-arrow-callback": 0,
     "no-unused-expressions": 0
   }
 }

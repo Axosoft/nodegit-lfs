@@ -36,8 +36,8 @@ const commitFile = (repo, fileName, commitMessage) => {
         [parent]));
 };
 
-describe('Apply', function () {
-  it('Clean', function () {
+describe('Apply', () => {
+  it('Clean', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
@@ -53,7 +53,7 @@ describe('Apply', function () {
       .then(() => todo());
   });
 
-  it('Smudge', function () {
+  it('Smudge', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
     let repository;

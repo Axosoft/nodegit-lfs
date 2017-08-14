@@ -5,8 +5,8 @@ import { default as LFS } from '../../../build/src';
 import track from '../../../build/src/commands/track';
 import untrack from '../../../build/src/commands/untrack';
 
-describe('Untrack', function () {
-  it('does generate untrack response', function () {
+describe('Untrack', () => {
+  it('does generate untrack response', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
