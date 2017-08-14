@@ -5,6 +5,7 @@
   },
   "extends": "airbnb-base",
   "rules": {
+    "comma-dangle": 0,
     "consistent-return": 0,
     "import/no-named-default": 0,
     "import/prefer-default-export": 0,

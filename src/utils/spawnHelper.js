@@ -62,5 +62,5 @@ const exec = (command, opts, callback) => new Promise(
   });
 
 export {
-  exec,
+  exec
 };
