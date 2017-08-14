@@ -1,6 +1,19 @@
+const fse = require('fs-extra');
 const { spawn } = require('child_process');
 
 let serverPid = null;
+
+const getWin32BashCommand = () => {
+  let shPath = 'C:\\Program Files\\Git\\bin\\sh.exe';
+  if (!fse.pathExistsSync(shPath)) {
+    shPath = 'C:\\Program Files (x86)\\Git\\bin\\sh.exe';
+    if (!fse.pathExistsSync(shPath)) {
+      throw new Error('Cannot find git-bash. Please install it in the Program Files directory');
+    }
+  }
+
+  return `"${shPath}" `;
+};
 
 module.exports = {
   start() {
@@ -10,7 +23,7 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       const cmdRunner = process.platform === 'win32'
-        ? '"C:\\Program Files\\Git\\bin\\sh.exe" '
+        ? getWin32BashCommand()
         : './';
       const server = spawn(`${cmdRunner}start.sh`, {
         cwd: __dirname,
