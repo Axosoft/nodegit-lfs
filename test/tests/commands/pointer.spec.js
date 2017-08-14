@@ -1,7 +1,7 @@
 import NodeGit from 'nodegit';
 import path from 'path';
 import { todo } from '../../utils';
-import { default as LFS } from '../../../build/src';
+import LFS from '../../../build/src';
 import pointer from '../../../build/src/commands/pointer';
 
 describe('Pointer', () => {

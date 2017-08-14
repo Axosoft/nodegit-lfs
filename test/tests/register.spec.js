@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import NodeGit from 'nodegit';
-import { default as LFS } from '../../build/src';
+import LFS from '../../build/src';
 
 describe('Register:', () => {
   it('has register callback', () => {

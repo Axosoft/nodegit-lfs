@@ -1,15 +1,11 @@
 import path from 'path';
 import NodeGit from 'nodegit';
 import { todo } from '../../utils';
-import { default as LFS } from '../../../build/src';
+import LFS from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
 
 describe('Push', () => {
-  beforeEach(function () {
-    this.timeout(5000);
-  });
-
-  it('should generate push repsonse', () => {
+  it('should generate push response', () => {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 
@@ -20,4 +16,4 @@ describe('Push', () => {
       .then(repo => NodeGitLFS.LFS.push(repo, 'origin', 'test'))
       .then(() => todo());
   });
-});
+}).timeout(5000);

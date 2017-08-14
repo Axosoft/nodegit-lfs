@@ -1,7 +1,7 @@
 import path from 'path';
 import NodeGit from 'nodegit';
 import { todo } from '../../utils';
-import { default as LFS } from '../../../build/src';
+import LFS from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
 import track from '../../../build/src/commands/track';
 

@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import NodeGit from 'nodegit';
 import { expect } from 'chai';
-import { default as LFS } from '../../build/src';
+import LFS from '../../build/src';
 
 const local = path.join.bind(path, __dirname);
 

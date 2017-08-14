@@ -4,10 +4,6 @@ import { todo } from '../../utils';
 import { exec } from '../../../build/src/utils/spawnHelper';
 
 describe('exec', () => {
-  beforeEach(function () { // eslint-disable-line prefer-arrow-callback
-    this.timeout(5000);
-  });
-
   it('mimics child_process.exec when no arguments are provided', () => {
     exec('git lfs version')
       .then(() => todo());
