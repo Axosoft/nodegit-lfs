@@ -1,5 +1,6 @@
 import path from 'path';
 import NodeGit from 'nodegit';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
 
@@ -15,6 +16,6 @@ describe('Push', function () {
       .then(() => exec('git commit -m "LFS: push unit test"', { cwd: workdirPath }))
       .then(() => NodeGitLFS.Repository.open(workdirPath))
       .then(repo => NodeGitLFS.LFS.push(repo, 'origin', 'test'))
-      .then(response => console.log('Response: ', response));
+      .then(() => todo());
   });
 });

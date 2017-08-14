@@ -1,5 +1,6 @@
 import NodeGit from 'nodegit';
 import path from 'path';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import track from '../../../build/src/commands/track';
 
@@ -10,6 +11,6 @@ describe('Track', function () {
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then(repo => track(repo, ['*.png', '*.dmg']))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });

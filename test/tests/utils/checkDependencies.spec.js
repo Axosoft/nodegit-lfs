@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { todo } from '../../utils';
 import * as checker from '../../../src/utils/checkDependencies';
 import { regex, BAD_VERSION } from '../../../src/constants';
 import { core } from '../../../src/commands/lfsCommands';
@@ -69,7 +70,7 @@ describe('Depenendency Helpers', function () {
   describe('Dependency Check', function () {
     it('generate valid response', function () {
       return checker.dependencyCheck()
-        .then(response => console.log(response));
+        .then(() => todo());
     });
   });
 });

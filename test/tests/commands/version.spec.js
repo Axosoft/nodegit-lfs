@@ -1,5 +1,6 @@
 import NodeGit from 'nodegit';
 import path from 'path';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import version from '../../../build/src/commands/version';
 
@@ -10,6 +11,6 @@ describe('Version', function () {
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then(repo => version(repo))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });

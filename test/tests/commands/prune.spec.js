@@ -1,5 +1,6 @@
 import NodeGit from 'nodegit';
 import path from 'path';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import prune from '../../../build/src/commands/prune';
 
@@ -10,6 +11,6 @@ describe('Prune', function () {
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then(repo => prune(repo))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });

@@ -1,5 +1,6 @@
 import NodeGit from 'nodegit';
 import path from 'path';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import track from '../../../build/src/commands/track';
 import untrack from '../../../build/src/commands/untrack';
@@ -15,6 +16,6 @@ describe('Untrack', function () {
         return track(repo, ['*.png', '*.dmg', '*.txt', '*.a']);
       })
       .then(() => untrack(repository, ['*.dmg', '*.a']))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });

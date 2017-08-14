@@ -1,5 +1,6 @@
 import path from 'path';
 import NodeGit from 'nodegit';
+import { todo } from '../../utils';
 import { default as LFS } from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
 import track from '../../../build/src/commands/track';
@@ -49,7 +50,7 @@ describe('Apply', function () {
       .then(() => NodeGitLFS.LFS.register())
       .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: workdirPath }))
       .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
-      .catch(err => console.log(err));
+      .then(() => todo());
   });
 
   it('Smudge', function () {
@@ -69,6 +70,7 @@ describe('Apply', function () {
           checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
         };
         return NodeGit.Checkout.head(repository, opts);
-      });
+      })
+      .then(() => todo());
   });
 });
