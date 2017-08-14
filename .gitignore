@@ -21,9 +21,6 @@ coverage
 # Build directory
 build
 
-# Generated Test Repos
-spec/repos
-
 # Dependency directory
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
 node_modules
@@ -35,11 +32,10 @@ node_modules
 .node_repl_history
 
 # Editor Preferences
-.vscode/*
+.dir-locals.el
+.idea
+.vscode
 
 # Generated test files
-test/home
-test/repos/workdir/*
-test/repos/empty/*
-test/server/*
-!test/server/lfs-server.js
+test/repos
+test/server/lfs-test-server

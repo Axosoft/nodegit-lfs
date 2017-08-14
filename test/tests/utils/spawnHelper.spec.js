@@ -1,45 +1,27 @@
 import path from 'path';
-import { exec } from '../../../build/src/utils/spawnHelper';
-//eslint-disable-next-line
-describe('Spawn', function(){
-  this.timeout(5000);
-  //eslint-disable-next-line
-  it('Spawn acts like exec', function(){
-    return exec('ls', ['-lart'])
-      .then(({ stdout, stderr }) => {
-        console.log('Spawn test [STDOUT]: ', stdout);
-        console.log('Spawn test [STDERR]: ', stderr);
-      })
-      .catch(err => console.log('Spawn test [ERR]: ', err));
-  });
-  //eslint-disable-next-line
-  it('Spawn works with exec style calls', function(){
-    return exec('git lfs version')
-      .then(({ stdout, stderr }) => {
-        console.log('Spawn test [STDOUT]: ', stdout);
-        console.log('Spawn test [STDERR]: ', stderr);
-      })
-      .catch(err => console.log('Spawn test [ERR]: ', err));
-  });
-  //eslint-disable-next-line
-  it('Spawn works with exec options', function(){
-    return exec('ls -lart', { cwd: path.join(__dirname, '../../repos/workdir') })
-      .then(({ stdout, stderr }) => {
-        console.log('Spawn test [STDOUT]: ', stdout);
-        console.log('Spawn test [STDERR]: ', stderr);
-      })
-      .catch(err => console.log('Spawn test [ERR]: ', err));
+
+import { todo } from '../../utils';
+import spawn from '../../../build/src/utils/spawnHelper';
+
+describe('spawn', () => {
+  it('mimics child_process.spawn when no arguments are provided', () => {
+    spawn('git lfs version')
+      .then(() => todo());
   });
 
-  //eslint-disable-next-line
-  it('Spawn works with callback', function(){
+  it('mimics child_process.spawn when arguments are provided', () => {
+    spawn('ls', ['-lart'])
+      .then(() => todo());
+  });
+
+  it('mimics child_process.spawn when options are provided', () => {
+    spawn('ls -lart', { cwd: path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository') })
+      .then(() => todo());
+  });
+
+  it('can take a callback', () => {
     const callback = innerCb => innerCb('John Doe', 'password');
-    console.log(path.join(__dirname, '../../'));
-    return exec('./mock-creds', { cwd: path.join(__dirname, '../../') }, callback)
-      .then(({ stdout, stderr }) => {
-        console.log('Spawn test [STDOUT]: ', stdout);
-        console.log('Spawn test [STDERR]: ', stderr);
-      })
-      .catch(err => console.log('Spawn test [ERR]: ', err));
+    return spawn('./mock-creds', { cwd: path.resolve(__dirname, '..', '..') }, callback)
+      .then(() => todo());
   });
 });

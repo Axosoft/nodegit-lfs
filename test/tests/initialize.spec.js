@@ -2,14 +2,12 @@ import path from 'path';
 import fs from 'fs';
 import NodeGit from 'nodegit';
 import { expect } from 'chai';
-import { default as LFS } from '../../build/src';
-
-const local = path.join.bind(path, __dirname);
+import LFS from '../../build/src';
 
 describe('Initialize', () => {
   it('initialize is a promise', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const workdirPath = local('../repos/workdir');
+    const workdirPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then((repo) => {
@@ -20,14 +18,12 @@ describe('Initialize', () => {
 
   it('creates .gitattributes for empty repo', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const emptydirPath = local('../repos/empty');
-    //eslint-disable-next-line
+    const emptydirPath = path.resolve(__dirname, '..', 'repos', 'empty');
     expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.false;
 
     return NodeGitLFS.Repository.open(emptydirPath)
       .then(repo => NodeGitLFS.LFS.initialize(repo))
       .then(() => {
-        // eslint-disable-next-line
         expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.true;
       });
   });

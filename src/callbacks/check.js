@@ -3,7 +3,7 @@ import { Error } from 'nodegit';
 
 import { loadGitattributeFiltersFromRepo } from '../helpers';
 
-const check = src => loadGitattributeFiltersFromRepo(src.repo())
+export const check = src => loadGitattributeFiltersFromRepo(src.repo())
   .then((filters) => {
     const file = src.path();
     const filterIgnore = ignore().add(filters);
@@ -16,5 +16,3 @@ const check = src => loadGitattributeFiltersFromRepo(src.repo())
     return Error.CODE.PASSTHROUGH;
   })
   .catch(() => Error.CODE.PASSTHROUGH);
-
-export { check };

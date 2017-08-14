@@ -2,7 +2,7 @@
 import fse from 'fs-extra';
 import path from 'path';
 import R from 'ramda';
-import { default as LFSVersion } from '../commands/version';
+import LFSVersion from '../commands/version';
 import generateResponse from './generateResponse';
 import { core } from '../commands/lfsCommands';
 

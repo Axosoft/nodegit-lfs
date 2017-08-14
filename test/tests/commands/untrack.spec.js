@@ -1,16 +1,14 @@
 import NodeGit from 'nodegit';
 import path from 'path';
-import { default as LFS } from '../../../build/src';
+import { todo } from '../../utils';
+import LFS from '../../../build/src';
 import track from '../../../build/src/commands/track';
 import untrack from '../../../build/src/commands/untrack';
 
-//eslint-disable-next-line
-describe('Untrack', function() {
-  //eslint-disable-next-line
-  it('does generate untrack response', function() {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+describe('Untrack', () => {
+  it('does generate untrack response', () => {
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
-    //eslint-disable-next-line
     let repository;
     return NodeGitLFS.Repository.open(workdirPath)
       .then((repo) => {
@@ -18,6 +16,6 @@ describe('Untrack', function() {
         return track(repo, ['*.png', '*.dmg', '*.txt', '*.a']);
       })
       .then(() => untrack(repository, ['*.dmg', '*.a']))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });

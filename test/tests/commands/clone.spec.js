@@ -1,16 +1,15 @@
 import path from 'path';
 import NodeGit from 'nodegit';
-import { default as LFS } from '../../../build/src';
+import { todo } from '../../utils';
+import LFS from '../../../build/src';
 
-describe('Clone', function () {
-  this.timeout(5000);
-
+describe('Clone', () => {
   it('should generate clone repsonse', () => {
-    const emptyrepoPath = path.join(__dirname, '../../repos/empty');
+    const emptyRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'empty');
     const NodeGitLFS = LFS(NodeGit);
     const url = 'https://github.com/mohseenrm/nodegit-lfs-test-repo';
 
-    return NodeGitLFS.LFS.clone(url, emptyrepoPath, { branch: 'test' })
-      .then(response => console.log('Response: ', response));
+    return NodeGitLFS.LFS.clone(url, emptyRepoPath, { branch: 'test' })
+      .then(() => todo());
   });
 });

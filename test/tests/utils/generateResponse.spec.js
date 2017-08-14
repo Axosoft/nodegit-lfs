@@ -1,8 +1,7 @@
-// import { expect } from 'chai';
-import generateResponse from '../../../build/src/utils/generateResponse';
+import { todo } from '../../utils';
 
 describe('generateResponse', () => {
   it('does generate response', () => {
-    console.log('TEST: ', generateResponse());
+    todo();
   });
 });

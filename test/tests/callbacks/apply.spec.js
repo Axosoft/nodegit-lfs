@@ -1,10 +1,11 @@
 import path from 'path';
 import NodeGit from 'nodegit';
-import { default as LFS } from '../../../build/src';
-import { exec } from '../../../build/src/utils/execHelpers';
+import { todo } from '../../utils';
+import LFS from '../../../build/src';
+import exec from '../../../build/src/utils/execHelper';
 import track from '../../../build/src/commands/track';
 
-function commitFile(repo, fileName, commitMessage) {
+const commitFile = (repo, fileName, commitMessage) => {
   let index;
   let treeOid;
   let parent;
@@ -33,12 +34,11 @@ function commitFile(repo, fileName, commitMessage) {
         commitMessage,
         treeOid,
         [parent]));
-}
-//eslint-disable-next-line
-describe('Apply', function() {
-  //eslint-disable-next-line
-  it('Clean', function(){
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+};
+
+describe('Apply', () => {
+  it('Clean', () => {
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 
@@ -50,12 +50,11 @@ describe('Apply', function() {
       .then(() => NodeGitLFS.LFS.register())
       .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: workdirPath }))
       .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
-      .catch(err => console.log(err));
+      .then(() => todo());
   });
 
-  //eslint-disable-next-line
-  it('Smudge', function() {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+  it('Smudge', () => {
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 
@@ -71,6 +70,7 @@ describe('Apply', function() {
           checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
         };
         return NodeGit.Checkout.head(repository, opts);
-      });
+      })
+      .then(() => todo());
   });
 });

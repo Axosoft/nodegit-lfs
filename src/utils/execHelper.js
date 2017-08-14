@@ -11,6 +11,4 @@ const exec = (command, opts) => new Promise(
     });
   });
 
-export {
-  exec,
-};
+export default exec;

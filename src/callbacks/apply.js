@@ -25,7 +25,7 @@ const smudge = (to, from, source) => {
   return to.set(sha, sha.length).then(() => Error.CODE.OK);
 };
 
-const apply = (to, from, source) => {
+export const apply = (to, from, source) => {
   const mode = source.mode();
 
   let filterPromise;
@@ -39,5 +39,3 @@ const apply = (to, from, source) => {
     .then(() => Error.CODE.OK)
     .catch(() => Error.CODE.PASSTHROUGH);
 };
-
-export { apply };

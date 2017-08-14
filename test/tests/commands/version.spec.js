@@ -1,17 +1,16 @@
 import NodeGit from 'nodegit';
 import path from 'path';
-import { default as LFS } from '../../../build/src';
+import { todo } from '../../utils';
+import LFS from '../../../build/src';
 import version from '../../../build/src/commands/version';
 
-//eslint-disable-next-line
-describe('Version', function() {
-  //eslint-disable-next-line
-  it('does provide version number', function() {
-    const workdirPath = path.join(__dirname, '../../repos/workdir');
+describe('Version', () => {
+  it('does provide version number', () => {
+    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
     return NodeGitLFS.Repository.open(workdirPath)
       .then(repo => version(repo))
-      .then(response => console.log(response));
+      .then(() => todo());
   });
 });
