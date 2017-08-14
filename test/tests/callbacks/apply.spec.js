@@ -4,7 +4,7 @@ import { default as LFS } from '../../../build/src';
 import { exec } from '../../../build/src/utils/execHelpers';
 import track from '../../../build/src/commands/track';
 
-function commitFile(repo, fileName, commitMessage) {
+const commitFile = (repo, fileName, commitMessage) => {
   let index;
   let treeOid;
   let parent;
@@ -33,11 +33,10 @@ function commitFile(repo, fileName, commitMessage) {
         commitMessage,
         treeOid,
         [parent]));
-}
-//eslint-disable-next-line
-describe('Apply', function() {
-  //eslint-disable-next-line
-  it('Clean', function(){
+};
+
+describe('Apply', function () {
+  it('Clean', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
@@ -53,8 +52,7 @@ describe('Apply', function() {
       .catch(err => console.log(err));
   });
 
-  //eslint-disable-next-line
-  it('Smudge', function() {
+  it('Smudge', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
     let repository;

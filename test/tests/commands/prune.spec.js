@@ -3,8 +3,8 @@ import path from 'path';
 import { default as LFS } from '../../../build/src';
 import prune from '../../../build/src/commands/prune';
 
-describe('Prune', () => {
-  it('does generate prune response', () => {
+describe('Prune', function () {
+  it('does generate prune response', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

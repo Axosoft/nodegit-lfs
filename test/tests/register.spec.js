@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import NodeGit from 'nodegit';
 import { default as LFS } from '../../build/src';
 
-describe('Register:', () => {
-  it('has register callback', () => {
+describe('Register:', function () {
+  it('has register callback', function () {
     const NodeGitLFS = LFS(NodeGit);
     return NodeGitLFS.LFS.register()
       .then((result) => {
@@ -12,7 +12,7 @@ describe('Register:', () => {
       });
   });
 
-  it('cannot re-register LFS filter twice', () => {
+  it('cannot re-register LFS filter twice', function () {
     const NodeGitLFS = LFS(NodeGit);
     return NodeGitLFS.LFS.register()
       .then((result) => {

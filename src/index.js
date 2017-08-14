@@ -41,7 +41,7 @@ LFS.prototype = {
 };
 
 module.exports = (nodegit) => {
-  const _NodeGit = nodegit;
+  const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
 
   Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
 

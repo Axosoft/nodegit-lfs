@@ -1,17 +1,21 @@
 {
-    "env": {
-      "es6": true,
-      "node": true,
-      "mocha": true
-    },
-    "extends": "airbnb-base",
-    "globals": {
-      "done": false
-    },
-    "rules":{
-      "import/no-named-default": 0,
-      "import/prefer-default-export": 0,
-      "spaced-comment": 0,
-      "func-names": 0
-    }
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": "airbnb-base",
+  "globals": {
+    "done": false
+  },
+  "plugins": [
+    "chai-friendly"
+  ],
+  "rules": {
+    "chai-friendly/no-unused-expressions": 2,
+    "func-names": 0,
+    "import/no-named-default": 0,
+    "prefer-arrow-callback": 0,
+    "no-unused-expressions": 0
+  }
 }

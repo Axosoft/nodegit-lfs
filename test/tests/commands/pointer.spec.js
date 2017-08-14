@@ -3,8 +3,8 @@ import path from 'path';
 import { default as LFS } from '../../../build/src';
 import pointer from '../../../build/src/commands/pointer';
 
-describe('Pointer', () => {
-  it('does generate pointer response', () => {
+describe('Pointer', function () {
+  it('does generate pointer response', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

@@ -29,14 +29,13 @@ before(function () {
 });
 
 beforeEach(function () {
-  this.timeout(300000);
   return exec('git clean -xdf', { cwd: workdirPath })
     .then(() => exec('git checkout test', { cwd: workdirPath }))
     .then(() => exec('git reset --hard', { cwd: workdirPath }))
     .then(() => exec('git clean -xdff', { cwd: emptyrepoPath }));
 });
 
-afterEach(() => {
+afterEach(function () {
   const NodeGitLFS = LFS(NodeGit);
   return NodeGitLFS.LFS.unregister()
     .catch((error) => {

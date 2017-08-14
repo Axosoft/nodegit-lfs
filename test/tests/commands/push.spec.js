@@ -6,7 +6,7 @@ import { exec } from '../../../build/src/utils/execHelpers';
 describe('Push', function () {
   this.timeout(5000);
 
-  it('should generate push repsonse', () => {
+  it('should generate push repsonse', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 

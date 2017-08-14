@@ -3,8 +3,8 @@ import path from 'path';
 import { default as LFS } from '../../../build/src';
 import track from '../../../build/src/commands/track';
 
-describe('Track', () => {
-  it('does generate track response', () => {
+describe('Track', function () {
+  it('does generate track response', function () {
     const workdirPath = path.join(__dirname, '../../repos/workdir');
     const NodeGitLFS = LFS(NodeGit);
 
