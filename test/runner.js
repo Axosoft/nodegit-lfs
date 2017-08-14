@@ -4,20 +4,13 @@ const NodeGit = require('nodegit');
 const LFS = require('../build/src');
 
 const exec = require('../build/src/utils/execHelpers').exec;
-const gitExec = require('../build/src/commands/lfsCommands').core.git;
+const git = require('../build/src/commands/lfsCommands').core.git;
 
 const testLFSServer = require('./server/server');
 
 const testReposPath = path.join('test', 'repos');
 const workdirPath = path.join(testReposPath, 'workdir');
 const emptyrepoPath = path.join(testReposPath, 'empty');
-
-const git = (...args) =>
-  gitExec(...args)
-    .then(({ stderr }) =>
-      stderr
-        ? Promise.reject(stderr)
-        : Promise.resolve());
 
 before(function () { // eslint-disable-line prefer-arrow-callback
   this.timeout(300000);

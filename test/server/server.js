@@ -9,7 +9,10 @@ module.exports = {
     }
 
     return new Promise((resolve, reject) => {
-      const server = spawn('./start.sh', {
+      const cmdRunner = process.platform === 'win32'
+        ? '"C:\\Program Files\\Git\\bin\\sh.exe" '
+        : './';
+      const server = spawn(`${cmdRunner}start.sh`, {
         cwd: __dirname,
         shell: true
       });
