@@ -7,9 +7,9 @@ import LFS from '../../build/src';
 describe('Initialize', () => {
   it('initialize is a promise', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const workdirPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
 
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
         const init = NodeGitLFS.LFS.initialize(repo);
         expect(init).to.be.a('promise');
@@ -18,13 +18,13 @@ describe('Initialize', () => {
 
   it('creates .gitattributes for empty repo', () => {
     const NodeGitLFS = LFS(NodeGit);
-    const emptydirPath = path.resolve(__dirname, '..', 'repos', 'empty');
-    expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.false;
+    const emptyRepoPath = path.resolve(__dirname, '..', 'repos', 'empty');
+    expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.false;
 
-    return NodeGitLFS.Repository.open(emptydirPath)
+    return NodeGitLFS.Repository.open(emptyRepoPath)
       .then(repo => NodeGitLFS.LFS.initialize(repo))
       .then(() => {
-        expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.true;
+        expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.true;
       });
   });
 });

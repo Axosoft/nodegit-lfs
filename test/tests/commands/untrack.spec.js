@@ -7,10 +7,10 @@ import untrack from '../../../build/src/commands/untrack';
 
 describe('Untrack', () => {
   it('does generate untrack response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
         repository = repo;
         return track(repo, ['*.png', '*.dmg', '*.txt', '*.a']);

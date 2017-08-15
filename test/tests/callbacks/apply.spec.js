@@ -38,33 +38,33 @@ const commitFile = (repo, fileName, commitMessage) => {
 
 describe('Apply', () => {
   it('Clean', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
         repository = repo;
         return track(repo, ['*.md']);
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: workdirPath }))
+      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: lfsTestRepoPath }))
       .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
       .then(() => todo());
   });
 
   it('Smudge', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
     let repository;
 
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
         repository = repo;
         return repo;
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', { cwd: workdirPath }))
+      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', { cwd: lfsTestRepoPath }))
       .then(() => {
         const opts = {
           checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
