@@ -6,12 +6,12 @@ import pointer from '../../../build/src/commands/pointer';
 
 describe('Pointer', () => {
   it('does generate pointer response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
-    const packageJson = path.join(workdirPath, 'package.json');
+    const packageJson = path.join(lfsTestRepoPath, 'package.json');
 
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then(repo => pointer(repo, packageJson))
       .then(() => todo());
   });

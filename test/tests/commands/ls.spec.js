@@ -6,10 +6,10 @@ import ls from '../../../build/src/commands/ls';
 
 describe('ls-files', () => {
   it('does generate ls response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
-    return NodeGitLFS.Repository.open(workdirPath)
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then(repo => ls(repo, { long: true }))
       .then(() => todo());
   });
