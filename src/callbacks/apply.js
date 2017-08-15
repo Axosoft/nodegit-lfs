@@ -4,9 +4,10 @@ import fse from 'fs-extra';
 import path from 'path';
 
 const clean = (to, from, source) => {
+  const ticks = process.platform === 'win32' ? '"' : '\'';
   const workdir = source.repo().workdir();
   const filePath = path.join(workdir, source.path());
-  const command = `git lfs clean ${source.path()}`;
+  const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
   // also does not work with async
   const buf = fse.readFileSync(filePath);
