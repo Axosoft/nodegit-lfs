@@ -4,9 +4,8 @@ import { BAD_CORE_RESPONSE } from '../constants';
 
 const prune = (repo, args) => {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
-  return core.prune(args, { cwd: repoPath })
+  return core.prune(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

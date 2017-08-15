@@ -23,9 +23,8 @@ const untrack = (repo, globs) => {
     R.map(g => `${ticks}${g}${ticks}`)
   )(globs);
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
-  return core.untrack(R.join(' ', filteredGlobs), { cwd: repoPath })
+  return core.untrack(R.join(' ', filteredGlobs), { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

@@ -61,7 +61,6 @@ const generatePullStats = (raw) => {
 
 function pull(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const args = [];
   const {

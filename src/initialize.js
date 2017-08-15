@@ -19,7 +19,7 @@ const builldArgs = (options) => {
 
 const initialize = (repo, options) => {
   const workdir = repo.workdir();
-  const lfsDir = path.join(workdir, '.git', 'lfs');
+  const lfsDir = path.join(repo.path(), 'lfs');
 
   return fse.pathExists(lfsDir)
     .then((exists) => {

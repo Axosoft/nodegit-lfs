@@ -70,7 +70,6 @@ const generatePushStats = (raw) => {
 
 function push(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const {
     remoteName,
