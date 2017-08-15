@@ -1,8 +1,10 @@
 import path from 'path';
 import NodeGit from 'nodegit';
-import { todo } from '../../utils';
+import {
+  createDummyFile,
+  todo
+} from '../../utils';
 import LFS from '../../../build/src';
-import exec from '../../../build/src/utils/execHelper';
 import track from '../../../build/src/commands/track';
 
 const commitFile = (repo, fileName, commitMessage) => {
@@ -48,7 +50,7 @@ describe('Apply', () => {
         return track(repo, ['*.md']);
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: lfsTestRepoPath }))
+      .then(() => createDummyFile(path.join(lfsTestRepoPath, 'big_file_test.md'), 20))
       .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
       .then(() => todo());
   });
@@ -64,7 +66,7 @@ describe('Apply', () => {
         return repo;
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', { cwd: lfsTestRepoPath }))
+      .then(() => createDummyFile(path.join(lfsTestRepoPath, 'big_file_test.txt'), 20))
       .then(() => {
         const opts = {
           checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,

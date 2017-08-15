@@ -1,6 +1,9 @@
 import path from 'path';
 import NodeGit from 'nodegit';
-import { todo } from '../../utils';
+import {
+  createDummyFile,
+  todo
+} from '../../utils';
 import LFS from '../../../build/src';
 import exec from '../../../build/src/utils/execHelper';
 
@@ -9,7 +12,7 @@ describe('Push', () => {
     const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
     const NodeGitLFS = LFS(NodeGit);
 
-    return exec('base64 /dev/urandom | head -c 20 > test_file.txt', { cwd: lfsTestRepoPath })
+    return createDummyFile(path.join(lfsTestRepoPath, 'test_file.txt'), 20)
       .then(() => exec('git add test_file.txt', { cwd: lfsTestRepoPath }))
       .then(() => exec('git commit -m "LFS: push unit test"', { cwd: lfsTestRepoPath }))
       .then(() => NodeGitLFS.Repository.open(lfsTestRepoPath))
