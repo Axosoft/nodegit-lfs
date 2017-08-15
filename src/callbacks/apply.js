@@ -8,7 +8,7 @@ const clean = (to, from, source) => {
   const filePath = path.join(workdir, source.path());
   const command = `git lfs clean ${source.path()}`;
 
-  // also does not work with async
+  // Does not work with async
   const buf = fse.readFileSync(filePath);
   const stdout = cp.execSync(command, { cwd: workdir, input: buf });
   const sha = new Buffer(stdout);
@@ -16,10 +16,8 @@ const clean = (to, from, source) => {
 };
 
 const smudge = (to, from, source) => {
-  const workdir = source.repo().workdir();
-
-  // for some reason I have not gotten this to work with async
-  const stdout = cp.execSync('git lfs smudge', { cwd: workdir, input: from.ptr() });
+  // Does not work with async
+  const stdout = cp.execSync('git lfs smudge', { cwd: source.repo().workdir(), input: from.ptr() });
   const sha = new Buffer(stdout);
 
   return to.set(sha, sha.length).then(() => Error.CODE.OK);

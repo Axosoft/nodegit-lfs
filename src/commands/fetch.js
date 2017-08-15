@@ -55,7 +55,6 @@ const generateFetchStats = (raw) => {
 
 function fetch(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const args = [];
   const {
@@ -73,7 +72,7 @@ function fetch(repo, options) {
   }
 
   const argsString = R.join(' ', args);
-  return core.fetch(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.fetch(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
       response.stderr = stderr;

@@ -82,7 +82,6 @@ const generatePushStats = (raw) => {
 
 function push(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const {
     remoteName,
@@ -115,7 +114,7 @@ function push(repo, options) {
   }
 
   return getRemoteAndBranchPromise
-    .then(() => core.push(`${remote} ${branch}`, { cwd: repoPath }, callback))
+    .then(() => core.push(`${remote} ${branch}`, { cwd: repo.workdir() }, callback))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

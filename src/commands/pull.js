@@ -56,7 +56,6 @@ const generatePullStats = (raw) => {
 
 function pull(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const args = [];
   const {
@@ -73,7 +72,7 @@ function pull(repo, options) {
   }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.pull(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

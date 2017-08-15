@@ -14,9 +14,8 @@ const pointer = (repo, filePath, pointerPath) => {
   }
 
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
-  return core.pointer(args, { cwd: repoPath })
+  return core.pointer(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

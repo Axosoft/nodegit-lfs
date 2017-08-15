@@ -57,7 +57,6 @@ const generateCheckoutStats = (raw) => {
 
 function checkout(repo, options) {
   const response = generateResponse();
-  const repoPath = repo.workdir();
 
   const {
     remoteName,
@@ -90,7 +89,7 @@ function checkout(repo, options) {
   }
 
   return getRemoteAndBranchPromise
-    .then(() => core.checkout(`${remote} ${branch}`, { cwd: repoPath }, callback))
+    .then(() => core.checkout(`${remote} ${branch}`, { cwd: repo.workdir() }, callback))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

@@ -48,10 +48,9 @@ const buildArgs = (options) => {
 
 const ls = (repo, options) => {
   const response = generateResponse();
-  const repoPath = repo.workdir();
   const args = buildArgs(options);
 
-  return core.ls(args, { cwd: repoPath })
+  return core.ls(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 
