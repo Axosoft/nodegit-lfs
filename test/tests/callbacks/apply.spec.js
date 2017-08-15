@@ -7,12 +7,13 @@ import path from 'path';
 
 import {
   createDummyFile,
-  getFilePointer,
-  todo
+  getFilePointer
 } from '../../utils';
 
 import LFS from '../../../build/src';
 import trackCommand from '../../../build/src/commands/track';
+
+const NodeGitLFS = LFS(NodeGit);
 
 const commitFile = (repo, fileName, commitMessage) => {
   let index;
@@ -58,51 +59,50 @@ const track = (repo, globs) => {
 };
 
 describe('Apply', () => {
-  it.only('Clean', () => {
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
-    let repository;
-    let dummyContents;
+  beforeEach(function () {
+    const testFileSize = 20;
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        repository = repo;
-        return track(repo, ['big_file_test.md']);
-      })
-      .then(() => NodeGitLFS.LFS.register())
-      .then(() => createDummyFile(path.join(lfsTestRepoPath, 'big_file_test.md'), 20))
-      .then((contents) => {
-        dummyContents = contents;
-      })
-      .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
-      .then(() => fse.readFile(path.join(lfsTestRepoPath, 'big_file_test.md'), 'utf8'))
-      .then((contents) => {
-        expect(contents).to.equal(dummyContents);
-      })
-      .then(() => getFilePointer(lfsTestRepoPath, 'big_file_test.md'))
-      .then((pointer) => {
-        expect(pointer).to.have.string('size 20');
-      });
+    this.lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
+    this.testFileName = 'bigFileTest.md';
+
+    this.verifyTestFileTracked = () =>
+      fse.readFile(path.join(this.lfsTestRepoPath, this.testFileName), 'utf8')
+        .then((contents) => {
+          expect(contents).to.equal(this.dummyContents);
+        })
+        .then(() => getFilePointer(this.lfsTestRepoPath, this.testFileName))
+        .then((pointer) => {
+          expect(pointer).to.have.string(`size ${testFileSize}`);
+        });
+
+    this.trackTestFile = () =>
+      NodeGitLFS.Repository.open(this.lfsTestRepoPath)
+        .then((repo) => {
+          this.repository = repo;
+          return track(repo, [this.testFileName]);
+        })
+        .then(() => NodeGitLFS.LFS.register())
+        .then(() => createDummyFile(
+          path.join(this.lfsTestRepoPath, this.testFileName),
+          testFileSize
+        ))
+        .then((contents) => {
+          this.dummyContents = contents;
+        })
+        .then(() => commitFile(this.repository, this.testFileName, 'LFS filter tests'));
   });
 
-  it('Smudge', () => {
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
-    let repository;
+  it('Clean', function () {
+    return this.trackTestFile()
+      .then(() => this.verifyTestFileTracked());
+  });
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        repository = repo;
-        return repo;
-      })
-      .then(() => NodeGitLFS.LFS.register())
-      .then(() => createDummyFile(path.join(lfsTestRepoPath, 'big_file_test.txt'), 20))
-      .then(() => {
-        const opts = {
-          checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
-        };
-        return NodeGit.Checkout.head(repository, opts);
-      })
-      .then(() => todo());
+  it('Smudge', function () {
+    return this.trackTestFile()
+      .then(() => createDummyFile(path.join(this.lfsTestRepoPath, this.testFileName), 5))
+      .then(() => NodeGit.Checkout.head(this.repository, {
+        checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE
+      }))
+      .then(() => this.verifyTestFileTracked());
   });
 });
