@@ -45,7 +45,7 @@ export const isAtleastGitVersion = gitInput =>
 export const isAtleastLfsVersion = lfsInput =>
   parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
 
-export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.git', 'lfs');
+export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir, '.git', 'lfs'));
 
 export const dependencyCheck = () => {
   const response = generateResponse();
