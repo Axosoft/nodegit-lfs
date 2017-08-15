@@ -26,6 +26,10 @@ const normalizeVersion = (versionArray) => {
 };
 
 export const parseVersion = (input, regex) => {
+  if (!input) {
+    return BAD_VERSION;
+  }
+
   const matches = input.match(regex);
   if (!matches || R.isEmpty(matches)) {
     return BAD_VERSION;
