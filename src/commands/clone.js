@@ -62,11 +62,12 @@ function clone(url, cwd, options) {
   const {
     branch,
     callback,
+    env = {}
   } = (options || {});
   const args = branch ? `-b ${branch}` : '';
 
   const response = generateResponse();
-  return core.clone(`${url} ${args}`, { cwd }, callback)
+  return core.clone(`${url} ${args}`, { cwd, env }, callback)
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 
