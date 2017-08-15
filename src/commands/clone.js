@@ -66,6 +66,7 @@ function clone(url, cwd, options) {
   const {
     branch,
     callback,
+    env = {}
   } = (options || {});
   const args = branch ? `-b ${branch}` : '';
 
