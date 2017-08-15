@@ -15,10 +15,16 @@ const spawn = (command, opts, callback) => new Promise(
     const options = R.mergeDeepRight(opts, { env: process.env, shell: true, detached });
     let args = [];
     let cmd = command;
-    if (command.includes(' ')) {
+    if (process.platform !== 'linux' && command.includes(' ')) {
       const argList = command.split(' ');
       cmd = argList.shift();
       args = argList;
+    } else {
+      let augmentedCommand = command;
+      if (command === 'git lfs smudge') {
+	augmentedCommand = `cat ${options.input} | ${command}`;
+      }
+      cmd = `script --return -c "${augmentedCommand}" /dev/null`;
     }
 
     let stdout = '';
@@ -31,12 +37,15 @@ const spawn = (command, opts, callback) => new Promise(
      * credentials and use the credentials in this scope.
      * Caller would need to hookup right credentials to the inner callback.
      */
+    debugger;
     if (callback && typeof callback === 'function') {
       let credentials = {};
       const innerCb = (username, password, cancel) => {
         if (cancel) {
           // we are done here, hopefully this works
+	  spawnedProcess.unref();
           spawnedProcess.kill();
+	  return reject(new Error('LFS action cancelled'));
         }
 
         credentials = { username, password };
