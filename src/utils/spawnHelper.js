@@ -7,7 +7,12 @@ const sanitizeStringForStdin = str => `${str}${EOL}`;
 
 const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
+    let detached = false;
+    if (process.platform === 'linux') {
+      detached = true;
+    }
+
+    const options = R.mergeDeepRight(opts, { env: process.env, shell: true, detached });
     let args = [];
     let cmd = command;
     if (command.includes(' ')) {
