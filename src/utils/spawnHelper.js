@@ -1,5 +1,5 @@
 import child from 'child_process';
-import { spawn } from 'pty.js';
+import pty from 'pty.js';
 import { EOL } from 'os';
 import R from 'ramda';
 import { regex } from '../constants';
