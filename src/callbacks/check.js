@@ -8,11 +8,9 @@ export default src => loadGitattributeFiltersFromRepo(src.repo())
     const file = src.path();
     const filterIgnore = ignore().add(filters);
 
-    // these ignore rules are the closest to the .gitignore rules I have found
-    if (filterIgnore.ignores(file)) {
-      return Error.CODE.OK;
-    }
-
-    return Error.CODE.PASSTHROUGH;
+    // The rules for `.gitignore` are close enough to those for `.gitattributes`
+    return filterIgnore.ignores(file)
+      ? Error.CODE.OK
+      : Error.CODE.PASSTHROUGH;
   })
   .catch(() => Error.CODE.PASSTHROUGH);
