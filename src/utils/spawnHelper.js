@@ -1,10 +1,11 @@
 import child from 'child_process';
+import { spawn } from 'pty.js';
 import { EOL } from 'os';
 import R from 'ramda';
 import { regex } from '../constants';
 
 const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}${EOL}`);
-const trimLinuxOutput = output => {
+const trimLinuxOutput = (output) => {
   if (!output || process.platform !== 'linux') {
     return output;
   }
