@@ -1,36 +1,42 @@
-const fse = require('fs-extra');
-const path = require('path');
-const NodeGit = require('nodegit');
-const LFS = require('../build/src');
+import chai from 'chai';
+import fse from 'fs-extra';
+import path from 'path';
+import NodeGit from 'nodegit';
+import sinonChai from 'sinon-chai';
 
-const exec = require('../build/src/utils/execHelper').default;
-const git = require('../build/src/commands/lfsCommands').core.git;
+import {
+  core
+} from '../build/src/commands/lfsCommands';
+import {
+  emptyRepoPath,
+  lfsTestRepoPath,
+  lfsTestRepoUrl,
+  testReposPath
+} from './constants';
 
-const testLFSServer = require('./server/server');
+import LFS from '../build/src';
+import exec from '../build/src/utils/execHelper';
 
-const testReposPath = path.join(__dirname, 'repos');
+import * as testLFSServer from './server/server';
+
 before(function () { // eslint-disable-line prefer-arrow-callback
   this.timeout(30000);
 
   this.NodeGitLFS = LFS(NodeGit);
 
-  this.emptyRepoPath = path.join(testReposPath, 'empty');
-  this.lfsTestRepoPath = path.join(testReposPath, 'lfs-test-repository');
-
-  const testRepoUrl = 'https://github.com/jgrosso/nodegit-lfs-test-repo';
   return testLFSServer.start()
     .then(() => fse.remove(testReposPath))
     .then(() => fse.mkdir(testReposPath))
-    .then(() => fse.mkdir(this.lfsTestRepoPath))
-    .then(() => fse.mkdir(this.emptyRepoPath))
-    .then(() => git(`init ${this.emptyRepoPath}`))
-    .then(() => git(`clone ${testRepoUrl} ${this.lfsTestRepoPath}`, {
+    .then(() => fse.mkdir(lfsTestRepoPath))
+    .then(() => fse.mkdir(emptyRepoPath))
+    .then(() => core.git(`init ${emptyRepoPath}`))
+    .then(() => core.git(`clone ${lfsTestRepoUrl} ${lfsTestRepoPath}`, {
       env: {
         GIT_SSL_NO_VERIFY: 1
       }
     }))
     .then(() => fse.appendFile(
-      path.join(this.lfsTestRepoPath, '.git', 'config'),
+      path.join(lfsTestRepoPath, '.git', 'config'),
 `[http]
   sslverify = false`
     ))
@@ -39,10 +45,9 @@ before(function () { // eslint-disable-line prefer-arrow-callback
     });
 });
 
-beforeEach(function () {
-  return exec('git clean -xdf && git reset --hard', { cwd: this.lfsTestRepoPath })
-    .then(() => exec('git clean -xdff', { cwd: this.emptyRepoPath }));
-});
+beforeEach(() =>
+  exec('git clean -xdf && git reset --hard', { cwd: lfsTestRepoPath })
+    .then(() => exec('git clean -xdff', { cwd: emptyRepoPath })));
 
 after(() => {
   testLFSServer.stop();
