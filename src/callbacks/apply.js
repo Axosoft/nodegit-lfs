@@ -4,9 +4,10 @@ import path from 'path';
 import exec from '../utils/execHelper';
 
 const clean = (to, from, source) => {
+  const ticks = process.platform === 'win32' ? '"' : '\'';
   const workdir = source.repo().workdir();
   const filePath = path.join(workdir, source.path());
-  const command = `git lfs clean ${source.path()}`;
+  const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
   return fse.readFile(filePath)
     .then(buf => exec(command, buf, { cwd: workdir, detached: true }))
