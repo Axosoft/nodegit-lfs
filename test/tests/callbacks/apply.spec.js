@@ -5,6 +5,9 @@ import fse from 'fs-extra';
 import path from 'path';
 
 import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
   createDummyFile,
   getFilePointer
 } from '../../utils';
@@ -23,10 +26,9 @@ const track = (repo, globs) => {
     .then(() => index.write());
 };
 
-describe('Apply', () => {
+describe('apply', () => {
   beforeEach(function () {
     const {
-      lfsTestRepoPath,
       NodeGitLFS
     } = this;
 
@@ -105,7 +107,6 @@ describe('Apply', () => {
 
   it('Smudge', function () {
     const {
-      lfsTestRepoPath,
       NodeGitLFS,
       repo,
       testFileName,

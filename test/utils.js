@@ -15,10 +15,11 @@ export const fail = (msg) => {
   expect.fail(true, true, msg);
 };
 
+export const getFilePointer = (workdir, fileName) =>
+  spawn(`git show HEAD:${fileName}`, { cwd: workdir, env: { GIT_PAGER: 'cat' } })
+  .then(({ stdout }) => stdout.toString());
+
 export const todo = () => {
   fail('TODO');
 };
 
-export const getFilePointer = (workdir, fileName) =>
-  spawn(`git show HEAD:${fileName}`, { cwd: workdir, env: { GIT_PAGER: 'cat' } })
-    .then(({ stdout }) => stdout.toString());
