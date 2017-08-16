@@ -10,7 +10,7 @@ const clean = (to, from, source) => {
   const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
   return fse.readFile(filePath)
-    .then(buf => exec(command, buf, { cwd: workdir, detached: true }))
+    .then(buf => exec(command, buf, { cwd: workdir }))
     .then(({ stdout }) => {
       const sha = new Buffer(stdout);
       return to.set(sha, sha.length).then(() => Error.CODE.OK);

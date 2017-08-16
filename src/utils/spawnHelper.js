@@ -4,6 +4,28 @@ import R from 'ramda';
 import { regex } from '../constants';
 
 const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}${EOL}`);
+const trimLinuxOutput = output => {
+  if (!output || process.platform !== 'linux') {
+    return output;
+  }
+
+  return R.pipe(
+    R.split(EOL),
+    R.filter((line) => {
+      if (!line) {
+        return true;
+      }
+
+      const normalLine = line.toLowerCase();
+      if (R.contains('script started, file is /dev/null', normalLine) ||
+          R.contains('script done, file is /dev/null', normalLine)) {
+        return false;
+      }
+      return true;
+    }),
+    R.join(EOL)
+  )(output);
+};
 
 /**
  * If provided with a callback, we will create a new callback which will take user
@@ -11,7 +33,7 @@ const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}$
  * Caller would need to hookup right credentials to the inner callback.
  */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
-  let userPassword = '';
+  let credentials = {};
   const credentialsCallback = (username, password, cancel) => {
     if (cancel) {
       // we are done here, hopefully this works
@@ -20,18 +42,22 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
       return reject(new Error('LFS action cancelled'));
     }
 
-    userPassword = password;
-    spawnedProcess.stdin.write(Buffer.from(sanitizeStringForStdin(username)));
+    credentials = { username, password };
+    spawnedProcess.stdin.write(sanitizeStringForStdin(credentials.username));
   };
 
   return (chunk) => {
     const output = chunk.toString();
 
     if (output.match(regex.USERNAME)) {
-      callback(credentialsCallback);
+      if (credentials.username) {
+        spawnedProcess.stdin.write(sanitizeStringForStdin(credentials.username));
+      } else {
+        callback(credentialsCallback);
+      }
     } else if (output.match(regex.PASSWORD)) {
-      const password = sanitizeStringForStdin(userPassword) || EOL;
-      spawnedProcess.stdin.write(Buffer.from(password));
+      const password = sanitizeStringForStdin(credentials.password) || EOL;
+      spawnedProcess.stdin.write(password);
       spawnedProcess.stdin.end();
     }
 
@@ -71,12 +97,16 @@ const spawn = (command, opts, callback) => new Promise(
     spawnedProcess.stderr.on('data', (data) => {
       stderr += data.toString();
     });
-    spawnedProcess.on('close', code => resolve({ code, stdout, stderr }));
+    spawnedProcess.on('close', code => resolve({
+      code,
+      stdout: trimLinuxOutput(stdout),
+      stderr: trimLinuxOutput(stderr)
+    }));
     spawnedProcess.on('error', err => reject(err));
 
     if (input) {
       spawnedProcess.stdin.write(input);
-      spawnedProcess.stdin.write(EOL);
+      spawnedProcess.stdin.end();
     }
   });
 
