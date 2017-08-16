@@ -1,6 +1,6 @@
 import child from 'child_process';
 
-const exec = (command, opts) => new Promise(
+const exec = (command, input, opts) => new Promise(
   (resolve, reject) => {
     const proc = child.exec(command, opts, (err, stdout, stderr) => {
       if (err) {
@@ -9,6 +9,11 @@ const exec = (command, opts) => new Promise(
         resolve({ proc, stdout, stderr });
       }
     });
+
+    if (input) {
+      proc.stdin.write(input);
+      proc.stdin.end();
+    }
   });
 
 export default exec;

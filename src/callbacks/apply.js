@@ -1,41 +1,50 @@
-import cp from 'child_process';
 import { Error } from 'nodegit';
 import fse from 'fs-extra';
 import path from 'path';
+import exec from '../utils/execHelper';
 
 const clean = (to, from, source) => {
   const workdir = source.repo().workdir();
   const filePath = path.join(workdir, source.path());
   const command = `git lfs clean ${source.path()}`;
 
-  // also does not work with async
-  const buf = fse.readFileSync(filePath);
-  const stdout = cp.execSync(command, { cwd: workdir, input: buf });
-  const sha = new Buffer(stdout);
-  return to.set(sha, sha.length).then(() => Error.CODE.OK);
+  return fse.readFile(filePath)
+    .then(buf => exec(command, buf, { cwd: workdir, detached: true }))
+    .then(({ stdout }) => {
+      const sha = new Buffer(stdout);
+      return to.set(sha, sha.length).then(() => Error.CODE.OK);
+    });
 };
 
 const smudge = (to, from, source) => {
   const workdir = source.repo().workdir();
 
-  // for some reason I have not gotten this to work with async
-  const stdout = cp.execSync('git lfs smudge', { cwd: workdir, input: from.ptr() });
-  const sha = new Buffer(stdout);
-
-  return to.set(sha, sha.length).then(() => Error.CODE.OK);
+  return exec('git lfs smudge', from.ptr(), { cwd: workdir })
+    .then(({ stdout }) => {
+      const sha = new Buffer(stdout);
+      return to.set(sha, sha.length).then(() => Error.CODE.OK);
+    });
 };
+
+let previousFilterPromise = Promise.resolve();
 
 export const apply = (to, from, source) => {
   const mode = source.mode();
 
-  let filterPromise;
-  if (mode === 1) {
-    filterPromise = clean(to, from, source);
-  } else if (mode === 0) {
-    filterPromise = smudge(to, from, source);
-  }
+  const runNextFilter = () => Promise.resolve()
+    .then(() => {
+      if (mode === 1) {
+        return clean(to, from, source);
+      }
+      return smudge(to, from, source);
+    })
+    .then(
+      () => Error.CODE.OK,
+      () => Error.CODE.PASSTHROUGH
+    );
 
-  return filterPromise
-    .then(() => Error.CODE.OK)
-    .catch(() => Error.CODE.PASSTHROUGH);
+  previousFilterPromise = previousFilterPromise
+    .then(runNextFilter, runNextFilter);
+
+  return previousFilterPromise;
 };
