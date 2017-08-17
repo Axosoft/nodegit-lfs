@@ -1,5 +1,5 @@
 import ignore from 'ignore';
-import { Error } from 'nodegit';
+import { Error } from '../constants';
 
 import { loadGitattributeFiltersFromRepo } from '../helpers';
 

@@ -1,6 +1,6 @@
-import { Error } from 'nodegit';
 import fse from 'fs-extra';
 import path from 'path';
+import { Error } from '../constants';
 import exec from '../utils/execHelper';
 
 const clean = (to, from, source) => {

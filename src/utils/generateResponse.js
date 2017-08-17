@@ -1,4 +1,4 @@
-import { Error } from 'nodegit';
+import { Error } from '../constants';
 
 const generateResponse = () => ({
   success: true,

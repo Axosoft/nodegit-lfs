@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/Axosoft/nodegit-lfs#readme",
   "peerDependencies": {
-    "nodegit": ">=0.18.3"
+    "nodegit": ">=0.20.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

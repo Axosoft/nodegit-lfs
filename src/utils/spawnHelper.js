@@ -1,8 +1,15 @@
 import child from 'child_process';
-import pty from 'pty.js';
 import { EOL } from 'os';
 import R from 'ramda';
 import { regex } from '../constants';
+
+/* eslint-disable */
+let pty;
+if (process.platform !== 'win32') {
+  pty = require('pty.js');
+}
+/* eslint-enable */
+
 
 const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}${EOL}`);
 const trimLinuxOutput = (output) => {

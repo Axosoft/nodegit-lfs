@@ -22,3 +22,10 @@ export const minimumVersions = {
   GIT: '1.8.5',
   LFS: '2.0.0',
 };
+
+export const Error = {
+  CODE: {
+    OK: 0,
+    PASSTHROUGH: -30,
+  }
+};
