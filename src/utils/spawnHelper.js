@@ -11,6 +11,8 @@ if (process.platform !== 'win32') {
 /* eslint-enable */
 
 
+const IS_WINDOWS = process.platform === 'win32';
+
 const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}${EOL}`);
 const trimLinuxOutput = (output) => {
   if (!output || process.platform !== 'linux') {
@@ -42,16 +44,19 @@ const trimLinuxOutput = (output) => {
  */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   let credentials = {};
+  const writeFn = spawnedProcess.stdin.write;
   const credentialsCallback = (username, password, cancel) => {
     if (cancel) {
-      // we are done here, hopefully this works
-      spawnedProcess.unref();
+      // we are done here
+      if (IS_WINDOWS) {
+        spawnedProcess.unref();
+      }
       spawnedProcess.kill();
       return reject(new Error('LFS action cancelled'));
     }
 
     credentials = { username, password };
-    spawnedProcess.stdin.write(sanitizeStringForStdin(credentials.username));
+    writeFn(sanitizeStringForStdin(credentials.username));
   };
 
   return (chunk) => {
@@ -59,14 +64,13 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
 
     if (output.match(regex.USERNAME)) {
       if (credentials.username) {
-        spawnedProcess.stdin.write(sanitizeStringForStdin(credentials.username));
+        writeFn(sanitizeStringForStdin(credentials.username));
       } else {
         callback(credentialsCallback);
       }
     } else if (output.match(regex.PASSWORD)) {
       const password = sanitizeStringForStdin(credentials.password) || EOL;
-      spawnedProcess.stdin.write(password);
-      spawnedProcess.stdin.end();
+      writeFn(password);
     }
 
     return output;
@@ -75,25 +79,22 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
 
 const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {
-    const detached = process.platform === 'linux';
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true, detached });
+    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
 
     const input = options.input;
     delete options.input;
 
-    let args = [];
-    let cmd = command;
-    if (process.platform !== 'linux' && command.includes(' ')) {
-      const argList = command.split(' ');
-      cmd = argList.shift();
-      args = argList;
-    } else {
-      cmd = `script --return -c "${command}" /dev/null`;
-    }
+    const argList = command.split(' ');
+    const cmd = argList.shift();
+    const args = argList;
+
+    // cmd = `script --return -c "${command}" /dev/null`;
 
     let stdout = '';
     let stderr = '';
-    const spawnedProcess = child.spawn(cmd, args, options);
+      const spawnedProcess = IS_WINDOWS
+        ? child.spawn(cmd, args, options)
+        : pty.spawn(cmd, args, options);
 
     const processChunk = callback && typeof callback === 'function'
       ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
@@ -102,9 +103,13 @@ const spawn = (command, opts, callback) => new Promise(
     spawnedProcess.stdout.on('data', (data) => {
       stdout += processChunk(data);
     });
-    spawnedProcess.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
+
+    if (IS_WINDOWS) {
+      spawnedProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+    }
+
     spawnedProcess.on('close', code => resolve({
       code,
       stdout: trimLinuxOutput(stdout),
@@ -114,7 +119,7 @@ const spawn = (command, opts, callback) => new Promise(
 
     if (input) {
       spawnedProcess.stdin.write(input);
-      spawnedProcess.stdin.end();
+      spawnedProcess.stdin.write('\n');
     }
   });
 

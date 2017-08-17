@@ -10,7 +10,7 @@ const clean = (to, from, source) => {
   const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
   return fse.readFile(filePath)
-    .then(buf => exec(command, buf, { cwd: workdir }))
+    .then(buf => exec(command, { cwd: workdir, input: buf }))
     .then(({ stdout }) => {
       const sha = new Buffer(stdout);
       return to.set(sha, sha.length).then(() => Error.CODE.OK);
@@ -20,7 +20,7 @@ const clean = (to, from, source) => {
 const smudge = (to, from, source) => {
   const workdir = source.repo().workdir();
 
-  return exec('git lfs smudge', from.ptr(), { cwd: workdir })
+  return exec('git lfs smudge', { cwd: workdir, input: from.ptr() })
     .then(({ stdout }) => {
       const sha = new Buffer(stdout);
       return to.set(sha, sha.length).then(() => Error.CODE.OK);
