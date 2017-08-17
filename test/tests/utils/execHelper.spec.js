@@ -1,9 +1,48 @@
-import { expect } from 'chai';
+import {
+  expect
+} from 'chai';
+import childProcess from 'child_process';
+
+import {
+  fail,
+  spyDescribe
+} from '../../utils';
+
 import exec from '../../../src/utils/execHelper';
 
-describe('exec', () => {
-  it('returns a promise', () => {
-    const result = exec('woo', {}).catch(() => {});
-    expect(result).to.be.a('Promise');
+spyDescribe('exec', (sandbox) => {
+  beforeEach(function () {
+    this.execSpy = sandbox.stub(childProcess, 'exec').returns('proc object');
+  });
+
+  it('resolves with the spawned process and its stdout and stderr on success', function () {
+    const {
+      execSpy
+    } = this;
+
+    const promise = exec('test', { foo: 'bar' });
+    execSpy.firstCall.args[2](null, 'some stdout', 'some stderr');
+    return promise
+      .then((result) => {
+        expect(result).to.eql({
+          proc: 'proc object',
+          stderr: 'some stderr',
+          stdout: 'some stdout'
+        });
+      });
+  });
+
+  it('rejects with the error on failure', function () {
+    const {
+      execSpy
+    } = this;
+
+    const promise = exec('test', { foo: 'bar' });
+    execSpy.firstCall.args[2]('some error');
+    return promise
+      .then(() => fail('Expected this promise to fail!'))
+      .catch((result) => {
+        expect(result).to.equal('some error');
+      });
   });
 });

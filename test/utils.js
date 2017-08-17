@@ -1,6 +1,9 @@
-import { expect } from 'chai';
+import {
+  expect
+} from 'chai';
 import crypto from 'crypto';
 import fse from 'fs-extra';
+import sinon from 'sinon';
 
 import spawn from '../build/src/utils/spawnHelper';
 
@@ -17,9 +20,20 @@ export const fail = (msg) => {
 
 export const getFilePointer = (workdir, fileName) =>
   spawn(`git show HEAD:${fileName}`, { cwd: workdir, env: { GIT_PAGER: 'cat' } })
-  .then(({ stdout }) => stdout.toString());
+    .then(({ stdout }) => stdout.toString());
+
+export const spyDescribe = (message, fn) => {
+  const sandbox = sinon.createSandbox();
+
+  describe(message, () => {
+    fn(sandbox);
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+  });
+};
 
 export const todo = () => {
   fail('TODO');
 };
-
