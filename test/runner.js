@@ -19,6 +19,8 @@ import exec from '../build/src/utils/execHelper';
 
 import * as testLFSServer from './server/server';
 
+chai.use(sinonChai);
+
 before(function () { // eslint-disable-line prefer-arrow-callback
   this.timeout(30000);
 
