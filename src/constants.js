@@ -23,6 +23,7 @@ export const minimumVersions = {
   LFS: '2.0.0',
 };
 
+// Copied from NodeGit for now... eventually we will find a way to change that
 export const Error = {
   CODE: {
     OK: 0,
