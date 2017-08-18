@@ -31,8 +31,8 @@ const smudge = (to, from, source) => {
 
   return spawnShell(`echo -ne "${from.ptr()}" | git lfs smudge ${filepath}`, { cwd: workdir }, fakecb)
     .then(({ stdout }) => {
-      const sha = new Buffer(stdout);
-      return to.set(sha, sha.length).then(() => Error.CODE.OK);
+      // const sha = new Buffer(stdout);
+      return to.set(stdout, stdout.length).then(() => Error.CODE.OK);
     })
     .catch((e) => {
       console.log(e);

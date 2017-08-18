@@ -55,8 +55,5 @@
     "ignore": "^3.3.3",
     "node-pty": "^0.6.10",
     "ramda": "^0.24.1"
-  },
-  "optionalDependencies": {
-    "pty.js": "0.3.1"
   }
 }

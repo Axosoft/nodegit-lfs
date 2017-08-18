@@ -1,15 +1,9 @@
 import child from 'child_process';
 import { EOL } from 'os';
 import R from 'ramda';
+import * as pty from 'node-pty';
+import { Writable } from 'stream';
 import { regex } from '../constants';
-
-/* eslint-disable */
-let pty;
-if (process.platform !== 'win32') {
-  pty = require('node-pty');
-}
-/* eslint-enable */
-
 
 const IS_WINDOWS = process.platform === 'win32';
 
@@ -79,11 +73,10 @@ export const spawnShell = (command, opts, callback) => new Promise(
   (resolve, reject) => {
     debugger;
     try {
-      const options = R.mergeDeepRight(opts, { env: process.env });
+      const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
       // cmd = `script --return -c "${command}" /dev/null`;
 
-      let stdout = '';
-      let stderr = '';
+      const stdout = Buffer.a;
       const spawnedProcess = pty.spawn('/bin/bash', ['-t', '-c', command], options);
 
       const processChunk = callback && typeof callback === 'function'
@@ -93,18 +86,22 @@ export const spawnShell = (command, opts, callback) => new Promise(
       // spawnedProcess.write(command);
       // spawnedProcess.write(EOL);
 
+      const bufferList = [];
       spawnedProcess.on('data', (data) => {
-        try {
-          stdout += processChunk(data);
-        } catch (e) {
-          console.log(e);
+        const str = processChunk(data);
+
+        if (R.contains('downloading', str) ||
+        R.contains('username', str) ||
+        R.contains('password', str)) {
+          return;
         }
+
+        bufferList.push(data);
       });
 
       const closeOrExit = (code = 0) => resolve({
         code,
-        stdout: trimNixOutput(stdout, command),
-        stderr: trimNixOutput(stderr, command)
+        stdout: Buffer.concat(bufferList)
       });
 
       spawnedProcess.on('close', closeOrExit);
@@ -147,7 +144,7 @@ const spawn = (command, opts, callback) => new Promise(
     spawnedProcess.on('exit', closeOrExit);
     spawnedProcess.on('error', err => {
       console.log(stdout);
-      console.log(error);
+      console.log(err);
       console.log('got an error but oh well!');
       //reject(err);
     });
