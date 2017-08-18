@@ -2310,6 +2310,10 @@ nan@2.3.5, nan@^2.3.0:
   version "2.3.5"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.3.5.tgz#822a0dc266290ce4cd3a12282ca3e7e364668a08"
 
+nan@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.0.tgz#aa8f1e34531d807e9e27755b234b4a6ec0c152a8"
+
 natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
@@ -2331,6 +2335,12 @@ node-pre-gyp@^0.6.36:
     semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
+
+node-pty@^0.6.10:
+  version "0.6.10"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.6.10.tgz#b7d355bb2002d16e14c3c353e58c48f7ee131a67"
+  dependencies:
+    nan "2.5.0"
 
 nopt@^4.0.1:
   version "4.0.1"
