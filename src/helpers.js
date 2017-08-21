@@ -49,8 +49,6 @@ export const repoHasLfsObjectBin = repo =>
 export const repoHasLfs = repo => repoHasLfsFilters(repo)
     .then(hasFilters => hasFilters || repoHasLfsObjectBin(repo));
 
-export const regexResult = (input, regularExpression) => input.match(regularExpression);
-
 export const verifyOutput = (stats, raw) => {
   // Check to see if it was a permissions error
   const wasPermissionDenied = raw.trim().toLowerCase().match(regex.PERMISSION_DENIED);

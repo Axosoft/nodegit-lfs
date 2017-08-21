@@ -8,7 +8,6 @@ import {
 
 import generateResponse from '../utils/generateResponse';
 import {
-  regexResult,
   verifyOutput,
   errorCatchHandler
 } from '../helpers';
@@ -22,7 +21,7 @@ const generateCheckoutStats = (raw) => {
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
 
-    const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
+    const byteResults = statLine.match(regex.TOTAL_BYTES);
 
     stats.total_bytes_checked_out =
       byteResults !== null ?
@@ -32,19 +31,19 @@ const generateCheckoutStats = (raw) => {
       byteResults !== null ?
         byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const fileResults = regexResult(statLine, regex.TOTAL_FILES);
+    const fileResults = statLine.match(regex.TOTAL_FILES);
 
     stats.total_files_checked_out =
       fileResults !== null ?
         fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
+    const skippedByteResults = statLine.match(regex.SKIPPED_BYTES);
 
     stats.total_bytes_skipped =
       skippedByteResults !== null ?
         skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
+    const skippedFileResults = statLine.match(regex.SKIPPED_FILES);
 
     stats.total_files_skipped =
       skippedFileResults !== null ?
