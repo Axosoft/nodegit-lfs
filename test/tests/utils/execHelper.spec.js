@@ -2,17 +2,27 @@ import {
   expect
 } from 'chai';
 import childProcess from 'child_process';
+import sinon from 'sinon';
 
 import {
-  fail,
-  spyDescribe
+  fail
 } from '../../utils';
 
 import exec from '../../../src/utils/execHelper';
 
-spyDescribe('exec', (sandbox) => {
+describe('exec', () => {
   beforeEach(function () {
-    this.execSpy = sandbox.stub(childProcess, 'exec').returns('proc object');
+    this.sandbox = sinon.sandbox.create();
+
+    this.execSpy = this.sandbox.stub(childProcess, 'exec').returns('proc object');
+  });
+
+  afterEach(function () {
+    const {
+      sandbox
+    } = this;
+
+    sandbox.restore();
   });
 
   it('resolves with the spawned process and its stdout and stderr on success', function () {
