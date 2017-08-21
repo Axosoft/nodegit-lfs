@@ -19,6 +19,12 @@ import exec from '../build/src/utils/execHelper';
 
 import * as testLFSServer from './server/server';
 
+// http://eng.wealthfront.com/2016/11/03/handling-unhandledrejections-in-node-and-the-browser/
+process.on('unhandledRejection', (err) => {
+  console.error(err); // eslint-disable-line no-console
+  process.exit(1);
+});
+
 chai.use(sinonChai);
 
 before(function () { // eslint-disable-line prefer-arrow-callback
@@ -39,12 +45,9 @@ before(function () { // eslint-disable-line prefer-arrow-callback
     }))
     .then(() => fse.appendFile(
       path.join(lfsTestRepoPath, '.git', 'config'),
-`[http]
+      `[http]
   sslverify = false`
-    ))
-    .catch((err) => {
-      throw new Error(err);
-    });
+    ));
 });
 
 beforeEach(() =>
