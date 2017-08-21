@@ -1,10 +1,15 @@
+export const dependencies = {
+  GIT: 'GIT',
+  LFS: 'LFS'
+};
+
 export const LFS_ATTRIBUTE = 'filter=lfs diff=lfs merge=lfs';
 
 export const LFS_FILTER_NAME = 'nodegit_lfs';
 
 export const regex = {
-  LFS: /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
-  GIT: /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
+  [dependencies.LFS]: /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
+  [dependencies.GIT]: /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
   TRACK: /([a-zA-Z*.]+(?="))/g,
   SKIPPED_BYTES: /[\d]+\s+B\s+(?=skipped)/g,
   SKIPPED_FILES: /[\d]\s+(?=skipped)/g,
@@ -19,6 +24,6 @@ export const BAD_CORE_RESPONSE = '-1';
 export const BAD_REGEX_PARSE_RESULT = '-2';
 
 export const minimumVersions = {
-  GIT: '1.8.5',
-  LFS: '2.0.0',
+  [dependencies.GIT]: '1.8.5',
+  [dependencies.LFS]: '2.0.0',
 };

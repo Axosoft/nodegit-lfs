@@ -1,22 +1,25 @@
-
 import fse from 'fs-extra';
 import path from 'path';
 import R from 'ramda';
-import LFSVersion from '../commands/version';
+import { gitVersion, lfsVersion } from '../commands/version';
 import generateResponse from './generateResponse';
-import { core } from '../commands/lfsCommands';
 
 import {
-  regex as versionRegexes,
+  dependencies,
   minimumVersions,
-  BAD_VERSION,
-  BAD_CORE_RESPONSE,
+  BAD_VERSION
 } from '../constants';
 
 /**
  * @function normalizeVersion
- * @param  Array<string> versionArray array of version number eg: ['1', '8', '3'] => 1.8.3
- * @return Number normalized version number
+ * @param {Array<string>} versionArray Array of version number sections
+ * @returns {Number} Constructed version number
+ *
+ * @example
+ * normalizeVersion(['1', '8', '3']) === '1.8.3'
+ *
+ * @example
+ * normalizeVersion([]) === BAD_VERSION
  */
 const normalizeVersion = (versionArray) => {
   if (!versionArray || versionArray.length === 0) {
@@ -25,6 +28,12 @@ const normalizeVersion = (versionArray) => {
   return R.join('.', versionArray);
 };
 
+/**
+ * @function parseVersion
+ * @param {String} input Version to parse
+ * @param {Regexp} regex Regex to parse version with
+ * @returns {String} Normalized version number
+ */
 export const parseVersion = (input, regex) => {
   if (!input) {
     return BAD_VERSION;
@@ -39,40 +48,33 @@ export const parseVersion = (input, regex) => {
   return normalizeVersion(numericVersionNumbers);
 };
 
-export const isAtleastGitVersion = gitInput =>
-  parseVersion(gitInput, versionRegexes.GIT) >= minimumVersions.GIT;
-
-export const isAtleastLfsVersion = lfsInput =>
-  parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
-
-export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir, '.git', 'lfs'));
+export const isLfsRepo = workDir => fse.pathExists(path.join(workDir, '.git', 'lfs'));
 
 export const dependencyCheck = () => {
-  const response = generateResponse();
-  return LFSVersion().then((responseObject) => {
-    response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
-    response.lfs_exists = parseVersion(
-      responseObject.version,
-      versionRegexes.LFS,
-    ) !== BAD_VERSION;
-    response.lfs_raw = responseObject.raw;
+  const processVersionResponse = (dependencyName, { raw, version }) => {
+    const exists = version !== BAD_VERSION;
+    const meetsMinimumVersion = exists && version >= minimumVersions[dependencyName];
 
-    return core.git('--version');
-  })
-  .then(({ stdout, stderr }) => {
-    if (stderr) {
-      response.success = false;
-      response.errno = BAD_CORE_RESPONSE;
-      response.stderr = stderr;
-      return response;
-    }
+    const prefixes = {
+      [dependencies.GIT]: 'git',
+      [dependencies.LFS]: 'lfs'
+    };
+    const constructKey = suffix => `${prefixes[dependencyName]}_${suffix}`;
+    return {
+      [constructKey('exists')]: exists,
+      [constructKey('meets_version')]: meetsMinimumVersion,
+      [constructKey('raw')]: raw
+    };
+  };
 
-    response.git_meets_version = isAtleastGitVersion(stdout);
-    response.git_exists = parseVersion(
-      stdout,
-      versionRegexes.GIT,
-    ) !== BAD_VERSION;
-    response.git_raw = stdout;
-    return response;
-  });
+  return Promise.all([
+    gitVersion(),
+    lfsVersion()
+  ])
+    .then(([gitResponse, lfsResponse]) => ({
+      ...generateResponse(),
+      ...processVersionResponse(dependencies.GIT, gitResponse),
+      ...processVersionResponse(dependencies.LFS, lfsResponse)
+    }));
 };
+

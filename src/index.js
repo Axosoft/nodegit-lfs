@@ -6,7 +6,7 @@ import { loadGitattributeFiltersFromRepo, hasLfsFilters } from './helpers';
 import checkout from './commands/checkout';
 import push from './commands/push';
 import track from './commands/track';
-import version from './commands/version';
+import { lfsVersion } from './commands/version';
 import fetch from './commands/fetch';
 import prune from './commands/prune';
 import list from './commands/ls';
@@ -35,7 +35,7 @@ LFS.prototype = {
   prune,
   pull,
   push,
-  version,
+  version: lfsVersion,
   unregister,
 };
 
