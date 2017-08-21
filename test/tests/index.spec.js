@@ -1,26 +1,36 @@
 import { expect } from 'chai';
-import NodeGit from 'nodegit';
-import LFS from '../../build/src';
 
 describe('LFS', () => {
-  it('LFS exists', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('LFS exists', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     expect(NodeGitLFS).to.have.property('LFS');
   });
 
-  it('initialize exists', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('initialize exists', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     expect(NodeGitLFS.LFS).to.have.property('initialize');
   });
 
-  it('register exists', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('register exists', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     expect(NodeGitLFS.LFS).to.have.property('register');
     expect(NodeGitLFS.LFS.register).to.be.a('function');
   });
 
-  it('unregister exists', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('unregister exists', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     expect(NodeGitLFS.LFS).to.have.property('unregister');
     expect(NodeGitLFS.LFS.unregister).to.be.a('function');
   });

@@ -1,12 +1,13 @@
 import path from 'path';
 import fs from 'fs';
-import NodeGit from 'nodegit';
 import { expect } from 'chai';
-import LFS from '../../build/src';
 
 describe('Initialize', () => {
   it('initialize is a promise', () => {
-    const NodeGitLFS = LFS(NodeGit);
+    const {
+      NodeGitLFS
+    } = this;
+
     const lfsTestRepoPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(lfsTestRepoPath)
@@ -16,9 +17,13 @@ describe('Initialize', () => {
       });
   });
 
-  it('creates .gitattributes for empty repo', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('creates .gitattributes for empty repo', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     const emptyRepoPath = path.resolve(__dirname, '..', 'repos', 'empty');
+
     expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.false;
 
     return NodeGitLFS.Repository.open(emptyRepoPath)

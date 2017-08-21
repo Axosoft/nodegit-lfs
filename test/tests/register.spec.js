@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import NodeGit from 'nodegit';
-import LFS from '../../build/src';
 
-describe('Register:', () => {
-  it('has register callback', () => {
-    const NodeGitLFS = LFS(NodeGit);
+describe('Register', () => {
+  it('has register callback', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     return NodeGitLFS.LFS.register()
       .then((result) => {
         expect(result).to.be.a('number');
@@ -12,8 +13,11 @@ describe('Register:', () => {
       });
   });
 
-  it('cannot re-register LFS filter twice', () => {
-    const NodeGitLFS = LFS(NodeGit);
+  it('cannot re-register LFS filter twice', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     return NodeGitLFS.LFS.register()
       .then((result) => {
         expect(result).to.be.a('number');

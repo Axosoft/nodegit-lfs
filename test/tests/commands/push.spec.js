@@ -1,16 +1,17 @@
 import path from 'path';
-import NodeGit from 'nodegit';
 import {
   createDummyFile,
   todo
 } from '../../utils';
-import LFS from '../../../build/src';
 import exec from '../../../build/src/utils/execHelper';
 
 describe('Push', () => {
-  it('should generate push response', () => {
+  it('should generate push response', function () {
+    const {
+      NodeGitLFS
+    } = this;
+
     const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
 
     return createDummyFile(path.join(lfsTestRepoPath, 'test_file.txt'), 20)
       .then(() => exec('git add test_file.txt', { cwd: lfsTestRepoPath }))
