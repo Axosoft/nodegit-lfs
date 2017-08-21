@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import fse from 'fs-extra';
 import path from 'path';
 import { Error } from '../constants';
@@ -28,8 +29,13 @@ const smudge = (to, from, source) => {
 
   const parts = source.path().split('/');
   const filepath = parts[parts.length - 1];
+  const ptr = from.ptr();
+  const ptrparts = ptr.split(EOL);
+  const sizeLine = ptrparts[ptrparts.length - 2];
+  const idx = sizeLine.indexOf('size ') + 5;
+  const size = Number(sizeLine.substring(idx).trim());
 
-  return spawnShell(`echo -ne "${from.ptr()}" | git lfs smudge ${filepath}`, { cwd: workdir }, fakecb)
+  return spawnShell(`echo -ne "${ptr}" | git lfs smudge ${filepath}`, { cwd: workdir }, size, `git lfs smudge ${filepath}`, fakecb)
     .then(({ stdout }) => {
       // const sha = new Buffer(stdout);
       return to.set(stdout, stdout.length).then(() => Error.CODE.OK);

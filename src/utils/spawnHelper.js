@@ -1,5 +1,7 @@
 import child from 'child_process';
+import fs from 'fs';
 import { EOL } from 'os';
+import net from 'net';
 import R from 'ramda';
 import * as pty from 'node-pty';
 import { Writable } from 'stream';
@@ -36,7 +38,8 @@ const trimNixOutput = (output, command) => {
 /**
  * If provided with a callback, we will create a new callback which will take user
  * credentials and use the credentials in this scope.
- * Caller would need to hookup right credentials to the inner callback.
+ * Caller would need to hookup
+  right credentials to the inner callback.
  */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   let credentials = {};
@@ -64,57 +67,69 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
       const password = sanitizeStringForStdin(credentials.password) || EOL;
       spawnedProcess.write(password);
     }
-
-    return output;
   };
 };
 
-export const spawnShell = (command, opts, callback) => new Promise(
+const buildSocket = (size, closeProcess, mainResolve, mainReject) => new Promise(
+  (resolve, reject) => {
+    const tempfile = '/tmp/echo.sock';
+    const bufferList = [];
+    let currentSize = 0;
+    let resolved = false;
+
+    const closedOrEnded = () => {
+      if (!resolved) {
+        mainResolve({ stdout: Buffer.concat(bufferList) });
+        resolved = true;
+        closeProcess();
+      }
+    };
+
+    const socketServer = net.createServer((socket) => {
+      socket.on('end', closedOrEnded);
+      socket.on('close', closedOrEnded);
+      socket.on('data', data => {
+        currentSize += data.length;
+        bufferList.push(data);
+        if (currentSize === size) {
+          socketServer.close(() => console.log('closed'));
+        }
+      });
+      socket.on('error', mainReject);
+    });
+    socketServer.listen(tempfile);
+    socketServer.on('listening', () => {
+      console.log('listening');
+      resolve();
+    });
+    socketServer.on('error', reject);
+    socketServer.on('close', closedOrEnded);
+  });
+
+export const spawnShell = (command, opts, size, parseChunk, callback) => new Promise(
   (resolve, reject) => {
     debugger;
-    try {
-      const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
-      // cmd = `script --return -c "${command}" /dev/null`;
+    let spawnedProcess;
+    return buildSocket(size, () => spawnedProcess.destroy(), resolve, reject)
+      .then(() => {
+        const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
 
-      const stdout = Buffer.a;
-      const spawnedProcess = pty.spawn('/bin/bash', ['-t', '-c', command], options);
+        spawnedProcess = pty.spawn('/bin/bash', [], options);
 
-      const processChunk = callback && typeof callback === 'function'
-        ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
-        : chunk => chunk.toString();
+        const processChunk = callback && typeof callback === 'function'
+          ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
+          : chunk => chunk.toString();
 
-      // spawnedProcess.write(command);
-      // spawnedProcess.write(EOL);
+        spawnedProcess.write(command + ' | nc -U /tmp/echo.sock');
+        spawnedProcess.write(EOL);
 
-      const bufferList = [];
-      spawnedProcess.on('data', (data) => {
-        const str = processChunk(data);
+        spawnedProcess.on('data', (data) => {
+          processChunk(data);
+        });
 
-        if (R.contains('downloading', str) ||
-        R.contains('username', str) ||
-        R.contains('password', str)) {
-          return;
-        }
-
-        bufferList.push(data);
+        spawnedProcess.on('error', reject);
       });
-
-      const closeOrExit = (code = 0) => resolve({
-        code,
-        stdout: Buffer.concat(bufferList)
-      });
-
-      spawnedProcess.on('close', closeOrExit);
-      spawnedProcess.on('exit', closeOrExit);
-      spawnedProcess.on('error', err => {
-        console.log(stdout);
-        console.log('got an error but oh well!');
-        reject(err);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  });
+    });
 
 const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {
@@ -151,3 +166,46 @@ const spawn = (command, opts, callback) => new Promise(
   });
 
 export default spawn;
+
+
+// const bufferList = [];
+// let totalLength = 0;
+// spawnedProcess.on('data', (data) => {
+//   try {
+//     const str = processChunk(data);
+//
+//     if (R.contains('downloading', str) ||
+//     R.contains('username', str) ||
+//     R.contains('password', str) ||
+//     str.trim().endsWith(parseChunk)) {
+//       return;
+//     }
+//
+//     const parts = str.split()
+//
+//     totalLength += data.length;
+//     bufferList.push(data);
+//
+//     if (totalLength >= size) {
+//       // spawnedProcess.destroy();
+//     }
+//
+//   } catch (e) {
+//     console.log(e);
+//   }
+// });
+// spawnedProcess.on('close', closeOrExit);
+// spawnedProcess.on('exit', closeOrExit);
+// const closeOrExit = (code = 0) => {
+//   const buf = Buffer.concat(bufferList);
+//
+//   let newBuf = buf.slice(buf.length - size);
+//
+//   return resolve({
+//     code,
+//     stdout: newBuf
+//   })
+// };
+
+// spawnedProcess.on('close', closeOrExit);
+// spawnedProcess.on('exit', closeOrExit);
