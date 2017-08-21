@@ -12,7 +12,16 @@ const spawn = (command, opts, callback) => new Promise(
       detached = true;
     }
 
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true, detached });
+    const options = R.mergeDeepRight(
+      { env: process.env }, // Allow environment values to be overwritten by `opts.env`
+      R.mergeDeepRight(
+        opts,
+        { // Do not allow `shell` or `detached` to be overwritten
+          detached,
+          shell: true
+        }
+      )
+    );
     let args = [];
     let cmd = command;
     if (process.platform !== 'linux' && command.includes(' ')) {
@@ -57,7 +66,7 @@ const spawn = (command, opts, callback) => new Promise(
         if (output.match(regex.USERNAME)) {
           callback(innerCb);
         } else if (output.match(regex.PASSWORD)) {
-          const password = sanitizeStringForStdin(credentials.password) || EOL;
+          const password = sanitizeStringForStdin(credentials.password);
           spawnedProcess.stdin.write(Buffer.from(password));
         }
 
