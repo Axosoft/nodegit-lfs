@@ -1,46 +1,25 @@
-import child from 'child_process';
-import fs from 'fs';
+import defaultShell from 'default-shell';
 import { EOL } from 'os';
 import net from 'net';
 import R from 'ramda';
+import path from 'path';
 import * as pty from 'node-pty';
-import { Writable } from 'stream';
+import _tmp from 'tmp';
+import promisify from 'promisify-node';
+
 import { regex } from '../constants';
+
+const tmp = promisify(_tmp);
 
 const IS_WINDOWS = process.platform === 'win32';
 
-const sanitizeStringForStdin = str => (str && str.endsWith(EOL) ? str : `${str}${EOL}`);
-const trimNixOutput = (output, command) => {
-  if (!output || IS_WINDOWS) {
-    return output;
-  }
+const buildSocketPath = () => tmp.dir()
+  .then(tmpPath => tmp.file()
+    .then((tmpFile) => {
+      const prefix = IS_WINDOWS ? '\\\\.\\pipe' : '';
+      return path.join(prefix, tmpPath, tmpFile);
+    }));
 
-  return R.pipe(
-    R.split(EOL),
-    R.filter((line) => {
-      if (!line) {
-        return true;
-      }
-
-      const normalLine = line.toLowerCase();
-      if (R.contains(command, normalLine) ||
-          R.contains('downloading', normalLine) ||
-          R.contains('username', normalLine) ||
-          R.contains('password', normalLine)) {
-        return false;
-      }
-      return true;
-    }),
-    R.join(EOL)
-  )(output.replace(/\$/, '')).trim();
-};
-
-/**
- * If provided with a callback, we will create a new callback which will take user
- * credentials and use the credentials in this scope.
- * Caller would need to hookup
-  right credentials to the inner callback.
- */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   let credentials = {};
   const credentialsCallback = (username, password, cancel) => {
@@ -51,7 +30,8 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
     }
 
     credentials = { username, password };
-    spawnedProcess.write(sanitizeStringForStdin(credentials.username));
+    spawnedProcess.write(credentials.username);
+    spawnedProcess.write(EOL);
   };
 
   return (chunk) => {
@@ -59,25 +39,29 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
 
     if (output.match(regex.USERNAME)) {
       if (credentials.username) {
-        spawnedProcess.write(sanitizeStringForStdin(credentials.username));
+        spawnedProcess.write(credentials.username);
+        spawnedProcess.write(EOL);
       } else {
         callback(credentialsCallback);
       }
     } else if (output.match(regex.PASSWORD)) {
-      const password = sanitizeStringForStdin(credentials.password) || EOL;
+      const password = credentials.password || EOL;
       spawnedProcess.write(password);
+      spawnedProcess.write(EOL);
     }
+    return output;
   };
 };
 
-const buildSocket = (size, closeProcess, mainResolve, mainReject) => new Promise(
+const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) => new Promise(
   (resolve, reject) => {
-    const tempfile = '/tmp/echo.sock';
     const bufferList = [];
     let currentSize = 0;
     let resolved = false;
 
     const closedOrEnded = () => {
+      // For some reason this fires twice so after
+      // the first fire let's move on
       if (!resolved) {
         mainResolve({ stdout: Buffer.concat(bufferList) });
         resolved = true;
@@ -88,39 +72,42 @@ const buildSocket = (size, closeProcess, mainResolve, mainReject) => new Promise
     const socketServer = net.createServer((socket) => {
       socket.on('end', closedOrEnded);
       socket.on('close', closedOrEnded);
-      socket.on('data', data => {
+      socket.on('data', (data) => {
         currentSize += data.length;
         bufferList.push(data);
         if (currentSize === size) {
-          socketServer.close(() => console.log('closed'));
+          socketServer.close(() => {});
         }
       });
       socket.on('error', mainReject);
     });
-    socketServer.listen(tempfile);
-    socketServer.on('listening', () => {
-      console.log('listening');
-      resolve();
-    });
+    socketServer.listen(socketName);
+    socketServer.on('listening', () => resolve(socketName));
     socketServer.on('error', reject);
     socketServer.on('close', closedOrEnded);
   });
 
-export const spawnShell = (command, opts, size, parseChunk, callback) => new Promise(
+export const spawnShell = (command, opts, size, callback) => new Promise(
   (resolve, reject) => {
     debugger;
     let spawnedProcess;
-    return buildSocket(size, () => spawnedProcess.destroy(), resolve, reject)
-      .then(() => {
+    const destroyProcess = () => spawnedProcess.destroy();
+    return buildSocketPath()
+      .then(socket => buildSocket(size, destroyProcess, socket, resolve, reject))
+      .then((socketName) => {
         const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
 
-        spawnedProcess = pty.spawn('/bin/bash', [], options);
+        spawnedProcess = pty.spawn(defaultShell, [], options);
 
         const processChunk = callback && typeof callback === 'function'
           ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
           : chunk => chunk.toString();
 
-        spawnedProcess.write(command + ' | nc -U /tmp/echo.sock');
+        const commandSuffix = IS_WINDOWS
+          ? ` >${socketName}`
+          : ` | nc -U ${socketName}`;
+
+        spawnedProcess.write(`${command}${commandSuffix}`);
         spawnedProcess.write(EOL);
 
         spawnedProcess.on('data', (data) => {
@@ -129,14 +116,14 @@ export const spawnShell = (command, opts, size, parseChunk, callback) => new Pro
 
         spawnedProcess.on('error', reject);
       });
-    });
+  });
 
 const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {
     const options = R.mergeDeepRight(opts, { env: process.env });
 
     const argList = command.trim().split(' ');
-    const cmd = argList.shift();
+    const cmd = argList.shift() + (IS_WINDOWS ? '.exe' : '');
     const args = argList;
 
     let stdout = '';
@@ -157,55 +144,7 @@ const spawn = (command, opts, callback) => new Promise(
 
     spawnedProcess.on('close', closeOrExit);
     spawnedProcess.on('exit', closeOrExit);
-    spawnedProcess.on('error', err => {
-      console.log(stdout);
-      console.log(err);
-      console.log('got an error but oh well!');
-      //reject(err);
-    });
+    spawnedProcess.on('error', reject);
   });
 
 export default spawn;
-
-
-// const bufferList = [];
-// let totalLength = 0;
-// spawnedProcess.on('data', (data) => {
-//   try {
-//     const str = processChunk(data);
-//
-//     if (R.contains('downloading', str) ||
-//     R.contains('username', str) ||
-//     R.contains('password', str) ||
-//     str.trim().endsWith(parseChunk)) {
-//       return;
-//     }
-//
-//     const parts = str.split()
-//
-//     totalLength += data.length;
-//     bufferList.push(data);
-//
-//     if (totalLength >= size) {
-//       // spawnedProcess.destroy();
-//     }
-//
-//   } catch (e) {
-//     console.log(e);
-//   }
-// });
-// spawnedProcess.on('close', closeOrExit);
-// spawnedProcess.on('exit', closeOrExit);
-// const closeOrExit = (code = 0) => {
-//   const buf = Buffer.concat(bufferList);
-//
-//   let newBuf = buf.slice(buf.length - size);
-//
-//   return resolve({
-//     code,
-//     stdout: newBuf
-//   })
-// };
-
-// spawnedProcess.on('close', closeOrExit);
-// spawnedProcess.on('exit', closeOrExit);

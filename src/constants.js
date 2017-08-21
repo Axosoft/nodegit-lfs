@@ -4,7 +4,8 @@ export const LFS_FILTER_NAME = 'nodegit_lfs';
 
 export const regex = {
   LFS: /(?:git-lfs\/\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
-  GIT: /(?:git version\s+)?(\d+)(?:.(\d+))?(?:.(\d+))?.*/,
+  GIT: /(?:git\s+version\s+)(\d+\.){2}\d+/,
+  VERSION: /(\d+\.){2}\d+/,
   TRACK: /([a-zA-Z*.]+(?="))/g,
   SKIPPED_BYTES: /[\d]+\s+B\s+(?=skipped)/g,
   SKIPPED_FILES: /[\d]\s+(?=skipped)/g,

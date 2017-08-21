@@ -1,15 +1,21 @@
-import { EOL } from 'os';
 import fse from 'fs-extra';
 import path from 'path';
 import { Error } from '../constants';
 import { spawnShell } from '../utils/spawnHelper';
 import exec from '../utils/execHelper';
 
+const IS_WINDOWS = process.platform === 'win32';
+const ticks = IS_WINDOWS ? '"' : '\'';
+
+const parseSize = (ptr) => {
+  const idx = ptr.indexOf('size ') + 5;
+  return Number(ptr.substring(idx).trim());
+};
+
 const clean = (to, from, source) => {
-  const ticks = process.platform === 'win32' ? '"' : '\'';
   const workdir = source.repo().workdir();
   const filePath = path.join(workdir, source.path());
-  const command = `git lfs clean ${source.path()}`;
+  const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
   return fse.readFile(filePath)
     .then(buf => exec(command, buf, { cwd: workdir }))
@@ -30,19 +36,17 @@ const smudge = (to, from, source) => {
   const parts = source.path().split('/');
   const filepath = parts[parts.length - 1];
   const ptr = from.ptr();
-  const ptrparts = ptr.split(EOL);
-  const sizeLine = ptrparts[ptrparts.length - 2];
-  const idx = sizeLine.indexOf('size ') + 5;
-  const size = Number(sizeLine.substring(idx).trim());
+  const size = parseSize(ptr);
+  const echo = IS_WINDOWS ? `echo "${ptr}"` : `echo -ne "${ptr}"`;
 
-  return spawnShell(`echo -ne "${ptr}" | git lfs smudge ${filepath}`, { cwd: workdir }, size, `git lfs smudge ${filepath}`, fakecb)
-    .then(({ stdout }) => {
-      // const sha = new Buffer(stdout);
-      return to.set(stdout, stdout.length).then(() => Error.CODE.OK);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  return spawnShell(
+    `${echo} | git lfs smudge ${ticks}${filepath}${ticks}`,
+    { cwd: workdir },
+    size,
+    fakecb
+  )
+    .then(({ stdout }) => to.set(stdout, stdout.length)
+      .then(() => Error.CODE.OK));
 };
 
 let previousFilterPromise = Promise.resolve();

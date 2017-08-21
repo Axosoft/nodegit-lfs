@@ -36,7 +36,10 @@ export const parseVersion = (input, regex) => {
   }
 
   const numericVersionNumbers = R.filter(match => !isNaN(match), matches);
-  return normalizeVersion(numericVersionNumbers);
+  if (numericVersionNumbers.length > 0) {
+    return normalizeVersion(numericVersionNumbers);
+  }
+  return matches[1];
 };
 
 export const isAtleastGitVersion = gitInput =>
@@ -53,7 +56,7 @@ export const dependencyCheck = () => {
     response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
     response.lfs_exists = parseVersion(
       responseObject.version,
-      versionRegexes.LFS,
+      versionRegexes.VERSION,
     ) !== BAD_VERSION;
     response.lfs_raw = responseObject.raw;
 
@@ -70,7 +73,7 @@ export const dependencyCheck = () => {
     response.git_meets_version = isAtleastGitVersion(stdout);
     response.git_exists = parseVersion(
       stdout,
-      versionRegexes.GIT,
+      versionRegexes.VERSION,
     ) !== BAD_VERSION;
     response.git_raw = stdout;
     return response;
