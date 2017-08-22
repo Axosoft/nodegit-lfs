@@ -1,7 +1,7 @@
 import fse from 'fs-extra';
 import path from 'path';
 import { Error } from '../constants';
-import { spawnShell } from '../utils/spawnHelper';
+import { spawnShell, winSpawn } from '../utils/spawnHelper';
 import exec from '../utils/execHelper';
 
 const IS_WINDOWS = process.platform === 'win32';
@@ -32,14 +32,18 @@ export default (crednetialsCallback) => {
     const filepath = parts[parts.length - 1];
     const ptr = from.ptr();
     const size = parseSize(ptr);
-    const echo = IS_WINDOWS ? `echo ${ptr}` : `echo -ne "${ptr}"`;
+    const echo = IS_WINDOWS ? `echo|set /p="${ptr}"` : `echo -ne "${ptr}"`;
 
-    return spawnShell(
-      `${echo} | git lfs smudge ${ticks}${filepath}${ticks}`,
-      { cwd: workdir },
-      size,
-      crednetialsCallback
-    )
+    const promise = IS_WINDOWS
+      ? winSpawn(`git lfs smudge ${ticks}${filepath}${ticks}`, ptr, { cwd: workdir })
+      : spawnShell(
+        `${echo} | git lfs smudge ${ticks}${filepath}${ticks}`,
+        { cwd: workdir },
+        size,
+        crednetialsCallback
+      );
+
+    return promise
       .then(({ stdout }) => to.set(stdout, stdout.length)
         .then(() => Error.CODE.OK));
   };

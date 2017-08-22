@@ -1,3 +1,4 @@
+import { spawn as nodeSpawn } from 'child_process';
 import defaultShell from 'default-shell';
 import { EOL } from 'os';
 import net from 'net';
@@ -128,6 +129,37 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
       })
       .catch(reject);
   });
+
+export const winSpawn = (command, input, opts) => new Promise(
+  (resolve, reject) => {
+    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
+
+    const argList = command.trim().split(' ');
+    const cmd = argList.shift();
+    const args = argList;
+
+    const spawnedProcess = nodeSpawn(cmd, args, options);
+
+    const bufferList = [];
+    spawnedProcess.stdout.on('data', (data) => {
+      bufferList.push(data);
+    });
+
+    const closeOrExit = (code = 0) => resolve({
+      code,
+      stdout: Buffer.concat(bufferList),
+    });
+
+    spawnedProcess.on('close', closeOrExit);
+    spawnedProcess.on('exit', closeOrExit);
+    spawnedProcess.stderr.on('data', (data) => {
+      reject(new Error(data.toString()));
+    });
+
+    spawnedProcess.stdin.write(input);
+    spawnedProcess.stdin.write(EOL);
+  }
+);
 
 const spawn = (command, opts, callback) => new Promise(
   (resolve, reject) => {

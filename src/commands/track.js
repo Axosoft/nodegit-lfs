@@ -7,6 +7,7 @@ import {
 } from '../constants';
 
 const isString = str => typeof str === 'string';
+const ticks = process.platform === 'win32' ? '"' : "'";
 
 const extractGlobs = (input, regex) => {
   const matches = input.match(regex);
@@ -17,7 +18,10 @@ const extractGlobs = (input, regex) => {
 const track = (repo, globs) => {
   if (!globs) { return; }
 
-  const filteredGlobs = R.filter(isString, globs);
+  const filteredGlobs = R.pipe(
+    R.filter(isString),
+    R.map(g => `${ticks}${g}${ticks}`)
+  )(globs);
   const response = generateResponse();
   const repoPath = repo.workdir();
 
