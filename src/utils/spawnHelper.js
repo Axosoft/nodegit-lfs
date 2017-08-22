@@ -10,19 +10,22 @@ import promisify from 'promisify-node';
 import { regex } from '../constants';
 
 const tmp = promisify(_tmp);
+// Cleanup even when there are errors
+tmp.setGracefulCleanup();
 
 const IS_WINDOWS = process.platform === 'win32';
 
 const buildSocketPath = () => tmp.dir()
-  .then(tmpPath => tmp.file()
-    .then((tmpFile) => {
-      const prefix = IS_WINDOWS ? '\\\\.\\pipe' : '';
-      return path.join(prefix, tmpPath, tmpFile);
-    }));
+  .then((tmpPath) => {
+    const prefix = IS_WINDOWS ? '\\\\.\\pipe' : '';
+    let cleanedPath = IS_WINDOWS ? tmpPath.replace('C:\\', '') : tmpPath;
+    cleanedPath = cleanedPath.replace('.tmp', '');
+    return path.join(prefix, cleanedPath, 'echo.sock');
+  });
 
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   let credentials = {};
-  const credentialsCallback = (username, password, cancel) => {
+  const credentialsCallback = forSsh => (username, password, cancel) => {
     if (cancel) {
       // we are done here
       spawnedProcess.destroy();
@@ -30,7 +33,7 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
     }
 
     credentials = { username, password };
-    spawnedProcess.write(credentials.username);
+    spawnedProcess.write(forSsh ? credentials.username : credentials.password);
     spawnedProcess.write(EOL);
   };
 
@@ -42,12 +45,18 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
         spawnedProcess.write(credentials.username);
         spawnedProcess.write(EOL);
       } else {
-        callback(credentialsCallback);
+        // We got a username so we must not be ssh
+        callback(false, credentialsCallback(false));
       }
     } else if (output.match(regex.PASSWORD)) {
-      const password = credentials.password || EOL;
-      spawnedProcess.write(password);
-      spawnedProcess.write(EOL);
+      if (credentials.password) {
+        const password = credentials.password || EOL;
+        spawnedProcess.write(password);
+        spawnedProcess.write(EOL);
+      } else {
+        // no username so ssh
+        callback(true, credentialsCallback(true));
+      }
     }
     return output;
   };
@@ -82,14 +91,15 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
       socket.on('error', mainReject);
     });
     socketServer.listen(socketName);
-    socketServer.on('listening', () => resolve(socketName));
+    socketServer.on('listening', () => {
+      resolve(socketName);
+    });
     socketServer.on('error', reject);
     socketServer.on('close', closedOrEnded);
   });
 
 export const spawnShell = (command, opts, size, callback) => new Promise(
   (resolve, reject) => {
-    debugger;
     let spawnedProcess;
     const destroyProcess = () => spawnedProcess.destroy();
     return buildSocketPath()
@@ -115,7 +125,8 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
         });
 
         spawnedProcess.on('error', reject);
-      });
+      })
+      .catch(reject);
   });
 
 const spawn = (command, opts, callback) => new Promise(
