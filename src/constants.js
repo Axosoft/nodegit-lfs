@@ -29,7 +29,7 @@ export const BAD_REGEX_PARSE_RESULT = '-2';
 
 export const minimumVersions = {
   GIT: '1.8.5',
-  LFS: '2.0.0',
+  LFS: '2.0.0'
 };
 
 // Copied from NodeGit for now... eventually we will find a way to change that

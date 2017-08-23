@@ -22,7 +22,7 @@ const isValidLine = str => str !== '';
 const generatePushStats = (raw) => {
   if (!raw || typeof raw !== 'string') {
     return {
-      error: 'invalid output',
+      error: 'invalid output'
     };
   }
   const stats = {};
@@ -74,7 +74,7 @@ function push(repo, options) {
   const {
     remoteName,
     branchName,
-    callback,
+    callback
   } = (options || {});
 
   let branch = branchName;

@@ -1,7 +1,7 @@
 import R from 'ramda';
 import { core } from './lfsCommands';
 import {
-  BAD_CORE_RESPONSE,
+  BAD_CORE_RESPONSE
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 

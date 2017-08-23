@@ -3,7 +3,7 @@ import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
 import {
   regex as Regex,
-  BAD_CORE_RESPONSE,
+  BAD_CORE_RESPONSE
 } from '../constants';
 
 const isString = str => typeof str === 'string';

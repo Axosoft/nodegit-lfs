@@ -10,7 +10,7 @@
   ],
   "rules": {
     "chai-friendly/no-unused-expressions": 2,
-    "comma-dangle": 0,
+    "comma-dangle": ["error", "never"],
     "consistent-return": 0,
     "func-names": 0,
     "import/prefer-default-export": 0,

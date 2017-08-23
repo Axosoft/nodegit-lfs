@@ -2,7 +2,7 @@ import { core } from './lfsCommands';
 import { parseVersion } from '../utils/checkDependencies';
 import {
   regex,
-  BAD_CORE_RESPONSE,
+  BAD_CORE_RESPONSE
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 

@@ -3,7 +3,7 @@ import { core } from './lfsCommands';
 import {
   regex,
   BAD_CORE_RESPONSE,
-  BAD_REGEX_PARSE_RESULT,
+  BAD_REGEX_PARSE_RESULT
 } from '../constants';
 
 import generateResponse from '../utils/generateResponse';

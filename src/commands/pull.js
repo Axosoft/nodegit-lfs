@@ -66,7 +66,7 @@ function pull(repo, options) {
   const {
     remoteName,
     branchName,
-    callback,
+    callback
   } = (options || {});
 
   if (remoteName) {

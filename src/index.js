@@ -38,7 +38,7 @@ LFS.prototype = {
   push,
   version,
   unregister,
-  untrack,
+  untrack
 };
 
 module.exports = (nodegit) => {
