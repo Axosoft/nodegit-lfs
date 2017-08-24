@@ -2,8 +2,8 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_REGEX_PARSE_RESULT,
   BAD_CORE_RESPONSE,
+  BAD_REGEX_PARSE_RESULT
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 import {

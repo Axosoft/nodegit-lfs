@@ -36,6 +36,6 @@ export const minimumVersions = {
 export const Error = {
   CODE: {
     OK: 0,
-    PASSTHROUGH: -30,
+    PASSTHROUGH: -30
   }
 };

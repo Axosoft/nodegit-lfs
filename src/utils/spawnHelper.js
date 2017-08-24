@@ -145,7 +145,7 @@ export const winSpawn = (command, input, opts) => new Promise(
 
     const closeOrExit = (code = 0) => resolve({
       code,
-      stdout: Buffer.concat(bufferList),
+      stdout: Buffer.concat(bufferList)
     });
 
     spawnedProcess.on('close', closeOrExit);
