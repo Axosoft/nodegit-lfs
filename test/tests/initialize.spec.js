@@ -3,7 +3,7 @@ import fs from 'fs';
 import { expect } from 'chai';
 
 describe('Initialize', () => {
-  it('initialize is a promise', () => {
+  it('initialize is a promise', function () {
     const {
       NodeGitLFS
     } = this;

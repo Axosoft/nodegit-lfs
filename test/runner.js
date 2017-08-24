@@ -22,7 +22,7 @@ import * as testLFSServer from './server/server';
 
 // http://eng.wealthfront.com/2016/11/03/handling-unhandledrejections-in-node-and-the-browser/
 process.on('unhandledRejection', (err) => {
-  console.error(err); // eslint-disable-line no-console
+  console.error('CAUGHT ERROR:', err); // eslint-disable-line no-console
   process.exit(1);
 });
 
@@ -70,10 +70,16 @@ before(function () { // eslint-disable-line prefer-arrow-callback
     .then(() => cacheLfsTestRemote());
 });
 
-beforeEach(() =>
-  setupEmptyTestRepo()
+beforeEach(function () {
+  const {
+    NodeGitLFS
+  } = this;
+
+  return NodeGitLFS.LFS.register()
+    .then(() => setupEmptyTestRepo())
     .then(() => setupLfsTestRemote())
-    .then(() => setupLfsTestRepo()));
+    .then(() => setupLfsTestRepo());
+});
 
 after(function () {
   const {
@@ -89,4 +95,12 @@ after(function () {
         throw error;
       }
     });
+});
+
+afterEach(function () {
+  const {
+    NodeGitLFS
+  } = this;
+
+  return NodeGitLFS.LFS.unregister();
 });

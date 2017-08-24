@@ -1,6 +1,16 @@
 import { expect } from 'chai';
 
 describe('Register', () => {
+  beforeEach(function () {
+    const {
+      NodeGitLFS
+    } = this;
+
+    // Undo the global `beforeEach`'s registration of the LFS filters
+    // so these tests can re-register them
+    return NodeGitLFS.LFS.unregister();
+  });
+
   it('has register callback', function () {
     const {
       NodeGitLFS

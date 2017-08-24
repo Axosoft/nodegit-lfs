@@ -3,11 +3,12 @@ import {
 } from 'chai';
 
 describe('Unregister', () => {
-  beforeEach(function () {
+  afterEach(function () {
     const {
       NodeGitLFS
     } = this;
 
+    // Prepare for the global `afterEach`'s unregistration of the LFS filters by re-registering them
     return NodeGitLFS.LFS.register();
   });
 

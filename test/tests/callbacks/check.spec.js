@@ -23,8 +23,7 @@ describe('check', () => {
       repo: () => this.repo
     });
 
-    return NodeGitLFS.LFS.register()
-      .then(() => NodeGitLFS.Repository.open(lfsTestRepoPath))
+    return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
         this.repo = repo;
       });
