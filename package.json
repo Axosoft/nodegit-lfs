@@ -9,7 +9,7 @@
     "eslint": "\"node_modules/.bin/eslint\" src test/tests",
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test/tests --fix",
     "pretest": "yarn eslint",
-    "postinstall": "yarn compile",
+    "prepublish": "yarn eslint && yarn compile",
     "src-watch": "\"node_modules/.bin/babel\" src -d build/src -w",
     "test": "nyc mocha --compilers js:babel-core/register --expose-gc test/runner \"test/**/*.spec.js\"",
     "test-debug": "mocha --debug-brk --compilers js:babel-core/register --expose-gc test/runner \"test/**/*.spec.js\"",
@@ -24,10 +24,9 @@
     "lfs",
     "nodegit"
   ],
-  "directories": {
-    "build": "./build",
-    "test": "./test/tests"
-  },
+  "files": [
+    "build/src"
+  ],
   "bugs": {
     "url": "https://github.com/Axosoft/nodegit-lfs/issues"
   },
