@@ -3,7 +3,7 @@ import { Error } from '../constants';
 
 import { loadGitattributeFiltersFromRepo } from '../helpers';
 
-export const check = src => loadGitattributeFiltersFromRepo(src.repo())
+export default src => loadGitattributeFiltersFromRepo(src.repo())
   .then((filters) => {
     const file = src.path();
     const filterIgnore = ignore().add(filters);

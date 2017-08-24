@@ -55,42 +55,11 @@ const generateCheckoutStats = (raw) => {
   return {};
 };
 
-function checkout(repo, options) {
+function checkout(repo) {
   const response = generateResponse();
   const repoPath = repo.workdir();
 
-  const {
-    remoteName,
-    branchName,
-    callback,
-  } = (options || {});
-
-  let branch = branchName;
-  let remote = remoteName;
-  let getRemoteAndBranchPromise = Promise.resolve();
-
-  if (!remote || !branch) {
-    let remoteRef;
-    getRemoteAndBranchPromise = repo.getCurrentBranch()
-      .then((Reference) => {
-        const promises = [];
-        promises.push(this.NodeGit.Branch.upstream(Reference));
-        promises.push(this.NodeGit.Branch.name(Reference));
-        return Promise.all(promises);
-      })
-      .then((results) => {
-        remoteRef = results[0];
-        branch = branch || results[1];
-        return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
-      })
-      .then((name) => {
-        remote = remote || name;
-        return Promise.resolve();
-      });
-  }
-
-  return getRemoteAndBranchPromise
-    .then(() => core.checkout(`${remote} ${branch}`, { cwd: repoPath }, callback))
+  return core.checkout('', { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

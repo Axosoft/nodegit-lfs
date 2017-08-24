@@ -6,6 +6,7 @@ import { loadGitattributeFiltersFromRepo, hasLfsFilters } from './helpers';
 import checkout from './commands/checkout';
 import push from './commands/push';
 import track from './commands/track';
+import untrack from './commands/untrack';
 import version from './commands/version';
 import fetch from './commands/fetch';
 import prune from './commands/prune';
@@ -37,6 +38,7 @@ LFS.prototype = {
   push,
   version,
   unregister,
+  untrack,
 };
 
 module.exports = (nodegit) => {
