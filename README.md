@@ -47,3 +47,8 @@ Once cloned:
 cd nodegit-lfs
 yarn
 ```
+
+## Tests
+
+**Tests are still a Work In Progress.**
+The tests rely on `mocha`, `chai`, `sinon`, and `sinon-chai`, and are currently a mix of system and unit tests.

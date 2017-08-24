@@ -6,9 +6,12 @@ import path from 'path';
 import sinon from 'sinon';
 
 import {
-  lfsTestRepoUrl,
+  lfsTestRemotePath,
   testReposPath
 } from '../../constants';
+import {
+  populateRemoteBranch
+} from '../../server/server';
 import {
   fail
 } from '../../utils';
@@ -46,8 +49,13 @@ describe('Clone', () => {
     // We are testing the returned value in the specific branch test, because the test repo's
     // `master` branch doesn't have LFS enabled by default
     return NodeGitLFS.LFS.clone(
-      lfsTestRepoUrl,
-      testReposPath
+      `${lfsTestRemotePath} ${tempRepoPath}`,
+      testReposPath,
+      {
+        env: {
+          GIT_SSL_NO_VERIFY: 1
+        }
+      }
     )
       .then(() => NodeGitLFS.Repository.open(tempRepoPath));
   });
@@ -57,11 +65,20 @@ describe('Clone', () => {
       NodeGitLFS
     } = this;
 
-    return NodeGitLFS.LFS.clone(
-      lfsTestRepoUrl,
-      testReposPath,
-      { branch: 'with-files' }
-    )
+    const branchName = 'other-branch';
+
+    return populateRemoteBranch(branchName)
+      .then(() => NodeGitLFS.LFS.clone(
+        // https://github.com/git-lfs/git-lfs/issues/2523
+        `${lfsTestRemotePath} ${tempRepoPath}`,
+        testReposPath,
+        {
+          branch: branchName,
+          env: {
+            GIT_SSL_NO_VERIFY: 1
+          }
+        }
+      ))
       .then((result) => {
         expect(result.clone).to.eql({
           total_bytes: '24 B',
@@ -74,7 +91,7 @@ describe('Clone', () => {
         .then(() => NodeGitLFS.Repository.open(tempRepoPath))
         .then(repo => repo.getCurrentBranch())
         .then((branch) => {
-          expect(branch.shorthand()).to.equal('with-files');
+          expect(branch.shorthand()).to.equal(branchName);
         });
   }).timeout(10000);
 
@@ -87,7 +104,7 @@ describe('Clone', () => {
     const cloneStub = sandbox.stub(core, 'clone').returns(Promise.resolve({}));
 
     NodeGitLFS.LFS.clone(
-      lfsTestRepoUrl,
+      lfsTestRemotePath,
       testReposPath,
       {
         env: {
@@ -95,7 +112,7 @@ describe('Clone', () => {
         }
       }
     );
-    expect(cloneStub).to.have.been.calledWithMatch(`${lfsTestRepoUrl} `, {
+    expect(cloneStub).to.have.been.calledWithMatch(`${lfsTestRemotePath} `, {
       cwd: testReposPath,
       env: {
         foo: 'bar'
@@ -113,7 +130,7 @@ describe('Clone', () => {
 
     const cloneStub = sandbox.stub(core, 'clone').returns(Promise.resolve({}));
 
-    NodeGitLFS.LFS.clone(lfsTestRepoUrl, testReposPath, { callback });
+    NodeGitLFS.LFS.clone(lfsTestRemotePath, testReposPath, { callback });
     expect(cloneStub.firstCall.args[2]).to.equal(callback);
   });
 
@@ -141,7 +158,7 @@ describe('Clone', () => {
 
     try {
       NodeGitLFS.LFS.clone(
-        lfsTestRepoUrl,
+        lfsTestRemotePath,
         null
       );
 

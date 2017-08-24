@@ -23,7 +23,7 @@ const getWin32BashCommand = () => {
   return `"${shPath}" `;
 };
 
-export const populate = () =>
+export const populateCurrentBranch = () =>
   spawnOnRemote('sh ../initializeObjects.sh');
 
 export const start = () => {
@@ -80,3 +80,18 @@ export const stop = () => {
 
   process.kill(serverPid, 'SIGKILL');
 };
+
+export const withRemoteBranch = (branchName, fn) => {
+  let result;
+
+  return spawnOnRemote(`git checkout -b ${branchName}`)
+    .then(() => fn())
+    .then((_result) => {
+      result = _result;
+      return spawnOnRemote('git checkout master');
+    })
+    .then(() => result);
+};
+
+export const populateRemoteBranch = branchName =>
+  withRemoteBranch(branchName, populateCurrentBranch);
