@@ -2,11 +2,13 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-import { regexResult } from '../helpers';
+import {
+  regexResult,
+  verifyOutput,
+  errorCatchHandler } from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -45,6 +47,8 @@ const generatePullStats = (raw) => {
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
+    verifyOutput(stats, raw);
+
     if (statLine.includes('error:')) {
       stats.pull_error = statLine.split('error:')[1].trim();
     }
@@ -74,19 +78,11 @@ function pull(repo, options) {
   const argsString = R.join(' ', args);
 
   return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
-    .then(({ stdout, stderr }) => {
+    .then(({ stdout }) => {
       response.raw = stdout;
-
-      if (stderr) {
-        response.stderr = stderr;
-        response.success = false;
-        response.errno = BAD_CORE_RESPONSE;
-        return response;
-      }
-
       response.pull = generatePullStats(stdout);
       return response;
-    });
+    }, errorCatchHandler(response));
 }
 
 export default pull;

@@ -5,7 +5,10 @@ import {
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-import { regexResult } from '../helpers';
+import {
+  regexResult,
+  errorCatchHandler,
+  verifyOutput } from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -44,6 +47,8 @@ const generateFetchStats = (raw) => {
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
+    verifyOutput(stats, raw);
+
     if (statLine.includes('error:')) {
       stats.fetch_error = statLine.split('error:')[1].trim();
     }
@@ -74,20 +79,11 @@ function fetch(repo, options) {
 
   const argsString = R.join(' ', args);
   return core.fetch(argsString, { cwd: repoPath, shell: true }, callback)
-    .then(({ stdout, stderr }) => {
+    .then(({ stdout }) => {
       response.raw = stdout;
-      response.stderr = stderr;
-
-      if (stderr > '') {
-        response.success = false;
-        response.raw = stderr;
-        response.stderr = stderr;
-        return response;
-      }
-
       response.fetch = generateFetchStats(stdout);
       return response;
-    });
+    }, errorCatchHandler(response));
 }
 
 export default fetch;

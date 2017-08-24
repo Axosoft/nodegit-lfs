@@ -2,11 +2,13 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-import { regexResult } from '../helpers';
+import {
+  regexResult,
+  errorCatchHandler,
+  verifyOutput } from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -45,6 +47,8 @@ const generateCloneStats = (raw) => {
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
+    verifyOutput(stats, raw);
+
     if (statLine.includes('error:')) {
       stats.clone_error = statLine.split('error:')[1].trim();
     }
@@ -67,19 +71,11 @@ function clone(url, cwd, options) {
 
   const response = generateResponse();
   return core.clone(`${url} ${args}`, { cwd }, callback)
-    .then(({ stdout, stderr }) => {
+    .then(({ stdout }) => {
       response.raw = stdout;
-
-      if (stderr) {
-        response.stderr = stderr;
-        response.success = false;
-        response.errno = BAD_CORE_RESPONSE;
-        return response;
-      }
-
       response.clone = generateCloneStats(stdout);
       return response;
-    });
+    }, errorCatchHandler(response));
 }
 
 export default clone;

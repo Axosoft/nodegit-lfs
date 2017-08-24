@@ -17,6 +17,6 @@ export const core = {
   status: (args = '', options) => exec(`git lfs status ${args}`, null, options),
   track: (args = '', options) => exec(`git lfs track ${args}`, null, options),
   untrack: (args = '', options) => exec(`git lfs untrack ${args}`, null, options),
-  update: (args = '', options) => spawn(`git lfs update ${args}`, options),
+  update: (args = '', options) => exec(`git lfs update ${args}`, null, options),
   version: options => exec('git lfs version', null, options),
 };

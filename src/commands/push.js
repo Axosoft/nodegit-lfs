@@ -2,11 +2,13 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-import { regexResult } from '../helpers';
+import {
+  regexResult,
+  errorCatchHandler,
+  verifyOutput } from '../helpers';
 
 /**
  * Note to future maintainers, I do not like this; at all. But at the moment this is the
@@ -57,21 +59,7 @@ const generatePushStats = (raw) => {
     ? skippedFileResults[0].trim()
     : BAD_REGEX_PARSE_RESULT;
 
-  // We need to handle this manually because LFS isn't returning stderr
-  const props = Object.keys(stats);
-  const errCount = R.reduce((acc, p) => {
-    if (p === BAD_REGEX_PARSE_RESULT) {
-      acc += 1;
-    }
-    return acc;
-  }, 0, props);
-
-  // We have all errors
-  if (errCount === props.length) {
-    const e = new Error(raw);
-    e.errno = BAD_CORE_RESPONSE;
-    throw e;
-  }
+  verifyOutput(stats, raw);
 
   if (statLine.includes('error:')) {
     stats.error = statLine.split('error:')[1].trim();
@@ -116,30 +104,11 @@ function push(repo, options) {
 
   return getRemoteAndBranchPromise
     .then(() => core.push(`${remote} ${branch}`, { cwd: repoPath }, callback))
-    .then(({ stdout, stderr }) => {
+    .then(({ stdout }) => {
       response.raw = stdout;
-
-      if (stderr) {
-        response.stderr = stderr;
-        response.errno = BAD_CORE_RESPONSE;
-        response.success = false;
-        return response;
-      }
-
       response.push = generatePushStats(stdout);
       return response;
-    })
-    .catch((err) => {
-      // This is a manually detected error we get from LFS
-      if (err.errno === BAD_CORE_RESPONSE) {
-        response.stderr = response.raw;
-        response.errno = BAD_CORE_RESPONSE;
-        response.success = false;
-        return response;
-      }
-
-      throw err;
-    });
+    }, errorCatchHandler(response));
 }
 
 export default push;
