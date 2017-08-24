@@ -63,7 +63,7 @@ const generateCheckoutStats = (raw) => {
 function checkout(repo, callback) {
   const response = generateResponse();
 
-  return core.checkout('', { cwd: repoPath }, callback)
+  return core.checkout('', { cwd: repo.workdir() }, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.checkout = generateCheckoutStats(stdout);

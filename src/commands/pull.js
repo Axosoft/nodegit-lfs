@@ -77,7 +77,7 @@ function pull(repo, options) {
   }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.pull(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.pull = generatePullStats(stdout);

@@ -78,7 +78,7 @@ function fetch(repo, options) {
   }
 
   const argsString = R.join(' ', args);
-  return core.fetch(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.fetch(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.fetch = generateFetchStats(stdout);
