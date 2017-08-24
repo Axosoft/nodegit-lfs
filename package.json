@@ -1,7 +1,7 @@
 {
   "name": "nodegit-lfs",
   "version": "0.0.11",
-  "description": "A wrapper for NodeGit to facilitate LFS Support",
+  "description": "A wrapper for NodeGit to facilitate LFS support",
   "main": "build/src/index.js",
   "scripts": {
     "build": "yarn eslint && yarn compile",
