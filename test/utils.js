@@ -4,6 +4,10 @@ import {
 import crypto from 'crypto';
 import fse from 'fs-extra';
 
+import {
+  lfsTestRemotePath
+} from './constants';
+
 import spawn from '../build/src/utils/spawnHelper';
 
 export const createDummyFile = (fileName, length) => {
@@ -20,6 +24,12 @@ export const fail = (msg) => {
 export const getFilePointer = (workdir, fileName) =>
   spawn(`git show HEAD:${fileName}`, { cwd: workdir, env: { GIT_PAGER: 'cat' } })
     .then(({ stdout }) => stdout.toString());
+
+export const spawnOnRemote = (command, opts) =>
+  spawn(command, {
+    ...opts,
+    cwd: lfsTestRemotePath
+  });
 
 export const todo = () => {
   fail('TODO');

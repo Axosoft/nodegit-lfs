@@ -3,6 +3,10 @@ import {
   spawn
 } from 'child_process';
 
+import {
+  spawnOnRemote
+} from '../utils';
+
 let serverPid = null;
 
 const getWin32BashCommand = () => {
@@ -19,10 +23,16 @@ const getWin32BashCommand = () => {
   return `"${shPath}" `;
 };
 
+export const populate = () =>
+  spawnOnRemote('sh ../initializeObjects.sh');
+
 export const start = () => {
   if (serverPid) {
     throw new Error('LFS test server has already been started!');
   }
+
+  let stderr = '';
+  let stdout = '';
 
   return new Promise((resolve, reject) => {
     const cmdRunner = process.platform === 'win32'
@@ -32,23 +42,34 @@ export const start = () => {
       cwd: __dirname,
       shell: true
     });
-    server.stdout.on('data', (data) => {
+    server.stdout.on('data', (chunk) => {
+      const data = chunk.toString();
+
+      stdout += data;
+
       // Store outputted server PID
-      const pid = data.toString().match(/pid=(\d+)/);
+      const pid = data.match(/pid=(\d+)/);
       if (pid) {
         serverPid = parseInt(pid[1], 10);
         return resolve();
       }
 
       // Handle Go errors
-      const err = data.toString().match(/ err=(.*)/);
+      const err = data.match(/ err=(.*)/);
       if (err) {
         throw new Error(err[1]);
       }
     });
-    server.stderr.on('data', (err) => {
-      throw new Error(err.toString());
+    server.stderr.on('data', (chunk) => {
+      const data = chunk.toString();
+
+      stderr += data;
     });
+    server.on('exit', code => (
+      code === 0
+        ? resolve()
+        : reject({ code, stderr, stdout })
+    ));
   });
 };
 

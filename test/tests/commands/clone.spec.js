@@ -81,7 +81,7 @@ describe('Clone', () => {
   it('should allow the environment to be customized', function () {
     const {
       NodeGitLFS,
-      sandbox,
+      sandbox
     } = this;
 
     const cloneStub = sandbox.stub(core, 'clone').returns(Promise.resolve({}));

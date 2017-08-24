@@ -39,5 +39,7 @@ node_modules
 # Generated test files
 test/repos
 test/server/lfs-test-server
+test/server/local-repo
+test/server/local-repo-cached
 
 \.DS_Store
