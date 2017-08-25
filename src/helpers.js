@@ -74,14 +74,14 @@ export const verifyOutput = (stats, raw) => {
   }
 };
 
-export const errorCatchHandler = response => (err) => {
+export const errorCatchHandler = response => (code) => {
   // This is a manually detected error we get from LFS
-  if (err.errno === BAD_CORE_RESPONSE) {
+  if (code === BAD_CORE_RESPONSE) {
     response.stderr = response.raw;
     response.errno = BAD_CORE_RESPONSE;
     response.success = false;
     return response;
   }
 
-  throw err;
+  throw code;
 };
