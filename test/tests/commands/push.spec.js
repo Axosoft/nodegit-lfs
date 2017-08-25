@@ -1,8 +1,13 @@
 import path from 'path';
+
+import {
+  lfsTestRepoPath
+} from '../../constants';
 import {
   createDummyFile,
   todo
 } from '../../utils';
+
 import exec from '../../../build/src/utils/execHelper';
 
 describe('Push', () => {
@@ -10,8 +15,6 @@ describe('Push', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
 
     return createDummyFile(path.join(lfsTestRepoPath, 'test_file.txt'), 20)
       .then(() => exec('git add test_file.txt', { cwd: lfsTestRepoPath }))

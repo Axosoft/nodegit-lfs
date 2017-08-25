@@ -1,5 +1,10 @@
-import path from 'path';
-import { todo } from '../../utils';
+import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
+  todo
+} from '../../utils';
+
 import track from '../../../build/src/commands/track';
 
 describe('Track', () => {
@@ -7,8 +12,6 @@ describe('Track', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then(repo => track(repo, ['*.png', '*.dmg']))

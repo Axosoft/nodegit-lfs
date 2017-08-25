@@ -1,5 +1,12 @@
 import path from 'path';
-import { todo } from '../../utils';
+
+import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
+  todo
+} from '../../utils';
+
 import pointer from '../../../build/src/commands/pointer';
 
 describe('Pointer', () => {
@@ -7,8 +14,6 @@ describe('Pointer', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
 
     const packageJson = path.join(lfsTestRepoPath, 'package.json');
 

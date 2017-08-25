@@ -1,5 +1,10 @@
-import path from 'path';
-import { todo } from '../../utils';
+import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
+  todo
+} from '../../utils';
+
 import track from '../../../build/src/commands/track';
 import untrack from '../../../build/src/commands/untrack';
 
@@ -8,8 +13,6 @@ describe('Untrack', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
 
     let repository;
 

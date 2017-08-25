@@ -1,14 +1,19 @@
-import path from 'path';
+import {
+  expect
+} from 'chai';
 import fs from 'fs';
-import { expect } from 'chai';
+import path from 'path';
+
+import {
+  emptyRepoPath,
+  lfsTestRepoPath
+} from '../constants';
 
 describe('Initialize', () => {
   it('initialize is a promise', function () {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then((repo) => {
@@ -21,8 +26,6 @@ describe('Initialize', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const emptyRepoPath = path.resolve(__dirname, '..', 'repos', 'empty');
 
     expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.false;
 

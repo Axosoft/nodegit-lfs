@@ -1,5 +1,10 @@
-import path from 'path';
-import { todo } from '../../utils';
+import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
+  todo
+} from '../../utils';
+
 import prune from '../../../build/src/commands/prune';
 
 describe('Prune', () => {
@@ -7,8 +12,6 @@ describe('Prune', () => {
     const {
       NodeGitLFS
     } = this;
-
-    const lfsTestRepoPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
 
     return NodeGitLFS.Repository.open(lfsTestRepoPath)
       .then(repo => prune(repo))
