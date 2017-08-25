@@ -97,14 +97,17 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
     socketServer.on('close', closed);
   });
 
-export const spawnShell = (command, opts, size, callback) => new Promise(
+export const spawnShell = (command, opts = {}, size, callback) => new Promise(
   (resolve, reject) => {
     let spawnedProcess;
     const destroyProcess = () => spawnedProcess.destroy();
     return buildSocketPath()
       .then(socket => buildSocket(size, destroyProcess, socket, resolve, reject))
       .then((socketName) => {
-        const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
+        const options = R.mergeDeepRight(
+          { env: process.env },
+          R.mergeDeepRight(opts, { encoding: null })
+        );
 
         spawnedProcess = pty.spawn(defaultShell, [], options);
 
@@ -128,9 +131,12 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
       .catch(reject);
   });
 
-export const winSpawn = (command, input, opts) => new Promise(
+export const winSpawn = (command, input, opts = {}) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
+    const options = R.mergeDeepRight(
+      { env: process.env },
+      R.mergeDeepRight(opts, { shell: true })
+    );
 
     const argList = command.trim().split(' ');
     const cmd = argList.shift();
@@ -159,9 +165,9 @@ export const winSpawn = (command, input, opts) => new Promise(
   }
 );
 
-const spawn = (command, opts, callback) => new Promise(
+const spawn = (command, opts = {}, callback) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env });
+    const options = R.mergeDeepRight({ env: process.env }, opts);
 
     const argList = command.trim().split(' ');
     const cmd = argList.shift() + (IS_WINDOWS ? '.exe' : '');
