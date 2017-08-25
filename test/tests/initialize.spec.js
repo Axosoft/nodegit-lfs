@@ -16,10 +16,7 @@ describe('Initialize', () => {
     } = this;
 
     return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        const init = NodeGitLFS.LFS.initialize(repo);
-        expect(init).to.be.a('promise');
-      });
+      .then(repo => NodeGitLFS.LFS.initialize(repo));
   });
 
   it('creates .gitattributes for empty repo', function () {

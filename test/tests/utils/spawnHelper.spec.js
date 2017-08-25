@@ -39,54 +39,6 @@ describe('spawn', () => {
     sandbox.restore();
   });
 
-  if (process.platform === 'win32') {
-    it('correctly overrides `detached` on Windows', function () {
-      const {
-        spawnStub
-      } = this;
-
-      spawn('command', { detached: true, foo: 'bar' });
-      expect(spawnStub).to.have.been.calledWithMatch('command', [], {
-        detached: false,
-        foo: 'bar',
-        env: process.env,
-        shell: true
-      });
-    });
-  }
-
-  if (process.platform === 'darwin') {
-    it('correctly overrides `detached` on macOS', function () {
-      const {
-        spawnStub
-      } = this;
-
-      spawn('command', { detached: true, foo: 'bar' });
-      expect(spawnStub).to.have.been.calledWithMatch('command', [], {
-        detached: false,
-        foo: 'bar',
-        env: process.env,
-        shell: true
-      });
-    });
-  }
-
-  if (process.platform === 'linux') {
-    it('correctly overrides `detached` on Linux', function () {
-      const {
-        spawnStub
-      } = this;
-
-      spawn('command', { detached: false, foo: 'bar' });
-      expect(spawnStub).to.have.been.calledWithMatch('command', [], {
-        detached: true,
-        foo: 'bar',
-        env: process.env,
-        shell: true
-      });
-    });
-  }
-
   it("merges the calling process' env into the provided env", function () {
     const {
       sandbox,

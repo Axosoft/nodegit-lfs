@@ -10,7 +10,7 @@ import {
 } from '../../constants';
 
 import track from '../../../build/src/commands/track';
-import { check as checkCallback } from '../../../build/src/callbacks/check';
+import checkCallback from '../../../build/src/callbacks/check';
 
 describe('check', () => {
   beforeEach(function () {

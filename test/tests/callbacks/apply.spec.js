@@ -32,7 +32,7 @@ describe('apply', () => {
       NodeGitLFS
     } = this;
 
-    const testFileSize = 20;
+    const testFileSize = 2000000;
     this.testFileName = 'bigFileTest.md';
 
     this.commitFile = (repo, fileName, commitMessage) => {
@@ -119,5 +119,5 @@ describe('apply', () => {
         checkoutStrategy: NodeGitLFS.Checkout.STRATEGY.FORCE
       }))
       .then(() => verifyTestFileTracked());
-  });
+  }).timeout(10000);
 });
