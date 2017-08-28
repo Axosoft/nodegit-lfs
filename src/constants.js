@@ -12,7 +12,7 @@ export const regex = {
   TOTAL_BYTES: /[\d]+\s+B/g,
   TOTAL_FILES: /[\d]\s+(?=files)/g,
   USERNAME: /username/i,
-  PASSWORD: /password/i,
+  PASSWORD: /password|passphrase/i,
 };
 
 export const BAD_VERSION = '0';

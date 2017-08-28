@@ -26,7 +26,7 @@ const buildSocketPath = () => tmp.dir()
 
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   let credentials = {};
-  const credentialsCallback = forSsh => (username, password, cancel) => {
+  const credentialsCallback = needsUsername => (username, password, cancel) => {
     if (cancel) {
       // we are done here
       spawnedProcess.destroy();
@@ -34,7 +34,7 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
     }
 
     credentials = { username, password };
-    spawnedProcess.write(forSsh ? credentials.username : credentials.password);
+    spawnedProcess.write(needsUsername ? credentials.username : credentials.password);
     spawnedProcess.write(EOL);
   };
 
@@ -46,17 +46,16 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
         spawnedProcess.write(credentials.username);
         spawnedProcess.write(EOL);
       } else {
-        // We got a username so we must not be ssh
-        callback(false, credentialsCallback(false));
+        // If we have a username we need to make sure to prompt for it
+        callback(true, credentialsCallback(true));
       }
     } else if (output.match(regex.PASSWORD)) {
       if (credentials.password) {
-        const password = credentials.password || EOL;
-        spawnedProcess.write(password);
+        spawnedProcess.write(credentials.password);
         spawnedProcess.write(EOL);
       } else {
-        // no username so ssh
-        callback(true, credentialsCallback(true));
+        // no username so maybe ssh?
+        callback(false, credentialsCallback(false));
       }
     }
     return output;
