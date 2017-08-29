@@ -13,11 +13,11 @@ import {
   populateRemoteBranch
 } from '../../server/server';
 import {
-  fail
+  fail,
+  todo
 } from '../../utils';
 
 import {
-  BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT
 } from '../../../build/src/constants';
 import {
@@ -168,24 +168,5 @@ describe('Clone', () => {
     }
   });
 
-  it('should return an appropriate result on error', function () {
-    const {
-      NodeGitLFS
-    } = this;
-
-    return NodeGitLFS.LFS.clone(
-      'invalid',
-      testReposPath
-    )
-      .then((result) => {
-        expect(result.errno).to.equal(BAD_CORE_RESPONSE);
-        expect(result.stderr).to.equal(
-`fatal: repository 'invalid' does not exist
-Error(s) during clone:
-git clone failed: exit status 128
-`,
-        );
-        expect(result.success).to.be.false;
-      });
-  });
+  it('should return an appropriate result on error', todo);
 });

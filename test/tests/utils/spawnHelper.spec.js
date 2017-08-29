@@ -1,16 +1,11 @@
-import {
-  expect
-} from 'chai';
 import childProcess from 'child_process';
 import sinon from 'sinon';
 
 import {
-  fail
+  todo
 } from '../../utils';
 
-import spawn from '../../../build/src/utils/spawnHelper';
-
-describe('spawn', () => {
+describe('Spawn Helpers', () => {
   beforeEach(function () {
     this.sandbox = sinon.sandbox.create();
 
@@ -39,223 +34,135 @@ describe('spawn', () => {
     sandbox.restore();
   });
 
-  it("merges the calling process' env into the provided env", function () {
-    const {
-      sandbox,
-      spawnStub
-    } = this;
+  describe('spawn', () => {
+    it('defaults `opts` to `{}`', todo);
 
-    sandbox.stub(process, 'env').get(() => ({
-      foo: 'override',
-      baz: 'quux'
-    }));
+    it("merges the calling process' env into the provided env", todo);
 
-    spawn('command', { env: { foo: 'bar' } });
-    expect(spawnStub).to.have.been.calledWithMatch('command', [], {
-      env: {
-        foo: 'bar',
-        baz: 'quux'
+    if (process.platform === 'win32') {
+      it('adds the `.exe` prefix to commands', todo);
+    } else {
+      it('does not add a `.exe` prefix to commands', todo);
+    }
+
+    it('parses arguments', todo);
+
+    describe('when a callback argument is provided', () => {
+      it('uses it for credentials if it is a function', todo);
+
+      it('ignores it if it is not a function', todo);
+    });
+
+    it('spawns the command', todo);
+
+    it('resolves with the correct data on a successful exit', todo);
+
+    it('rejects on spawn error', todo);
+
+    it('rejects on non-0 exit code', todo);
+  });
+
+  describe('winSpawn', () => {
+    it('defaults `opts` to `{}`', todo);
+
+    it("merges the calling process' env into the provided env", todo);
+
+    it('overwrites `shell` to `true`', todo);
+
+    it('parses arguments', todo);
+
+    it('spawns the command', todo);
+
+    it('resolves with the correct data on a successful exit', todo);
+
+    it('writes to standard input');
+
+    it('rejects on spawn error', todo);
+
+    it('rejects on non-0 exit code', todo);
+  });
+
+  describe('spawnShell', () => {
+    it('defaults `opts` to `{}`', todo);
+
+    it("merges the calling process' env into the provided env", todo);
+
+    it('builds the socket with the right arguments', todo);
+
+    it('uses raw `Buffer`s', todo);
+
+    describe('when a callback argument is provided', () => {
+      it('uses it for credentials if it is a function', todo);
+
+      it('ignores it if it is not a function', todo);
+
+      if (process.platform === 'win32') {
+        it('pipes the command output', todo);
+      } else {
+        it('pipes the command output', todo);
       }
+
+      it('spawns the command', todo);
+
+      it('closes when the socket closes', todo);
     });
   });
 
-  it('correctly overrides `shell`', function () {
-    const {
-      spawnStub
-    } = this;
+  describe('buildSocket', () => {
+    it('resolves the calling `Promise` with the correct data on a successful exit', todo);
 
-    spawn('command', { shell: false });
-    expect(spawnStub).to.have.been.calledWithMatch('command', [], {
-      shell: true
-    });
+    it('only runs the successful close logic once', todo);
+
+    it('calls the close callback when the socket ends', todo);
+
+    it('calls the close callback when the socket closes', todo);
+
+    it('reads incoming data, closing the socket server when enough bytes have been read', todo);
+
+    it('rejects the calling `Promise` on socket error', todo);
+
+    it('listens to the socket', todo);
+
+    it('resolves with the socket name when the server is ready', todo);
+
+    it('calls the close callback on server close', todo);
+
+    it('rejects on server error', todo);
   });
 
-  if (process.platform === 'darwin' || process.platform === 'win32') {
-    it('correctly calculates arguments on Windows or macOS', function () {
-      const {
-        spawnStub
-      } = this;
+  describe('buildCredentialsCallbackProcess', () => {
+    describe('when prompted for a username', () => {
+      describe('when a username has not been cached', () => {
+        it('calls the callback to obtain a username and password and writes the username out', todo);
+      });
 
-      spawn('command arg1 arg2');
-      expect(spawnStub).to.have.been.calledWithMatch('command', ['arg1', 'arg2'], {
-        detached: false,
-        env: process.env,
-        shell: true
+      describe('when the username has been cached', () => {
+        it('writes the cached username out', todo);
       });
     });
-  }
 
-  if (process.platform === 'linux') {
-    it('correctly calculates arguments on Linux', function () {
-      const {
-        spawnStub
-      } = this;
-
-      spawn('command arg1 arg2');
-      expect(spawnStub).to.have.been.calledWithMatch(
-        'script --return -c "command arg1 arg2" /dev/null',
-        [],
-        {
-          detached: true,
-          env: process.env,
-          shell: true
-        }
-      );
-    });
-  }
-
-  if (process.platform === 'linux') {
-    it('correctly handles `git lfs smudge` on Linux', function () {
-      const {
-        spawnStub
-      } = this;
-
-      spawn('git lfs smudge', {
-        input: 'file.txt'
+    describe('when prompted for a password', () => {
+      describe('when a password was provided by the callback', () => {
+        it('writes the password out', todo);
       });
-      expect(spawnStub).to.have.been.calledWithMatch(
-        'cat file.txt | git lfs smudge',
-        [],
-        {
-          detached: true,
-          env: process.env,
-          shell: true
-        }
-      );
-    });
-  }
 
-  describe('when passed a callback', () => {
-    afterEach(function () {
-      const {
-        sandbox
-      } = this;
-
-      sandbox.restore();
-    });
-
-    it('ignores the callback if it is not a `Function`', function () {
-      const {
-        mockProcess
-      } = this;
-
-      spawn('', {}, 'not a callback');
-      const stdoutHandler = mockProcess.stdout.on.firstCall.args[1];
-      stdoutHandler(new Buffer('some data'));
-    });
-
-    it('uses the callback to obtain credentials', function () {
-      const {
-        mockProcess,
-        sandbox
-      } = this;
-
-      const cbStub = sandbox.stub().callsFake((cb) => {
-        cb('some username', 'some password', false);
+      describe('when a password was not provided by the callback', () => {
+        it('calls the callback to obtain a password only and writes the password out', todo);
       });
-      spawn('', {}, cbStub);
-      const stdoutHandler = mockProcess.stdout.on.firstCall.args[1];
-      stdoutHandler(new Buffer('Username: '));
-      expect(mockProcess.stdin.write.firstCall.args[0].toString()).to.equal('some username\n');
-      stdoutHandler(new Buffer('Password: '));
-      expect(mockProcess.stdin.write.secondCall.args[0].toString()).to.equal('some password\n');
-
-      expect(cbStub).to.have.been.calledOnce;
     });
 
-    it('does not require the callback to send a password', function () {
-      const {
-        mockProcess,
-        sandbox
-      } = this;
-
-      const cbStub = sandbox.stub().callsFake((cb) => {
-        cb('some username', '', false);
-      });
-      spawn('', {}, cbStub);
-      const stdoutHandler = mockProcess.stdout.on.firstCall.args[1];
-      stdoutHandler(new Buffer('Username: '));
-      expect(mockProcess.stdin.write.firstCall.args[0].toString()).to.equal('some username\n');
-      stdoutHandler(new Buffer('Password: '));
-      expect(mockProcess.stdin.write.secondCall.args[0].toString()).to.equal('\n');
-
-      expect(cbStub).to.have.been.calledOnce;
-    });
-
-    it('allows the callback to cancel', function () {
-      const {
-        mockProcess
-      } = this;
-
-      const promise = spawn('', {}, (cb) => {
-        cb(undefined, undefined, true);
-      });
-      const stdoutHandler = mockProcess.stdout.on.firstCall.args[1];
-      stdoutHandler(new Buffer('Username: '));
-      return promise
-        .then(() => fail('The promise should have failed!'))
-        .catch((err) => {
-          expect(err.message).to.equal('LFS action cancelled');
-        });
-    });
+    it('allows the callback to cancel', todo);
   });
 
-  describe('when `spawn` completes successfully', () => {
-    afterEach(function () {
-      const {
-        sandbox
-      } = this;
+  describe('buildSocketPath', () => {
+    if (process.platform === 'win32') {
+      it('prefixes `.pipe` to the socket path', todo);
 
-      sandbox.restore();
-    });
+      it('removes `C:\\` from the socket path', todo);
 
-    it('resolves with the exit code, processed stdout, and stderr', function () {
-      const {
-        mockProcess
-      } = this;
-
-      const promise = spawn('');
-      const closeHandler = mockProcess.on.firstCall.args[1];
-      const stderrHandler = mockProcess.stderr.on.firstCall.args[1];
-      const stdoutHandler = mockProcess.stdout.on.firstCall.args[1];
-      stderrHandler('some stderr, line 1\n');
-      stderrHandler('some stderr, line 2');
-      stdoutHandler('some stdout, line 1\n');
-      stdoutHandler('some stdout, line 2');
-      closeHandler(0);
-      return promise
-        .then((result) => {
-          expect(result).to.eql({
-            code: 0,
-            stderr: 'some stderr, line 1\nsome stderr, line 2',
-            stdout: 'some stdout, line 1\nsome stdout, line 2'
-          });
-        });
-    });
-  });
-
-  describe('when `spawn` errors', () => {
-    afterEach(function () {
-      const {
-        sandbox
-      } = this;
-
-      sandbox.restore();
-    });
-
-    it('rejects with the exit code', function () {
-      const {
-        mockProcess
-      } = this;
-
-      const promise = spawn('');
-      const errorHandler = mockProcess.on.secondCall.args[1];
-      errorHandler(-1337);
-      return promise
-        .then(() => fail('This promise should have failed!'))
-        .catch((err) => {
-          expect(err).to.equal(-1337);
-        });
-    });
+      it('removes `.tmp` from the socket path', todo);
+    } else {
+      it('removes `.tmp` from the socket path', todo);
+    }
   });
 });

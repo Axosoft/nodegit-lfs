@@ -1,27 +1,11 @@
 import {
-  lfsTestRepoPath
-} from '../../constants';
-import {
   todo
 } from '../../utils';
 
-import track from '../../../build/src/commands/track';
-import untrack from '../../../build/src/commands/untrack';
-
 describe('Untrack', () => {
-  it('does generate untrack response', function () {
-    const {
-      NodeGitLFS
-    } = this;
+  it('requires globs to be provided', todo);
 
-    let repository;
+  it('can untrack currently-tracked files', todo);
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        repository = repo;
-        return track(repo, ['*.png', '*.dmg', '*.txt', '*.a']);
-      })
-      .then(() => untrack(repository, ['*.dmg', '*.a']))
-      .then(() => todo());
-  });
+  it('responds appropriately on error', todo);
 });

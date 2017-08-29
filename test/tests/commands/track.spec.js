@@ -1,20 +1,11 @@
 import {
-  lfsTestRepoPath
-} from '../../constants';
-import {
   todo
 } from '../../utils';
 
-import track from '../../../build/src/commands/track';
-
 describe('Track', () => {
-  it('does generate track response', function () {
-    const {
-      NodeGitLFS
-    } = this;
+  it('requires globs to be provided', todo);
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then(repo => track(repo, ['*.png', '*.dmg']))
-      .then(() => todo());
-  });
+  it('can track files', todo);
+
+  it('responds appropriately on error', todo);
 });

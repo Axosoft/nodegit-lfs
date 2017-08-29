@@ -24,10 +24,27 @@ const buildSocketPath = () => tmp.dir()
     return path.join(prefix, cleanedPath, 'echo.sock');
   });
 
+/**
+ * Flow type definition:
+ *
+ * type BuildCredentialsCallbackProcess =
+ *   (
+ *     spawnedProcess: ChildProcess,
+ *     callback: (
+ *       passwordOnly: boolean,
+ *       callback: (usernamePrompt: boolean) =>
+ *                 (username: string, password: ?string, cancel: boolean) =>
+ *                 void
+ *       )
+ *     ),
+ *     reject: Error => Promise<void>
+ *   ) =>
+ *   (chunk: Buffer) =>
+ *   string;
+ */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   const credentialsCallback = promptType => (username, password, cancel) => {
     if (cancel) {
-      // we are done here
       spawnedProcess.destroy();
       return reject(new Error('LFS action cancelled'));
     }
@@ -49,6 +66,7 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
     } else if (output.match(regex.PASSPHRASE)) {
       callback(output, credentialsCallback(promptTypes.PASSPHRASE));
     }
+
     return output;
   };
 };
@@ -89,6 +107,7 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
       });
       socket.on('error', handleErrorWith(mainReject));
     });
+
     socketServer.listen(socketName);
     socketServer.on('listening', () => {
       resolve(socketName);
@@ -207,3 +226,9 @@ const spawn = (command, opts = {}, callback) => new Promise(
   });
 
 export default spawn;
+
+export const __TESTING__ = { // eslint-disable-line no-underscore-dangle
+  buildCredentialsCallbackProcess,
+  buildSocket,
+  buildSocketPath
+};

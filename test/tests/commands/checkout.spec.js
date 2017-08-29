@@ -2,8 +2,8 @@ import {
   todo
 } from '../../utils';
 
-describe('Prune', () => {
-  it('can prune the provided repository', todo);
+describe('checkout', () => {
+  it('can checkout in the provided repo', todo);
 
   it('responds appropriately on error', todo);
 });

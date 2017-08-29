@@ -1,35 +1,11 @@
 import {
-  expect
-} from 'chai';
-import fs from 'fs';
-import path from 'path';
-
-import {
-  emptyRepoPath,
-  lfsTestRepoPath
-} from '../constants';
+  todo
+} from '../utils';
 
 describe('Initialize', () => {
-  it('initialize is a promise', function () {
-    const {
-      NodeGitLFS
-    } = this;
+  it('correctly calculates arguments from options', todo);
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then(repo => NodeGitLFS.LFS.initialize(repo));
-  });
+  it('initializes a non-LFS repo', todo);
 
-  it('creates .gitattributes for empty repo', function () {
-    const {
-      NodeGitLFS
-    } = this;
-
-    expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.false;
-
-    return NodeGitLFS.Repository.open(emptyRepoPath)
-      .then(repo => NodeGitLFS.LFS.initialize(repo))
-      .then(() => {
-        expect(fs.existsSync(path.join(emptyRepoPath, '.gitattributes'))).to.be.true;
-      });
-  });
+  it('skips initializing on a repo that has already been initializing', todo);
 });

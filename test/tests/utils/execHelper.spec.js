@@ -5,7 +5,8 @@ import childProcess from 'child_process';
 import sinon from 'sinon';
 
 import {
-  fail
+  fail,
+  todo
 } from '../../utils';
 
 import exec from '../../../src/utils/execHelper';
@@ -14,7 +15,14 @@ describe('exec', () => {
   beforeEach(function () {
     this.sandbox = sinon.sandbox.create();
 
-    this.execSpy = this.sandbox.stub(childProcess, 'exec').returns('proc object');
+    this.mockProcess = {
+      stdin: {
+        end: this.sandbox.spy(),
+        write: this.sandbox.spy()
+      }
+    };
+
+    this.execSpy = this.sandbox.stub(childProcess, 'exec').returns(this.mockProcess);
   });
 
   afterEach(function () {
@@ -27,7 +35,8 @@ describe('exec', () => {
 
   it('resolves with the spawned process and its stdout and stderr on success', function () {
     const {
-      execSpy
+      execSpy,
+      mockProcess
     } = this;
 
     const promise = exec('test', { foo: 'bar' });
@@ -35,12 +44,14 @@ describe('exec', () => {
     return promise
       .then((result) => {
         expect(result).to.eql({
-          proc: 'proc object',
+          proc: mockProcess,
           stderr: 'some stderr',
           stdout: 'some stdout'
         });
       });
   });
+
+  it('writes out provided input', todo);
 
   it('rejects with the error on failure', function () {
     const {
@@ -51,8 +62,8 @@ describe('exec', () => {
     execSpy.firstCall.args[2]('some error');
     return promise
       .then(() => fail('Expected this promise to fail!'))
-      .catch((result) => {
-        expect(result).to.equal('some error');
+      .catch((err) => {
+        expect(err).to.equal('some error');
       });
   });
 });

@@ -1,20 +1,11 @@
 import {
-  lfsTestRepoPath
-} from '../../constants';
-import {
   todo
 } from '../../utils';
 
-import ls from '../../../build/src/commands/ls';
-
 describe('ls-files', () => {
-  it('does generate ls response', function () {
-    const {
-      NodeGitLFS
-    } = this;
+  it('builds args from the provided options', todo);
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then(repo => ls(repo, { long: true }))
-      .then(() => todo());
-  });
+  it('can list LFS-tracked files in the provided repo', todo);
+
+  it('returns the correct response on error', todo);
 });

@@ -10,13 +10,6 @@ import {
   verifyOutput
 } from '../helpers';
 
-/**
- * Note to future maintainers, I do not like this; at all. But at the moment this is the
- * best we got, inorder to parse the result from git core. Any slight change to the LFS output
- * in subsequent versions of CORE for LFS, will surely break this. Until we migrate off
- * git core dependency, we will have to regex the output. Godspeed.
- */
-
 const isValidLine = str => str !== '';
 
 const generatePushStats = (raw) => {

@@ -1,24 +1,11 @@
-import path from 'path';
-
-import {
-  lfsTestRepoPath
-} from '../../constants';
 import {
   todo
 } from '../../utils';
 
-import pointer from '../../../build/src/commands/pointer';
-
 describe('Pointer', () => {
-  it('does generate pointer response', function () {
-    const {
-      NodeGitLFS
-    } = this;
+  it('creates args from provided file and pointer paths', todo);
 
-    const packageJson = path.join(lfsTestRepoPath, 'package.json');
+  it('can build a pointer', todo);
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then(repo => pointer(repo, packageJson))
-      .then(() => todo());
-  });
+  it('responds appropriately on error', todo);
 });

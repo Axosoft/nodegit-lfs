@@ -54,7 +54,7 @@ describe('helpers', () => {
         repo
       } = this;
 
-      return track(repo, ['"*.md"', 'test.txt'])
+      return track(repo, ['*.md', 'test.txt'])
         .then(() => helpers.loadGitattributeFiltersFromRepo(repo))
         .then((result) => {
           expect(result).to.have.members(['*.md', 'test.txt']);
