@@ -14,6 +14,7 @@ const version = () => {
 
       if (stderr) {
         response.stderr = stderr;
+        response.raw = stderr;
         response.success = false;
         response.errno = BAD_CORE_RESPONSE;
       } else {

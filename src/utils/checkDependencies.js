@@ -52,6 +52,10 @@ export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.g
 export const dependencyCheck = () => {
   const response = generateResponse();
   return LFSVersion().then((responseObject) => {
+    if (!response.success) {
+      throw new Error(response.raw);
+    }
+
     response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
     response.lfs_exists = parseVersion(
       responseObject.version,
@@ -68,6 +72,13 @@ export const dependencyCheck = () => {
       versionRegexes.VERSION,
     ) !== BAD_VERSION;
     response.git_raw = stdout;
+    return response;
+  })
+  .catch((err) => {
+    response.success = false;
+    response.errno = BAD_VERSION;
+    response.stderr = 'Git LFS does not exist';
+    response.raw = err.message;
     return response;
   });
 };
