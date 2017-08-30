@@ -2310,9 +2310,13 @@ mute-stream@~0.0.4:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@2.5.0, nan@^2.3.0:
+nan@^2.3.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.0.tgz#aa8f1e34531d807e9e27755b234b4a6ec0c152a8"
+
+nan@^2.6.2:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -2336,11 +2340,11 @@ node-pre-gyp@^0.6.36:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node-pty@^0.6.10:
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.6.10.tgz#b7d355bb2002d16e14c3c353e58c48f7ee131a67"
+"node-pty@github:implausible/node-pty#25a81b4d316300469a8c2ab0c46cfc70c7122ec8":
+  version "0.7.0"
+  resolved "https://codeload.github.com/implausible/node-pty/tar.gz/25a81b4d316300469a8c2ab0c46cfc70c7122ec8"
   dependencies:
-    nan "2.5.0"
+    nan "^2.6.2"
 
 nodegit-promise@~4.0.0:
   version "4.0.0"

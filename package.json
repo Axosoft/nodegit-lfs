@@ -53,7 +53,7 @@
     "default-shell": "^1.0.1",
     "fs-extra": "^3.0.1",
     "ignore": "^3.3.3",
-    "node-pty": "^0.6.10",
+    "node-pty": "github:implausible/node-pty#25a81b4d316300469a8c2ab0c46cfc70c7122ec8",
     "promisify-node": "^0.4.0",
     "ramda": "^0.24.1",
     "tmp": "^0.0.33"
