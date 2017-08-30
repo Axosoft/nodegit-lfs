@@ -1,5 +1,11 @@
 # Changelog for v0.0.6
 
+- Updated `/src/commands/fetch.js` to properly return error output when parsing fails
+- Updated `/src/commands/pull.js` to properly return error output when parsing fails
+- Removed the `tests` directory from the `eslint` command and addedd `eslint-full` to be able to lint tests
+
+# Changelog for v0.0.6
+
 - Added `/usr/local/bin` to exec path when it does not exist on `darwin` or `linux`
 - Added error handling in `checkDependencies` so we get nicer output when version checks fail or the binaries do not exist
 
