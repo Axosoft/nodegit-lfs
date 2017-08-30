@@ -1,3 +1,7 @@
+# Changelog for v0.0.5
+
+- Changed the `node-pty` dependency again to be a different forked version found [here](https://github.com/implausible/node-pty)
+
 # Changelog for v0.0.4
 
 - Changed the `node-pty` dependency to be a forked version found [here](https://github.com/implausible/node-pty)
