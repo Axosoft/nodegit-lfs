@@ -1,3 +1,7 @@
+# Changelog for v0.0.8
+
+- Fixed adding `/usr/local/bin` to exec path when it does not exist on `darwin` or `linux` as it was exploding in some situations and returning false negatives
+
 # Changelog for v0.0.6
 
 - Updated `/src/commands/fetch.js` to properly return error output when parsing fails
