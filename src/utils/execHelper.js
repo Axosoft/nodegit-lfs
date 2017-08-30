@@ -3,7 +3,7 @@ import R from 'ramda';
 
 const exec = (command, input, opts) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight({ env: process.env }, opts);
+    const options = R.mergeDeepRight((opts || {}), { env: process.env });
 
     if (process.platform !== 'win32' && !R.contains('/usr/local/bin', options.env.PATH)) {
       options.env.PATH = `${options.env.PATH}${':/usr/local/bin'}`;
