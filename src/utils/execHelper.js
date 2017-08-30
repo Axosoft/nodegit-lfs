@@ -5,7 +5,7 @@ const exec = (command, input, opts) => new Promise(
   (resolve, reject) => {
     const options = R.mergeDeepRight({ env: process.env }, opts);
 
-    if (process.platform === 'darwin' && !R.contains('/usr/local/bin', options.env.PATH)) {
+    if (process.platform !== 'win32' && !R.contains('/usr/local/bin', options.env.PATH)) {
       options.env.PATH = `${options.env.PATH}${':/usr/local/bin'}`;
     }
 
