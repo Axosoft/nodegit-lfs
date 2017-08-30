@@ -6,7 +6,8 @@
   "scripts": {
     "build": "yarn eslint && yarn compile",
     "compile": "\"node_modules/.bin/babel\" src -d build/src",
-    "eslint": "\"node_modules/.bin/eslint\" src test/tests",
+    "eslint": "\"node_modules/.bin/eslint\" src",
+    "eslint-full": "\"node_modules/.bin/eslint\" src test/tests",
     "eslint-quick-fix": "\"node_modules/.bin/eslint\" src test/tests --fix",
     "pretest": "yarn eslint",
     "prepublish": "yarn eslint && yarn compile",
