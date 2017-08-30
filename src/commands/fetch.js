@@ -3,6 +3,7 @@ import { core } from './lfsCommands';
 import {
   regex,
   BAD_REGEX_PARSE_RESULT,
+  BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 import {
@@ -82,6 +83,13 @@ function fetch(repo, options) {
     .then(({ stdout }) => {
       response.raw = stdout;
       response.fetch = generateFetchStats(stdout);
+
+      if (response.fetch.fetch_error) {
+        response.success = false;
+        response.stderr = response.fetch.fetch_error;
+        response.errno = BAD_CORE_RESPONSE;
+      }
+
       return response;
     }, errorCatchHandler(response));
 }

@@ -3,6 +3,7 @@ import { core } from './lfsCommands';
 import {
   regex,
   BAD_REGEX_PARSE_RESULT,
+  BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 import {
@@ -81,6 +82,13 @@ function pull(repo, options) {
     .then(({ stdout }) => {
       response.raw = stdout;
       response.pull = generatePullStats(stdout);
+
+      if (response.pull.pull_error) {
+        response.success = false;
+        response.stderr = response.pull.pull_error;
+        response.errno = BAD_CORE_RESPONSE;
+      }
+
       return response;
     }, errorCatchHandler(response));
 }
