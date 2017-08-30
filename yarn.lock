@@ -2340,9 +2340,9 @@ node-pre-gyp@^0.6.36:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-"node-pty@github:implausible/node-pty#25a81b4d316300469a8c2ab0c46cfc70c7122ec8":
+"node-pty@github:implausible/node-pty#57f5f4ef6b751ffcd056fb6f2b626a0a0d804301":
   version "0.7.0"
-  resolved "https://codeload.github.com/implausible/node-pty/tar.gz/25a81b4d316300469a8c2ab0c46cfc70c7122ec8"
+  resolved "https://codeload.github.com/implausible/node-pty/tar.gz/57f5f4ef6b751ffcd056fb6f2b626a0a0d804301"
   dependencies:
     nan "^2.6.2"
 
