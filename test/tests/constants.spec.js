@@ -2,26 +2,42 @@ import {
   todo
 } from '../utils';
 
-describe('Constants', () => {
-  describe('Regexes', () => {
-    it('GIT', todo);
+describe('constants', () => {
+  describe('regex', () => {
+    describe('GIT', () => {
+      it('parses `git` version output', todo);
+    });
 
-    it('LFS', todo);
+    describe('LFS', () => {
+      it('parses `git-lfs` version output', todo);
+    });
 
-    it('PASSWORD', todo);
+    describe('PASSWORD', () => {
+      it('parses a password prompt', todo);
+    });
 
-    it('SKIPPED_BYTES', todo);
+    describe('SKIPPED_BYTES', () => {
+      it('matches the number of skipped bytes in `git-lfs` output', todo);
+    });
 
-    it('SKIPPED_FILES', todo);
+    describe('SKIPPED_FILES', () => {
+      it('matches the number of skipped files in `git-lfs` output', todo);
+    });
 
-    it('TOTAL_BYTES', todo);
+    describe('TOTAL_BYTES', () => {
+      it('matches the number of total bytes in `git-lfs` output', todo);
+    });
 
-    it('TOTAL_FILES', todo);
+    describe('TOTAL_FILES', () => {
+      it('matches the number of total files in `git-lfs` output', todo);
+    });
 
-    it('TRACK', todo);
+    describe('TRACK', () => {
+      it('matches a glob in `git-lfs-track` or `git-lfs-untrack` output', todo);
+    });
 
-    it('USERNAME', todo);
-
-    it('VERSION', todo);
+    it('USERNAME', () => {
+      it('parses a username prompt', todo);
+    });
   });
 });

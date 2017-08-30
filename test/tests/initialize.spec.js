@@ -2,10 +2,16 @@ import {
   todo
 } from '../utils';
 
-describe('Initialize', () => {
-  it('correctly calculates arguments from options', todo);
+describe('initialize', () => {
+  describe('the default export', () => {
+    it('correctly calculates arguments from options', todo);
 
-  it('initializes a non-LFS repo', todo);
+    describe('when provided a non-LFS repo', () => {
+      it('initializes the provided repo', todo);
+    });
 
-  it('skips initializing on a repo that has already been initializing', todo);
+    describe('when provided an already-initialized repo', () => {
+      it('skips initialization', todo);
+    });
+  });
 });

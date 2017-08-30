@@ -5,7 +5,7 @@ import {
   todo
 } from '../../utils';
 
-describe('Spawn Helpers', () => {
+describe('spawnHelper', () => {
   beforeEach(function () {
     this.sandbox = sinon.sandbox.create();
 
@@ -34,7 +34,7 @@ describe('Spawn Helpers', () => {
     sandbox.restore();
   });
 
-  describe('spawn', () => {
+  describe('the default export', () => {
     it('defaults `opts` to `{}`', todo);
 
     it("merges the calling process' env into the provided env", todo);

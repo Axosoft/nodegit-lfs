@@ -22,35 +22,37 @@ import untrack from '../../build/src/commands/untrack';
 import version from '../../build/src/commands/version';
 import {
   loadGitattributeFiltersFromRepo,
-  hasLfsFilters
+  repoHasLfs
 } from '../../build/src/helpers';
 import {
   dependencyCheck
 } from '../../build/src/utils/checkDependencies';
 
 // NOTE These tests depend on `LFS(NodeGit)` being called in the global `beforeEach`.
-describe('LFS', () => {
-  it('permanently adds itself to NodeGit', () => {
-    expect(NodeGit.LFS).to.eql({
-      checkout,
-      clone,
-      core,
-      dependencyCheck,
-      fetch,
-      filters: loadGitattributeFiltersFromRepo,
-      hasLfsFilters,
-      initialize,
-      list,
-      NodeGit,
-      register,
-      testPointer,
-      track,
-      prune,
-      pull,
-      push,
-      version,
-      unregister,
-      untrack
+describe('index', () => {
+  describe('the default export', () => {
+    it('adds LFS to NodeGit permanently', () => {
+      expect(NodeGit.LFS).to.eql({
+        checkout,
+        clone,
+        core,
+        dependencyCheck,
+        fetch,
+        filters: loadGitattributeFiltersFromRepo,
+        initialize,
+        list,
+        NodeGit,
+        register,
+        repoHasLfs,
+        testPointer,
+        track,
+        prune,
+        pull,
+        push,
+        version,
+        unregister,
+        untrack
+      });
     });
   });
 });

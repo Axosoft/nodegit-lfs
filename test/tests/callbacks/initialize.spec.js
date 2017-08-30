@@ -7,8 +7,10 @@ import {
 
 import initialize from '../../../build/src/callbacks/initialize';
 
-describe('Initialize', () => {
-  it('returns `OK`', () => {
-    expect(initialize()).to.equal(Error.CODE.OK);
+describe('initialize', () => {
+  describe('the default export', () => {
+    it('returns `OK`', () => {
+      expect(initialize()).to.equal(Error.CODE.OK);
+    });
   });
 });

@@ -2,10 +2,12 @@ import {
   todo
 } from '../../utils';
 
-describe('Untrack', () => {
-  it('requires globs to be provided', todo);
+describe('untrack', () => {
+  describe('the default export', () => {
+    it('untracks the provided, currently-tracked globs', todo);
 
-  it('can untrack currently-tracked files', todo);
+    it('requires globs to be provided', todo);
 
-  it('responds appropriately on error', todo);
+    it('handles errors', todo);
+  });
 });

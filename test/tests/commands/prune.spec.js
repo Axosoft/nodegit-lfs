@@ -2,8 +2,10 @@ import {
   todo
 } from '../../utils';
 
-describe('Prune', () => {
-  it('can prune the provided repository', todo);
+describe('prune', () => {
+  describe('the default export', () => {
+    it('prunes the provided repository', todo);
 
-  it('responds appropriately on error', todo);
+    it('handles errors', todo);
+  });
 });

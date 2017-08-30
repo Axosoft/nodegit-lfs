@@ -77,8 +77,16 @@ beforeEach(function () {
 
   return NodeGitLFS.LFS.register()
     .then(() => setupEmptyTestRepo())
+    .then(() => NodeGitLFS.Repository.open(emptyRepoPath))
+    .then((emptyRepo) => {
+      this.emptyRepo = emptyRepo;
+    })
     .then(() => setupLfsTestRemote())
-    .then(() => setupLfsTestRepo());
+    .then(() => setupLfsTestRepo())
+    .then(() => NodeGitLFS.Repository.open(lfsTestRepoPath))
+    .then((lfsTestRepo) => {
+      this.lfsTestRepo = lfsTestRepo;
+    });
 });
 
 after(function () {

@@ -3,7 +3,9 @@ import {
 } from '../../utils';
 
 describe('checkout', () => {
-  it('can checkout in the provided repo', todo);
+  describe('the default export', () => {
+    it('runs checkout in the provided repo', todo);
 
-  it('responds appropriately on error', todo);
+    it('handles errors', todo);
+  });
 });

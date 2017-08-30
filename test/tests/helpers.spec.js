@@ -4,58 +4,33 @@ import {
 import path from 'path';
 
 import {
-  emptyRepoPath,
-  lfsTestRepoPath
-} from '../constants';
-import {
-  fail
+  fail,
+  todo
 } from '../utils';
 
 import * as helpers from '../../build/src/helpers';
 import track from '../../build/src/commands/track';
 
 describe('helpers', () => {
-  beforeEach(function () {
-    const {
-      NodeGitLFS
-    } = this;
-
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        this.repo = repo;
-      });
-  });
-
   describe('getGitattributesPathFromRepo', () => {
-    beforeEach(function () {
-      const {
-        NodeGitLFS
-      } = this;
-
-      return NodeGitLFS.Repository.open(lfsTestRepoPath)
-        .then((repo) => {
-          this.repo = repo;
-        });
-    });
-
     it("gets the location of a repository's `.gitattributes` file", function () {
       const {
-        repo
+        lfsTestRepo
       } = this;
 
-      expect(helpers.getGitattributesPathFromRepo(repo))
-        .to.equal(path.join(lfsTestRepoPath, '.gitattributes'));
+      expect(helpers.getGitattributesPathFromRepo(lfsTestRepo))
+        .to.equal(path.join(lfsTestRepo.workdir(), '.gitattributes'));
     });
   });
 
   describe('loadGitattributeFiltersFromRepo', () => {
     it('reads globs from `.gitattributes`', function () {
       const {
-        repo
+        lfsTestRepo
       } = this;
 
-      return track(repo, ['*.md', 'test.txt'])
-        .then(() => helpers.loadGitattributeFiltersFromRepo(repo))
+      return track(lfsTestRepo, ['*.md', 'test.txt'])
+        .then(() => helpers.loadGitattributeFiltersFromRepo(lfsTestRepo))
         .then((result) => {
           expect(result).to.have.members(['*.md', 'test.txt']);
         });
@@ -63,11 +38,10 @@ describe('helpers', () => {
 
     it('errors if `.gitattributes` does not exist', function () {
       const {
-        NodeGitLFS
+        emptyRepo
       } = this;
 
-      return NodeGitLFS.Repository.open(emptyRepoPath)
-        .then(repo => helpers.loadGitattributeFiltersFromRepo(repo))
+      return helpers.loadGitattributeFiltersFromRepo(emptyRepo)
         .then(() => fail('Expected promise to fail!'))
         .catch((err) => {
           expect(err.message).to.equal('No .gitattributes found');
@@ -75,28 +49,33 @@ describe('helpers', () => {
     });
   });
 
-  describe('hasLfsFilters', () => {
-    it('returns `false` if the repo has no filters', function () {
-      const {
-        repo
-      } = this;
-
-      return helpers.hasLfsFilters(repo)
-        .then((result) => {
-          expect(result).to.be.false;
-        });
+  describe('repoHasLfsFilters', () => {
+    describe('when the provided repository has `.gitattributes` filters', () => {
+      it('returns `true`', todo);
     });
 
-    it('returns `true` if the repo has filters', function () {
-      const {
-        repo
-      } = this;
+    describe('when the provided repository has no `.gitattributes` filters', () => {
+      it('returns `false`', todo);
+    });
+  });
 
-      return track(repo, ['test.txt'])
-        .then(() => helpers.hasLfsFilters(repo))
-        .then((result) => {
-          expect(result).to.be.true;
-        });
+  describe('repoHasLfsObjectBin', () => {
+    describe('when `.git/lfs` exists in the provided repository', () => {
+      it('returns `true`', todo);
+    });
+
+    describe('when `.git/lfs` does not exist in the provided repository', () => {
+      it('returns `false`', todo);
+    });
+  });
+
+  describe('repoHasLfs', () => {
+    describe('when the provided repository does not have LFS support enabled', () => {
+      it('returns `true`', todo);
+    });
+
+    describe('when the provided repository has LFS support enabled', () => {
+      it('returns `false`', todo);
     });
   });
 });

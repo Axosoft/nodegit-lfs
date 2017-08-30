@@ -2,10 +2,12 @@ import {
   todo
 } from '../../utils';
 
-describe('Pointer', () => {
-  it('creates args from provided file and pointer paths', todo);
+describe('pointer', () => {
+  describe('the default export', () => {
+    it('creates args from the provided file and pointer paths', todo);
 
-  it('can build a pointer', todo);
+    it('builds a pointer', todo);
 
-  it('responds appropriately on error', todo);
+    it('handles errors', todo);
+  });
 });

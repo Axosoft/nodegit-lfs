@@ -5,77 +5,76 @@ import {
   Error
 } from 'nodegit';
 
-import {
-  lfsTestRepoPath
-} from '../../constants';
-
 import track from '../../../build/src/commands/track';
 import checkCallback from '../../../build/src/callbacks/check';
 
 describe('check', () => {
   beforeEach(function () {
     const {
-      NodeGitLFS
+      lfsTestRepo
     } = this;
 
     this.check = fileName => checkCallback({
       path: () => fileName,
-      repo: () => this.repo
+      repo: () => lfsTestRepo
+    });
+  });
+
+  describe('the default export', () => {
+    describe('when the provided file is directly specified in `.gitattributes`', () => {
+      it('returns `OK` for the provided file', function () {
+        const {
+          check,
+          lfsTestRepo
+        } = this;
+
+        return track(lfsTestRepo, ['test.txt'])
+          .then(() => check('test.txt'))
+          .then((result) => {
+            expect(result).to.equal(Error.CODE.OK);
+          });
+      });
     });
 
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        this.repo = repo;
+    describe('when the provided file is included in a glob in `.gitattributes`', () => {
+      it('returns `OK` for the provided file', function () {
+        const {
+           check,
+          lfsTestRepo
+         } = this;
+
+        return track(lfsTestRepo, ['*.txt'])
+          .then(() => check('test.txt'))
+          .then((result) => {
+            expect(result).to.equal(Error.CODE.OK);
+          });
       });
-  });
+    });
 
-  it('returns `OK` for a file directly specified in .gitattributes', function () {
-    const {
-      check,
-      repo
-    } = this;
+    describe('when the provided file is not included in `.gitattributes`', () => {
+      it('returns `PASSTHROUGH`', function () {
+        const {
+          check,
+          lfsTestRepo
+        } = this;
 
-    return track(repo, ['test.txt'])
-      .then(() => check('test.txt'))
-      .then((result) => {
-        expect(result).to.equal(Error.CODE.OK);
+        return track(lfsTestRepo, ['other.txt'])
+          .then(() => check('test.txt'))
+          .then((result) => {
+            expect(result).to.equal(Error.CODE.PASSTHROUGH);
+          });
       });
-  });
+    });
 
-  it('returns `OK` for a file included in a glob in .gitattributes', function () {
-    const {
-      check,
-      repo
-    } = this;
+    it('returns `PASSTHROUGH` on error', function () {
+      const {
+        check
+      } = this;
 
-    return track(repo, ['*.txt'])
-      .then(() => check('test.txt'))
-      .then((result) => {
-        expect(result).to.equal(Error.CODE.OK);
-      });
-  });
-
-  it('returns `PASSTHROUGH` for a file not included in .gitattributes', function () {
-    const {
-      check,
-      repo
-    } = this;
-
-    return track(repo, ['other.txt'])
-      .then(() => check('test.txt'))
-      .then((result) => {
-        expect(result).to.equal(Error.CODE.PASSTHROUGH);
-      });
-  });
-
-  it('returns `PASSTHROUGH` on error', function () {
-    const {
-      check
-    } = this;
-
-    return check('test.txt')
-      .then((result) => {
-        expect(result).to.equal(Error.CODE.PASSTHROUGH);
-      });
+      return check('test.txt')
+        .then((result) => {
+          expect(result).to.equal(Error.CODE.PASSTHROUGH);
+        });
+    });
   });
 });

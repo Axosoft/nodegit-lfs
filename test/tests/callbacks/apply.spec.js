@@ -29,6 +29,7 @@ const track = (repo, globs) => {
 describe('apply', () => {
   beforeEach(function () {
     const {
+      lfsTestRepo,
       NodeGitLFS
     } = this;
 
@@ -68,7 +69,7 @@ describe('apply', () => {
     };
 
     this.trackTestFile = () =>
-      track(this.repo, [this.testFileName])
+      track(lfsTestRepo, [this.testFileName])
         .then(() => createDummyFile(
           path.join(lfsTestRepoPath, this.testFileName),
           testFileSize
@@ -76,7 +77,7 @@ describe('apply', () => {
         .then((contents) => {
           this.contents = contents;
         })
-        .then(() => this.commitFile(this.repo, this.testFileName, 'LFS filter tests'));
+        .then(() => this.commitFile(lfsTestRepo, this.testFileName, 'LFS filter tests'));
 
     this.verifyTestFileTracked = () =>
       fse.readFile(path.join(lfsTestRepoPath, this.testFileName), 'utf8')
@@ -87,37 +88,36 @@ describe('apply', () => {
       .then((pointer) => {
         expect(pointer).to.have.string(`size ${testFileSize}`);
       });
-
-    return NodeGitLFS.Repository.open(lfsTestRepoPath)
-      .then((repo) => {
-        this.repo = repo;
-      });
   });
 
-  it('Clean', function () {
-    const {
+  describe('clean', () => {
+    it('cleans LFS-tracked files', function () {
+      const {
       trackTestFile,
-      verifyTestFileTracked
+        verifyTestFileTracked
     } = this;
 
-    return trackTestFile()
-      .then(() => verifyTestFileTracked());
+      return trackTestFile()
+        .then(() => verifyTestFileTracked());
+    });
   });
 
-  it('Smudge', function () {
-    const {
-      NodeGitLFS,
-      repo,
-      testFileName,
-      trackTestFile,
-      verifyTestFileTracked
-    } = this;
+  describe('smudge', () => {
+    it('smudges LFS blobs', function () {
+      const {
+        NodeGitLFS,
+        lfsTestRepo,
+        testFileName,
+        trackTestFile,
+        verifyTestFileTracked
+      } = this;
 
-    return trackTestFile()
-      .then(() => createDummyFile(path.join(lfsTestRepoPath, testFileName), 5))
-      .then(() => NodeGitLFS.Checkout.head(repo, {
-        checkoutStrategy: NodeGitLFS.Checkout.STRATEGY.FORCE
-      }))
-      .then(() => verifyTestFileTracked());
-  }).timeout(10000);
+      return trackTestFile()
+        .then(() => createDummyFile(path.join(lfsTestRepoPath, testFileName), 5))
+        .then(() => NodeGitLFS.Checkout.head(lfsTestRepo, {
+          checkoutStrategy: NodeGitLFS.Checkout.STRATEGY.FORCE
+        }))
+        .then(() => verifyTestFileTracked());
+    }).timeout(10000);
+  });
 });
