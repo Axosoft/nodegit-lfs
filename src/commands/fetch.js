@@ -60,8 +60,6 @@ const generateFetchStats = (raw) => {
 };
 
 function fetch(repo, options) {
-  const response = generateResponse();
-
   const args = [];
   const {
     remoteName,
@@ -84,9 +82,9 @@ function fetch(repo, options) {
       response.fetch = generateFetchStats(stdout);
 
       if (response.fetch.fetch_error) {
-        response.success = false;
-        response.stderr = response.fetch.fetch_error;
         response.errno = BAD_CORE_RESPONSE;
+        response.stderr = response.fetch.fetch_error;
+        response.success = false;
       }
 
       return response;

@@ -8,6 +8,7 @@ import {
   BAD_REGEX_PARSE_RESULT,
   regex,
 } from './constants';
+import generateResponse from './utils/generateResponse';
 
 export const getGitattributesPathFromRepo = repo => path.join(repo.workdir(), '.gitattributes');
 
@@ -74,13 +75,15 @@ export const verifyOutput = (stats, raw) => {
   }
 };
 
-export const errorCatchHandler = response => (code) => {
+export const errorCatchHandler = (code) => {
   // This is a manually detected error we get from LFS
   if (code === BAD_CORE_RESPONSE) {
-    response.stderr = response.raw;
-    response.errno = BAD_CORE_RESPONSE;
-    response.success = false;
-    return response;
+    return {
+      ...generateResponse(),
+      errno: BAD_CORE_RESPONSE,
+      stderr: '',
+      success: false
+    };
   }
 
   throw code;

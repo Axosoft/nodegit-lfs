@@ -47,17 +47,18 @@ const buildArgs = (options) => {
 };
 
 const ls = (repo, options) => {
-  const response = generateResponse();
   const args = buildArgs(options);
 
   return core.ls(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
+      const response = generateResponse();
       response.raw = stdout;
 
-      if (stderr.length > 0) {
+      if (stderr) {
+        response.errno = BAD_CORE_RESPONSE;
         response.stderr = stderr;
         response.success = false;
-        response.errno = BAD_CORE_RESPONSE;
+        return response;
       }
 
       response.files = extractFileNames(stdout);

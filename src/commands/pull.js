@@ -60,8 +60,6 @@ const generatePullStats = (raw) => {
 };
 
 function pull(repo, options) {
-  const response = generateResponse();
-
   const args = [];
   const {
     remoteName,
@@ -83,9 +81,9 @@ function pull(repo, options) {
       response.pull = generatePullStats(stdout);
 
       if (response.pull.pull_error) {
-        response.success = false;
-        response.stderr = response.pull.pull_error;
         response.errno = BAD_CORE_RESPONSE;
+        response.stderr = response.pull.pull_error;
+        response.success = false;
       }
 
       return response;

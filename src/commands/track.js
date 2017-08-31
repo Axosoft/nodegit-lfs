@@ -22,16 +22,16 @@ const track = (repo, globs) => {
     R.filter(isString),
     R.map(g => `${ticks}${g}${ticks}`)
   )(globs);
-  const response = generateResponse();
 
   return core.track(R.join(' ', filteredGlobs), { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
+      const response = generateResponse();
       response.raw = stdout;
 
       if (stderr) {
-        response.success = false;
         response.errno = BAD_CORE_RESPONSE;
         response.stderr = stderr;
+        response.success = false;
         return response;
       }
 

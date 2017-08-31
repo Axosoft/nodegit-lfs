@@ -70,13 +70,12 @@ function clone(url, cwd, options) {
   } = (options || {});
   const args = branch ? `-b ${branch}` : '';
 
-  const response = generateResponse();
   return core.clone(`${url} ${args}`, { cwd, env }, callback)
-    .then(({ stdout }) => {
-      response.raw = stdout;
-      response.clone = generateCloneStats(stdout);
-      return response;
-    }, errorCatchHandler(response));
+    .then(({ stdout }) => ({
+      ...generateResponse(),
+      raw: stdout,
+      clone: generateCloneStats(stdout)
+    }), errorCatchHandler);
 }
 
 export default clone;

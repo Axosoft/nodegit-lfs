@@ -13,16 +13,16 @@ const pointer = (repo, filePath, pointerPath) => {
     args += `--file=${pointerPath} `;
   }
 
-  const response = generateResponse();
 
   return core.pointer(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
+      const response = generateResponse();
       response.raw = stdout;
 
       if (stderr) {
-        response.success = false;
         response.errno = BAD_CORE_RESPONSE;
         response.stderr = stderr;
+        response.success = false;
         return response;
       }
 
