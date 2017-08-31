@@ -23,6 +23,13 @@ import * as testLFSServer from './server/server';
 // http://eng.wealthfront.com/2016/11/03/handling-unhandledrejections-in-node-and-the-browser/
 process.on('unhandledRejection', (err) => {
   console.error('CAUGHT ERROR:', err); // eslint-disable-line no-console
+
+  try {
+    testLFSServer.stop();
+  } catch (e) {
+    // The server may not have been started yet
+  }
+
   process.exit(1);
 });
 
