@@ -1,7 +1,8 @@
-# Changelog for v0.0.8
+# Changelog for v0.0.9
 
 - Changed `version` to write errors to `stderr` only and not `raw`
 - Changed `checkDependencies` to use the correct response object on errors
+- Updated the version regexes
 
 # Changelog for v0.0.8
 
