@@ -52,8 +52,8 @@ export const isLfsRepo = workingDir => fse.pathExists(path.join(workingDir), '.g
 export const dependencyCheck = () => {
   const response = generateResponse();
   return LFSVersion().then((responseObject) => {
-    if (!response.success) {
-      throw new Error(response.raw);
+    if (!responseObject.success) {
+      throw new Error(responseObject.stderr);
     }
 
     response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
