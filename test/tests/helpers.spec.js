@@ -36,16 +36,18 @@ describe('helpers', () => {
         });
     });
 
-    it('errors if `.gitattributes` does not exist', function () {
-      const {
-        emptyRepo
-      } = this;
+    describe('when `.gitattributes` does not exist', () => {
+      it('errors', function () {
+        const {
+          emptyRepo
+        } = this;
 
-      return helpers.loadGitattributeFiltersFromRepo(emptyRepo)
-        .then(() => fail('Expected promise to fail!'))
-        .catch((err) => {
-          expect(err.message).to.equal('No .gitattributes found');
-        });
+        return helpers.loadGitattributeFiltersFromRepo(emptyRepo)
+          .then(() => fail('Expected promise to fail!'))
+          .catch((err) => {
+            expect(err.message).to.equal('No .gitattributes found');
+          });
+      });
     });
   });
 
@@ -76,6 +78,16 @@ describe('helpers', () => {
 
     describe('when the provided repository has LFS support enabled', () => {
       it('returns `false`', todo);
+    });
+  });
+
+  describe('errorCatchHandler', () => {
+    describe('when the error is from LFS', () => {
+      it('returns a response object', todo);
+    });
+
+    describe('when the error is not from LFS', () => {
+      it('rethrows the error code', todo);
     });
   });
 });

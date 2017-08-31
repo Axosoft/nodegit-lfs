@@ -6,8 +6,8 @@ import {
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
-const version = () => {
-  return core.version()
+const version = () =>
+  core.version()
     .then(({ stdout, stderr }) => {
       const response = generateResponse();
       response.raw = stdout;

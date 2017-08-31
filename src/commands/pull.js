@@ -77,6 +77,7 @@ function pull(repo, options) {
 
   return core.pull(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout }) => {
+      const response = generateResponse();
       response.raw = stdout;
       response.pull = generatePullStats(stdout);
 
@@ -87,7 +88,7 @@ function pull(repo, options) {
       }
 
       return response;
-    }, errorCatchHandler(response));
+    }, errorCatchHandler);
 }
 
 export default pull;

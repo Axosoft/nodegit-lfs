@@ -40,7 +40,7 @@ describe('execHelper', () => {
         mockProcess
       } = this;
 
-      const promise = exec('test', '', { foo: 'bar' });
+      const promise = exec('test', '');
       execSpy.firstCall.args[2](null, 'some stdout', 'some stderr');
       return promise
         .then((result) => {
