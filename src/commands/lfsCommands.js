@@ -2,7 +2,7 @@ import spawn from '../utils/spawnHelper';
 import exec from '../utils/execHelper';
 
 export const core = {
-  checkout: (args = '', options) => exec(`git lfs checkout ${args}`, null, options),
+  checkout: (args = '', options, callback) => spawn(`git lfs checkout ${args}`, options, callback),
   clone: (args = '', options, callback) => spawn(`git lfs clone ${args}`, options, callback),
   fetch: (args = '', options, callback) => spawn(`git lfs fetch ${args}`, options, callback),
   fsck: options => exec('git lfs fsck', null, options),

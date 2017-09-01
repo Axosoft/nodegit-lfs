@@ -11,8 +11,16 @@ export const regex = {
   SKIPPED_FILES: /[\d]\s+(?=skipped)/g,
   TOTAL_BYTES: /[\d]+\s+B/g,
   TOTAL_FILES: /[\d]\s+(?=files)/g,
-  USERNAME: /username/i,
-  PASSWORD: /password|passphrase/i,
+  USERNAME: /username/g,
+  PASSWORD: /password/g,
+  PASSPHRASE: /passphrase/g,
+  PERMISSION_DENIED: /permission\s+denied\s+\(.+\)\./g,
+};
+
+export const promptTypes = {
+  USERNAME: 'username',
+  PASSWORD: 'password',
+  PASSPHRASE: 'passphrase',
 };
 
 export const BAD_VERSION = '0';

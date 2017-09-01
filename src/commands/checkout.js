@@ -7,7 +7,11 @@ import {
 } from '../constants';
 
 import generateResponse from '../utils/generateResponse';
-import { regexResult } from '../helpers';
+import {
+  regexResult,
+  verifyOutput,
+  errorCatchHandler
+} from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -46,6 +50,8 @@ const generateCheckoutStats = (raw) => {
       skippedFileResults !== null ?
         skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
+    verifyOutput(stats, raw);
+
     if (statLine.includes('error:')) {
       stats.checkout_error = statLine.split('error:')[1].trim();
     }
@@ -55,24 +61,23 @@ const generateCheckoutStats = (raw) => {
   return {};
 };
 
-function checkout(repo) {
+function checkout(repo, callback) {
   const response = generateResponse();
   const repoPath = repo.workdir();
 
-  return core.checkout('', { cwd: repoPath })
-    .then(({ stdout, stderr }) => {
+  return core.checkout('', { cwd: repoPath }, callback)
+    .then(({ stdout }) => {
       response.raw = stdout;
+      response.checkout = generateCheckoutStats(stdout);
 
-      if (stderr) {
-        response.stderr = stderr;
-        response.errno = BAD_CORE_RESPONSE;
+      if (response.checkout.checkout_error) {
         response.success = false;
-        return response;
+        response.stderr = response.checkout.checkout_error;
+        response.errno = BAD_CORE_RESPONSE;
       }
 
-      response.checkout = generateCheckoutStats(stdout);
       return response;
-    });
+    }, errorCatchHandler(response));
 }
 
 export default checkout;

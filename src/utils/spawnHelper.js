@@ -8,7 +8,7 @@ import * as pty from 'node-pty';
 import _tmp from 'tmp';
 import promisify from 'promisify-node';
 
-import { regex } from '../constants';
+import { regex, promptTypes } from '../constants';
 
 const tmp = promisify(_tmp);
 // Cleanup even when there are errors
@@ -25,38 +25,29 @@ const buildSocketPath = () => tmp.dir()
   });
 
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
-  let credentials = {};
-  const credentialsCallback = needsUsername => (username, password, cancel) => {
+  const credentialsCallback = promptType => (username, password, cancel) => {
     if (cancel) {
       // we are done here
       spawnedProcess.destroy();
       return reject(new Error('LFS action cancelled'));
     }
 
-    credentials = { username, password };
-    spawnedProcess.write(needsUsername ? credentials.username : credentials.password);
+    spawnedProcess.write(
+      promptType === promptTypes.USERNAME
+        ? username
+        : password);
     spawnedProcess.write(EOL);
   };
 
   return (chunk) => {
-    const output = chunk.toString();
+    const output = chunk.toString().trim().toLowerCase();
 
     if (output.match(regex.USERNAME)) {
-      if (credentials.username) {
-        spawnedProcess.write(credentials.username);
-        spawnedProcess.write(EOL);
-      } else {
-        // If we have a username we need to make sure to prompt for it
-        callback(true, credentialsCallback(true));
-      }
+      callback(output, credentialsCallback(promptTypes.USERNAME));
     } else if (output.match(regex.PASSWORD)) {
-      if (credentials.password) {
-        spawnedProcess.write(credentials.password);
-        spawnedProcess.write(EOL);
-      } else {
-        // no username so maybe ssh?
-        callback(false, credentialsCallback(false));
-      }
+      callback(output, credentialsCallback(promptTypes.PASSWORD));
+    } else if (output.match(regex.PASSPHRASE)) {
+      callback(output, credentialsCallback(promptTypes.PASSPHRASE));
     }
     return output;
   };
