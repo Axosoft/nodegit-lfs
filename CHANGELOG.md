@@ -1,3 +1,10 @@
+# Changelog for v0.0.10
+
+- Added the credentials callback to `git lfs checkout` in case it invokes the smudge filters manually
+- Fixed `helpers.verifyOutput` to actually check for errors and ssh permission errors
+- Removed dead code
+- Refactored the `spawnHelper` credentials routine to do less work and just shell out to the parent process with the potential prompt results
+
 # Changelog for v0.0.9
 
 - Changed `version` to write errors to `stderr` only and not `raw`
