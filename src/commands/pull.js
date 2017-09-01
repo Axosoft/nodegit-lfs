@@ -11,64 +11,86 @@ import {
   verifyOutput,
   errorCatchHandler } from '../helpers';
 
-const isValidLine = str => str !== '';
-
-const generatePullStats = (raw) => {
-  if (raw && typeof raw === 'string') {
-    const stats = {};
-    const outputLines = raw.split('Git LFS:');
-    const filteredLines = R.filter(isValidLine, outputLines);
-    const statLine = filteredLines.pop();
-
-    const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
-
-    stats.total_bytes_pulled =
-      byteResults !== null ?
-        byteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
-
-    stats.total_bytes =
-      byteResults !== null ?
-        byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
-
-    const fileResults = regexResult(statLine, regex.TOTAL_FILES);
-
-    stats.total_files_pulled =
-      fileResults !== null ?
-        fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
-
-    const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
-
-    stats.total_bytes_skipped =
-      skippedByteResults !== null ?
-        skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
-
-    const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
-
-    stats.total_files_skipped =
-      skippedFileResults !== null ?
-        skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
-
-    verifyOutput(stats, raw);
-
-    if (statLine.includes('error:')) {
-      stats.pull_error = statLine.split('error:')[1].trim();
-    }
-
-    return stats;
+const addPullStats = (response) => {
+  if (!response.raw) {
+    //TODO
+    return {};
   }
-  return {};
+
+  const statLine = R.pipe(
+    R.split('Git LFS:'),
+    R.reject(R.isEmpty),
+    R.head
+  )(response.raw);
+
+  const byteResults = statLine.match(regex.TOTAL_BYTES);
+
+  const totalBytesPulled =
+    byteResults !== null
+      ? byteResults[0].trim()
+      : BAD_REGEX_PARSE_RESULT;
+
+  const totalBytes =
+    byteResults !== null
+      ? byteResults[1].trim()
+      : BAD_REGEX_PARSE_RESULT;
+
+  const fileResults = statLine.match(regex.TOTAL_FILES);
+
+  const totalFilesPulled =
+    fileResults !== null
+      ? fileResults[0].trim()
+      : BAD_REGEX_PARSE_RESULT;
+
+  const skippedByteResults = statLine.match(regex.SKIPPED_BYTES);
+
+  const totalBytesSkipped =
+    skippedByteResults !== null
+      ? skippedByteResults[0].trim()
+      : BAD_REGEX_PARSE_RESULT;
+
+  const skippedFileResults = statLine.match(regex.SKIPPED_FILES);
+
+  const totalFilesSkipped =
+    skippedFileResults !== null
+      ? skippedFileResults[0].trim()
+      : BAD_REGEX_PARSE_RESULT;
+
+  const stats = {
+    total_bytes: totalBytes,
+    total_bytes_pulled: totalBytesPulled,
+    total_bytes_skipped: totalBytesSkipped,
+    total_files_pulled: totalFilesPulled,
+    total_files_skipped: totalFilesSkipped
+  };
+
+  if (verifyOutput(stats)) {
+    return {
+      ...response,
+      pull: stats
+    };
+  }
+
+  const stderr =
+    statLine.includes('error:')
+      ? statLine.split('error:')[1].trim()
+      : '';
+  return {
+    ...response,
+    errno: BAD_CORE_RESPONSE,
+    stderr,
+    success: false
+  };
 };
 
-function pull(repo, options) {
-  const response = generateResponse();
-  const repoPath = repo.workdir();
-
-  const args = [];
+export default (repo, options = {}) => {
   const {
     remoteName,
     branchName,
     callback,
-  } = (options || {});
+  } = options;
+
+  const args = [];
 
   if (remoteName) {
     args.push(remoteName);
@@ -79,18 +101,11 @@ function pull(repo, options) {
   const argsString = R.join(' ', args);
 
   return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
-    .then(({ stdout }) => {
-      response.raw = stdout;
-      response.pull = generatePullStats(stdout);
-
-      if (response.pull.pull_error) {
-        response.success = false;
-        response.stderr = response.pull.pull_error;
-        response.errno = BAD_CORE_RESPONSE;
-      }
-
-      return response;
-    }, errorCatchHandler(response));
-}
-
-export default pull;
+    .then(
+      ({ stdout }) => addPullStats({
+        ...generateResponse(),
+        raw: stdout
+      }),
+      errorCatchHandler
+    );
+};
