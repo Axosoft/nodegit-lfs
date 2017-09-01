@@ -48,25 +48,28 @@ export const repoHasLfsObjectBin = repo =>
 export const repoHasLfs = repo => repoHasLfsFilters(repo)
     .then(hasFilters => hasFilters || repoHasLfsObjectBin(repo));
 
-export const regexResult = (input, regularExpression) => input.match(regularExpression);
-
 export const verifyOutput = (stats, raw) => {
    // We need to handle this manually because LFS isn't returning stderr
-  const props = Object.keys(stats);
-  const errCount = R.reduce((acc, p) => {
-    if (p === BAD_REGEX_PARSE_RESULT) {
-      acc += 1;
-    }
-    return acc;
-  }, 0, props);
+  const props = R.values(stats);
+  const allErrored = R.pipe(
+    R.filter(R.equals(BAD_REGEX_PARSE_RESULT)),
+    R.sum,
+    R.equals(props.length)
+  )(props);
 
-  // We have all errors
-  if (errCount === props.length) {
+  if (allErrored) {
     const e = new Error(raw);
     e.errno = BAD_CORE_RESPONSE;
     throw e;
   }
 };
+// We need to handle this manually because LFS isn't returning stderr
+export const verifyOutput =
+  R.pipe(
+    R.omit(['error']),
+    R.values,
+    R.none(R.equals(BAD_REGEX_PARSE_RESULT))
+  );
 
 export const errorCatchHandler = response => (err) => {
   // This is a manually detected error we get from LFS
