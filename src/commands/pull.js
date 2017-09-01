@@ -63,15 +63,11 @@ function pull(repo, options) {
   const args = [];
   const {
     remoteName,
-    branchName,
     callback
   } = (options || {});
 
   if (remoteName) {
     args.push(remoteName);
-  }
-  if (branchName) {
-    args.push(branchName);
   }
   const argsString = R.join(' ', args);
 
