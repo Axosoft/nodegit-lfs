@@ -1,17 +1,15 @@
 import fse from 'fs-extra';
 import path from 'path';
 import R from 'ramda';
-
-import {
-  gitVersion,
-  lfsVersion
-} from '../commands/version';
-import generateResponse from './generateResponse';
+import semver from 'semver';
 
 import {
   minimumVersions,
   BAD_VERSION
 } from '../constants';
+import generateResponse from './generateResponse';
+
+import { gitVersion, lfsVersion } from '../commands/version';
 
 /**
  * @function normalizeVersion
@@ -62,7 +60,7 @@ const handleVersionResponse = (dependencyName, response) => {
   }
 
   const exists = version !== BAD_VERSION;
-  const meetsVersion = exists && version >= minimumVersions[dependencyName];
+  const meetsVersion = exists && semver.gte(version, minimumVersions[dependencyName]);
 
   const constructKey = key => `${R.toLower(dependencyName)}_${key}`;
   return {

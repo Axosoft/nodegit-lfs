@@ -60,6 +60,7 @@
     "node-pty": "github:implausible/node-pty#57f5f4ef6b751ffcd056fb6f2b626a0a0d804301",
     "promisify-node": "^0.4.0",
     "ramda": "^0.24.1",
+    "semver": "^5.4.1",
     "tmp": "^0.0.33"
   }
 }
