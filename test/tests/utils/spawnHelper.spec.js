@@ -58,8 +58,6 @@ describe('spawnHelper', () => {
     it('resolves with the correct data on a successful exit', todo);
 
     it('rejects on spawn error', todo);
-
-    it('rejects on non-0 exit code', todo);
   });
 
   describe('winSpawn', () => {
@@ -110,8 +108,6 @@ describe('spawnHelper', () => {
 
   describe('buildSocket', () => {
     it('resolves the calling `Promise` with the correct data on a successful exit', todo);
-
-    it('only runs the successful close logic once', todo);
 
     it('calls the close callback when the socket ends', todo);
 

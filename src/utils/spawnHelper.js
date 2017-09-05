@@ -31,11 +31,11 @@ const buildSocketPath = () => tmp.dir()
  *   (
  *     spawnedProcess: ChildProcess,
  *     callback: (
- *       passwordOnly: boolean,
- *       callback: (usernamePrompt: boolean) =>
+ *       output: string,
+ *       callback: (promptType: string) =>
  *                 (username: string, password: ?string, cancel: boolean) =>
  *                 void
- *       )
+ *       ) => void
  *     ),
  *     reject: Error => Promise<void>
  *   ) =>
@@ -220,7 +220,7 @@ const spawn = (command, opts = {}, callback) => new Promise(
 
       resolve({
         code,
-        stdout,
+        stdout
       });
     });
   });

@@ -74,7 +74,7 @@ function checkout(repo, callback) {
       }
 
       return response;
-    }, errorCatchHandler(response));
+    }, errorCatchHandler);
 }
 
 export default checkout;

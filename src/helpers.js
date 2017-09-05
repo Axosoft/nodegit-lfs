@@ -3,10 +3,10 @@ import path from 'path';
 import R from 'ramda';
 
 import {
-  LFS_ATTRIBUTE,
   BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
-  regex,
+  LFS_ATTRIBUTE,
+  regex
 } from './constants';
 import generateResponse from './utils/generateResponse';
 

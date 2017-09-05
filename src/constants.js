@@ -13,13 +13,13 @@ export const regex = {
   USERNAME: /username/g,
   PASSWORD: /password/g,
   PASSPHRASE: /passphrase/g,
-  PERMISSION_DENIED: /permission\s+denied\s+\(.+\)\./g,
+  PERMISSION_DENIED: /permission\s+denied\s+\(.+\)\./g
 };
 
 export const promptTypes = {
   USERNAME: 'username',
   PASSWORD: 'password',
-  PASSPHRASE: 'passphrase',
+  PASSPHRASE: 'passphrase'
 };
 
 export const BAD_VERSION = '0';
