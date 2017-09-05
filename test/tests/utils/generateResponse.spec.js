@@ -1,10 +1,10 @@
 import {
   expect
 } from 'chai';
+
 import {
   Error
-} from 'nodegit';
-
+} from '../../../build/src/constants';
 import generateResponse from '../../../build/src/utils/generateResponse';
 
 describe('generateResponse', () => {

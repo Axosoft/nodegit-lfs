@@ -1,10 +1,10 @@
 import {
   expect
 } from 'chai';
+
 import {
   Error
-} from 'nodegit';
-
+} from '../../../build/src/constants';
 import track from '../../../build/src/commands/track';
 import checkCallback from '../../../build/src/callbacks/check';
 

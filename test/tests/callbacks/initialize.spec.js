@@ -1,10 +1,10 @@
 import {
   expect
 } from 'chai';
+
 import {
   Error
-} from 'nodegit';
-
+} from '../../../build/src/constants';
 import initialize from '../../../build/src/callbacks/initialize';
 
 describe('initialize', () => {
