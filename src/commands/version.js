@@ -1,12 +1,26 @@
-import { core } from './lfsCommands';
-import { parseVersion } from '../utils/checkDependencies';
 import {
   regex,
   BAD_CORE_RESPONSE
 } from '../constants';
+import {
+  errorCatchHandler
+} from '../helpers';
+import { parseVersion } from '../utils/checkDependencies';
 import generateResponse from '../utils/generateResponse';
 
-const version = () =>
+import {
+  core
+} from './lfsCommands';
+
+export const gitVersion = () =>
+  core.git('--version')
+    .then(({ stdout }) => ({
+      ...generateResponse(),
+      raw: stdout,
+      version: parseVersion(stdout, regex.GIT)
+    }), errorCatchHandler);
+
+export const lfsVersion = () =>
   core.version()
     .then(({ stdout, stderr }) => {
       const response = generateResponse();
@@ -23,4 +37,4 @@ const version = () =>
       return response;
     });
 
-export default version;
+export default lfsVersion;

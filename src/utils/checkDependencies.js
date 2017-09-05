@@ -1,25 +1,34 @@
+import fse from 'fs-extra';
+import path from 'path';
 import R from 'ramda';
-import LFSVersion from '../commands/version';
-import generateResponse from './generateResponse';
-import { core } from '../commands/lfsCommands';
 
 import {
-  regex as versionRegexes,
+  gitVersion,
+  lfsVersion
+} from '../commands/version';
+import generateResponse from './generateResponse';
+
+import {
   minimumVersions,
   BAD_VERSION
 } from '../constants';
 
 /**
  * @function normalizeVersion
- * @param  Array<string> versionArray array of version number eg: ['1', '8', '3'] => 1.8.3
- * @return Number normalized version number
+ * @param {Array<string>} versionArray Array of version number sections
+ * @returns {Number} Constructed version number
+ *
+ * @example
+ * normalizeVersion(['1', '8', '3']) === '1.8.3'
+ *
+ * @example
+ * normalizeVersion([]) === BAD_VERSION
  */
-const normalizeVersion = (versionArray) => {
-  if (!versionArray || versionArray.length === 0) {
-    return BAD_VERSION;
-  }
-  return R.join('.', versionArray);
-};
+const normalizeVersion = versionArray => (
+  (versionArray && versionArray.length > 0)
+    ? R.join('.', versionArray)
+    : BAD_VERSION
+);
 
 export const parseVersion = (input, regex) => {
   if (!input) {
@@ -27,53 +36,54 @@ export const parseVersion = (input, regex) => {
   }
 
   const matches = input.match(regex);
-  if (!matches || R.isEmpty(matches)) {
+  if (!matches) {
     return BAD_VERSION;
   }
 
-  const numericVersionNumbers = R.filter(match => !isNaN(match), matches);
-  if (numericVersionNumbers.length > 0) {
-    return normalizeVersion(numericVersionNumbers);
-  }
-  return matches[1];
+  const validSegments = R.filter(R.complement(isNaN), matches);
+
+  return R.isEmpty(validSegments)
+    ? BAD_VERSION
+    : normalizeVersion(validSegments);
 };
 
-export const isAtleastGitVersion = gitInput =>
-  parseVersion(gitInput, versionRegexes.GIT) >= minimumVersions.GIT;
+export const isLfsRepo = workDir => fse.pathExists(path.join(workDir, '.git', 'lfs'));
 
-export const isAtleastLfsVersion = lfsInput =>
-  parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
+const handleVersionResponse = (dependencyName, response) => {
+  const {
+    raw,
+    stderr,
+    success,
+    version
+  } = response;
 
-export const dependencyCheck = () => {
-  const response = generateResponse();
-  return LFSVersion().then((responseObject) => {
-    if (!responseObject.success) {
-      throw new Error(responseObject.stderr);
-    }
+  if (!success) {
+    throw new Error(stderr);
+  }
 
-    response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
-    response.lfs_exists = parseVersion(
-      responseObject.version,
-      versionRegexes.VERSION,
-    ) !== BAD_VERSION;
-    response.lfs_raw = responseObject.raw;
+  const exists = version !== BAD_VERSION;
+  const meetsVersion = exists && version >= minimumVersions[dependencyName];
 
-    return core.git('--version');
-  })
-  .then(({ stdout }) => {
-    response.git_meets_version = isAtleastGitVersion(stdout);
-    response.git_exists = parseVersion(
-      stdout,
-      versionRegexes.VERSION,
-    ) !== BAD_VERSION;
-    response.git_raw = stdout;
-    return response;
-  })
-  .catch((err) => {
-    response.success = false;
-    response.errno = BAD_VERSION;
-    response.stderr = 'Git LFS does not exist';
-    response.raw = err.message;
-    return response;
-  });
+  const constructKey = key => `${R.toLower(dependencyName)}_${key}`;
+  return {
+    [constructKey('exists')]: exists,
+    [constructKey('meets_version')]: meetsVersion,
+    [constructKey('raw')]: raw
+  };
+};
+
+export const dependencyCheck = () =>
+  Promise.all([
+    gitVersion(),
+    lfsVersion()
+  ])
+    .then(([gitResponse, lfsResponse]) => ({
+      ...generateResponse(),
+      ...handleVersionResponse('GIT', gitResponse),
+      ...handleVersionResponse('LFS', lfsResponse)
+    }));
+
+export const __TESTING__ = { // eslint-disable-line no-underscore-dangle
+  handleVersionResponse,
+  normalizeVersion
 };
