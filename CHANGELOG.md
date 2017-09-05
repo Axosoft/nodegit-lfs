@@ -1,3 +1,7 @@
+# Changelog for v0.0.11
+
+- Updated the `spawnHelper` to successfully kill processes. It was leaving rogue processes around before.
+
 # Changelog for v0.0.10
 
 - Added the credentials callback to `git lfs checkout` in case it invokes the smudge filters manually
