@@ -57,21 +57,29 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
   (resolve, reject) => {
     const bufferList = [];
     let currentSize = 0;
-    let resolved = false;
+    let shouldReject = false; // in case an error is thrown but it is null or undefined
+    let error;
+    let rejectionHandler;
 
-    const closedOrEnded = () => {
-      // For some reason this fires twice so after
-      // the first fire let's move on
-      if (!resolved) {
-        mainResolve({ stdout: Buffer.concat(bufferList) });
-        resolved = true;
-        closeProcess();
+    const handleErrorWith = _rejectionHandler => (_error) => {
+      error = _error;
+      rejectionHandler = _rejectionHandler;
+      shouldReject = true;
+    };
+
+    const closed = () => {
+      closeProcess();
+
+      if (shouldReject) {
+        rejectionHandler(error);
+        return;
       }
+
+      mainResolve({ stdout: Buffer.concat(bufferList) });
     };
 
     const socketServer = net.createServer((socket) => {
-      socket.on('end', closedOrEnded);
-      socket.on('close', closedOrEnded);
+      socket.on('close', closed);
       socket.on('data', (data) => {
         currentSize += data.length;
         bufferList.push(data);
@@ -79,14 +87,14 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
           socketServer.close(() => {});
         }
       });
-      socket.on('error', mainReject);
+      socket.on('error', handleErrorWith(mainReject));
     });
     socketServer.listen(socketName);
     socketServer.on('listening', () => {
       resolve(socketName);
     });
-    socketServer.on('error', reject);
-    socketServer.on('close', closedOrEnded);
+    socketServer.on('error', handleErrorWith(reject));
+    socketServer.on('close', closed);
   });
 
 export const spawnShell = (command, opts, size, callback) => new Promise(
@@ -170,14 +178,26 @@ const spawn = (command, opts, callback) => new Promise(
       stdout += processChunk(data);
     });
 
-    const closeOrExit = (code = 0) => resolve({
-      code,
-      stdout,
+    let shouldReject = false; // in case an error is thrown but it is null or undefined
+    let error;
+    spawnedProcess.on('error', (_error) => {
+      error = _error;
+      shouldReject = true;
     });
+    spawnedProcess.on('exit', (code = 0) => {
+      // without this call, we will leave winpty-agents around.
+      spawnedProcess.destroy();
 
-    spawnedProcess.on('close', closeOrExit);
-    spawnedProcess.on('exit', closeOrExit);
-    spawnedProcess.on('error', reject);
+      if (shouldReject) {
+        reject(error);
+        return;
+      }
+
+      resolve({
+        code,
+        stdout,
+      });
+    });
   });
 
 export default spawn;
