@@ -132,23 +132,15 @@ describe('spawnHelper', () => {
 
   describe('buildCredentialsCallbackProcess', () => {
     describe('when prompted for a username', () => {
-      describe('when a username has not been cached', () => {
-        it('calls the callback to obtain a username and password and writes the username out', todo);
-      });
-
-      describe('when the username has been cached', () => {
-        it('writes the cached username out', todo);
-      });
+      it('calls the callback to obtain a username and writes it out', todo);
     });
 
     describe('when prompted for a password', () => {
-      describe('when a password was provided by the callback', () => {
-        it('writes the password out', todo);
-      });
+      it('calls the callback to obtain a password and writes it out', todo);
+    });
 
-      describe('when a password was not provided by the callback', () => {
-        it('calls the callback to obtain a password only and writes the password out', todo);
-      });
+    describe('when prompted for a passphrase', () => {
+      it('calls the callback to obtain a passphrase and writes it out', todo);
     });
 
     it('allows the callback to cancel', todo);

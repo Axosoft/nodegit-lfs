@@ -136,6 +136,16 @@ describe('helpers', () => {
   });
 
   describe('verifyOutput', () => {
-    describe('when the provided stats ')
+    describe('when no errors occurred', () => {
+      it('no-ops', todo);
+    });
+
+    describe('when all parses failed', () => {
+      it('throws', todo);
+    });
+
+    describe('when the provided input contains a permissions error', () => {
+      it('throws', todo);
+    });
   });
 });

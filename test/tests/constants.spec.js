@@ -12,8 +12,16 @@ describe('constants', () => {
       it('parses `git-lfs` version output', todo);
     });
 
+    describe('PASSPHRASE', () => {
+      it('parses a passphrase prompt', todo);
+    });
+
     describe('PASSWORD', () => {
       it('parses a password prompt', todo);
+    });
+
+    describe('PERMISSION_DENIED', () => {
+      it('parses a permission denied error', todo);
     });
 
     describe('SKIPPED_BYTES', () => {
