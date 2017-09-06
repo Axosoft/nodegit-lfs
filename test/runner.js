@@ -1,54 +1,121 @@
-const fse = require('fs-extra');
-const path = require('path');
-const NodeGit = require('nodegit');
-const LFS = require('../build/src');
+import chai from 'chai';
+import fse from 'fs-extra';
+import path from 'path';
+import NodeGit from 'nodegit';
+import sinonChai from 'sinon-chai';
 
-const exec = require('../build/src/utils/execHelper').default;
-const git = require('../build/src/commands/lfsCommands').core.git;
+import {
+  core
+} from '../build/src/commands/lfsCommands';
+import {
+  cachedLfsTestRemotePath,
+  emptyRepoPath,
+  lfsTestRepoPath,
+  lfsTestRepoUrl,
+  lfsTestRemotePath,
+  testReposPath
+} from './constants';
 
-const testLFSServer = require('./server/server');
+import LFS from '../build/src';
 
-const testReposPath = path.join(__dirname, 'repos');
-const lfsRepoPath = path.join(testReposPath, 'lfs-test-repository');
-const emptyRepoPath = path.join(testReposPath, 'empty');
+import * as testLFSServer from './server/server';
 
-before(function () { // eslint-disable-line prefer-arrow-callback
-  this.timeout(30000);
+// http://eng.wealthfront.com/2016/11/03/handling-unhandledrejections-in-node-and-the-browser/
+process.on('unhandledRejection', (err) => {
+  console.error('CAUGHT ERROR:', err); // eslint-disable-line no-console
 
-  const testRepoUrl = 'https://github.com/jgrosso/nodegit-lfs-test-repo';
-  return testLFSServer.start()
-    .then(() => fse.remove(testReposPath))
-    .then(() => fse.mkdir(testReposPath))
-    .then(() => fse.mkdir(lfsRepoPath))
-    .then(() => fse.mkdir(emptyRepoPath))
-    .then(() => git(`init ${emptyRepoPath}`))
-    .then(() => git(`clone ${testRepoUrl} ${lfsRepoPath}`, {
+  try {
+    testLFSServer.stop();
+  } catch (e) {
+    // The server may not have been started yet
+  }
+
+  process.exit(1);
+});
+
+chai.use(sinonChai);
+
+// We cache the test remote to avoid the overhead of re-cloning it before each test.
+const cacheLfsTestRemote = () =>
+  fse.remove(cachedLfsTestRemotePath)
+    .then(() => core.git(`clone ${lfsTestRepoUrl} ${cachedLfsTestRemotePath}`, {
+      env: {
+        GIT_SSL_NO_VERIFY: 1
+      }
+    }));
+
+// We have to re-copy the test remote before each test to avoid pollution in pull, fetch, etc. tests
+const setupLfsTestRemote = () =>
+  fse.remove(lfsTestRemotePath)
+    .then(() => fse.copy(cachedLfsTestRemotePath, lfsTestRemotePath));
+
+const setupLfsTestRepo = () =>
+  fse.remove(lfsTestRepoPath)
+    .then(() => core.git(`clone ${lfsTestRemotePath} ${lfsTestRepoPath}`, {
       env: {
         GIT_SSL_NO_VERIFY: 1
       }
     }))
     .then(() => fse.appendFile(
-      path.join(lfsRepoPath, '.git', 'config'),
+      path.join(cachedLfsTestRemotePath, '.git', 'config'),
 `[http]
   sslverify = false`
-    ))
-    .catch((err) => { throw new Error(err); });
+    ));
+
+const setupEmptyTestRepo = () =>
+  fse.remove(emptyRepoPath)
+    .then(() => core.git(`init ${emptyRepoPath}`));
+
+before(function () { // eslint-disable-line prefer-arrow-callback
+  this.timeout(30000);
+
+  this.NodeGitLFS = LFS(NodeGit);
+
+  return testLFSServer.start()
+    .then(() => fse.remove(testReposPath))
+    .then(() => fse.mkdir(testReposPath))
+    .then(() => cacheLfsTestRemote());
 });
 
-beforeEach(() => {
-  return exec('git clean -xdf && git reset --hard', { cwd: lfsRepoPath })
-    .then(() => exec('git clean -xdff', { cwd: emptyRepoPath }));
+beforeEach(function () {
+  const {
+    NodeGitLFS
+  } = this;
+
+  return NodeGitLFS.LFS.register()
+    .then(() => setupEmptyTestRepo())
+    .then(() => NodeGitLFS.Repository.open(emptyRepoPath))
+    .then((emptyRepo) => {
+      this.emptyRepo = emptyRepo;
+    })
+    .then(() => setupLfsTestRemote())
+    .then(() => setupLfsTestRepo())
+    .then(() => NodeGitLFS.Repository.open(lfsTestRepoPath))
+    .then((lfsTestRepo) => {
+      this.lfsTestRepo = lfsTestRepo;
+    });
 });
 
-after(() => {
+after(function () {
+  const {
+    NodeGitLFS
+  } = this;
+
   testLFSServer.stop();
-});
 
-afterEach(() => {
-  const NodeGitLFS = LFS(NodeGit);
   return NodeGitLFS.LFS.unregister()
     .catch((error) => {
       // -3 implies LFS filter was not registered
-      if (error.errno !== -3) { throw error; }
+      if (error.errno !== -3) {
+        throw error;
+      }
     });
+});
+
+afterEach(function () {
+  const {
+    NodeGitLFS
+  } = this;
+
+  return NodeGitLFS.LFS.unregister();
 });

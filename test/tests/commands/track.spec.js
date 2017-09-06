@@ -1,16 +1,13 @@
-import NodeGit from 'nodegit';
-import path from 'path';
-import { todo } from '../../utils';
-import LFS from '../../../build/src';
-import track from '../../../build/src/commands/track';
+import {
+  todo
+} from '../../utils';
 
-describe('Track', () => {
-  it('does generate track response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
+describe('track', () => {
+  describe('the default export', () => {
+    it('tracks the provided globs', todo);
 
-    return NodeGitLFS.Repository.open(workdirPath)
-      .then(repo => track(repo, ['*.png', '*.dmg']))
-      .then(() => todo());
+    it('requires globs to be provided', todo);
+
+    it('handles errors', todo);
   });
 });

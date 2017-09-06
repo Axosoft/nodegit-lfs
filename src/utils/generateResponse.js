@@ -4,7 +4,7 @@ const generateResponse = () => ({
   success: true,
   errno: Error.CODE.OK,
   raw: '',
-  stderr: '',
+  stderr: ''
 });
 
 export default generateResponse;

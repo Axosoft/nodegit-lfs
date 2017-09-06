@@ -1,76 +1,123 @@
+import {
+  expect
+} from 'chai';
+import fse from 'fs-extra';
 import path from 'path';
-import NodeGit from 'nodegit';
-import { todo } from '../../utils';
-import LFS from '../../../build/src';
-import exec from '../../../build/src/utils/execHelper';
-import track from '../../../build/src/commands/track';
 
-const commitFile = (repo, fileName, commitMessage) => {
+import {
+  lfsTestRepoPath
+} from '../../constants';
+import {
+  createDummyFile,
+  getFilePointer
+} from '../../utils';
+
+import trackCommand from '../../../build/src/commands/track';
+
+const track = (repo, globs) => {
   let index;
-  let treeOid;
-  let parent;
 
-  return repo.refreshIndex()
-    .then((indexResult) => {
-      index = indexResult;
+  return trackCommand(repo, globs)
+    .then(() => repo.index())
+    .then((_index) => {
+      index = _index;
+      return index.addByPath('.gitattributes');
     })
-    .then(() => index.addByPath(fileName))
-    .then(() => index.write())
-    .then(() => index.writeTree())
-    .then((oidResult) => {
-      treeOid = oidResult;
-      return NodeGit.Reference.nameToId(repo, 'HEAD');
-    })
-    .then(head => repo.getCommit(head))
-    .then((parentResult) => {
-      parent = parentResult;
-      return NodeGit.Signature.default(repo);
-    })
-    .then(signatures =>
-      repo.createCommit(
-        'HEAD',
-        signatures,
-        signatures,
-        commitMessage,
-        treeOid,
-        [parent]));
+    .then(() => index.write());
 };
 
-describe('Apply', () => {
-  it('Clean', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
-    let repository;
+describe('apply', () => {
+  beforeEach(function () {
+    const {
+      lfsTestRepo,
+      NodeGitLFS
+    } = this;
 
-    return NodeGitLFS.Repository.open(workdirPath)
-      .then((repo) => {
-        repository = repo;
-        return track(repo, ['*.md']);
+    const testFileSize = 2000000;
+    this.testFileName = 'bigFileTest.md';
+
+    this.commitFile = (repo, fileName, commitMessage) => {
+      let index;
+      let treeOid;
+      let parent;
+
+      return repo.refreshIndex()
+        .then((indexResult) => {
+          index = indexResult;
+        })
+        .then(() => index.addByPath(fileName))
+        .then(() => index.write())
+        .then(() => index.writeTree())
+        .then((oidResult) => {
+          treeOid = oidResult;
+          return NodeGitLFS.Reference.nameToId(repo, 'HEAD');
+        })
+        .then(head => repo.getCommit(head))
+        .then((parentResult) => {
+          parent = parentResult;
+          return NodeGitLFS.Signature.default(repo);
+        })
+        .then(signatures =>
+          repo.createCommit(
+            'HEAD',
+            signatures,
+            signatures,
+            commitMessage,
+            treeOid,
+            [parent]
+          ));
+    };
+
+    this.trackTestFile = () =>
+      track(lfsTestRepo, [this.testFileName])
+        .then(() => createDummyFile(
+          path.join(lfsTestRepoPath, this.testFileName),
+          testFileSize
+        ))
+        .then((contents) => {
+          this.contents = contents;
+        })
+        .then(() => this.commitFile(lfsTestRepo, this.testFileName, 'LFS filter tests'));
+
+    this.verifyTestFileTracked = () =>
+      fse.readFile(path.join(lfsTestRepoPath, this.testFileName), 'utf8')
+      .then((contents) => {
+        expect(contents).to.equal(this.contents);
       })
-      .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: workdirPath }))
-      .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
-      .then(() => todo());
+      .then(() => getFilePointer(lfsTestRepoPath, this.testFileName))
+      .then((pointer) => {
+        expect(pointer).to.have.string(`size ${testFileSize}`);
+      });
   });
 
-  it('Smudge', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
-    let repository;
+  describe('clean', () => {
+    it('cleans LFS-tracked files', function () {
+      const {
+      trackTestFile,
+        verifyTestFileTracked
+    } = this;
 
-    return NodeGitLFS.Repository.open(workdirPath)
-      .then((repo) => {
-        repository = repo;
-        return repo;
-      })
-      .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', { cwd: workdirPath }))
-      .then(() => {
-        const opts = {
-          checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
-        };
-        return NodeGit.Checkout.head(repository, opts);
-      })
-      .then(() => todo());
+      return trackTestFile()
+        .then(() => verifyTestFileTracked());
+    });
+  });
+
+  describe('smudge', () => {
+    it('smudges LFS blobs', function () {
+      const {
+        NodeGitLFS,
+        lfsTestRepo,
+        testFileName,
+        trackTestFile,
+        verifyTestFileTracked
+      } = this;
+
+      return trackTestFile()
+        .then(() => createDummyFile(path.join(lfsTestRepoPath, testFileName), 5))
+        .then(() => NodeGitLFS.Checkout.head(lfsTestRepo, {
+          checkoutStrategy: NodeGitLFS.Checkout.STRATEGY.FORCE
+        }))
+        .then(() => verifyTestFileTracked());
+    }).timeout(10000);
   });
 });

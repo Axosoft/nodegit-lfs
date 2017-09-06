@@ -1,5 +1,11 @@
-const fse = require('fs-extra');
-const { spawn } = require('child_process');
+import fse from 'fs-extra';
+import {
+  spawn
+} from 'child_process';
+
+import {
+  spawnOnRemote
+} from '../utils';
 
 let serverPid = null;
 
@@ -17,45 +23,75 @@ const getWin32BashCommand = () => {
   return `"${shPath}" `;
 };
 
-module.exports = {
-  start() {
-    if (serverPid) {
-      throw new Error('LFS test server has already been started!');
-    }
+export const populateCurrentBranch = () =>
+  spawnOnRemote('sh ../initializeObjects.sh');
 
-    return new Promise((resolve, reject) => {
-      const cmdRunner = process.platform === 'win32'
-        ? getWin32BashCommand()
-        : './';
-      const server = spawn(`${cmdRunner}start.sh`, {
-        cwd: __dirname,
-        shell: true
-      });
-      server.stdout.on('data', (data) => {
-        // Store outputted server PID
-        const pid = data.toString().match(/pid=(\d+)/);
-        if (pid) {
-          serverPid = parseInt(pid[1], 10);
-          return resolve();
-        }
-
-        // Handle Go errors
-        const err = data.toString().match(/ err=(.*)/);
-        if (err) {
-          throw new Error(err[1]);
-        }
-      });
-      server.stderr.on('data', (err) => {
-        throw new Error(err.toString());
-      });
-    });
-  },
-
-  stop() {
-    if (!serverPid) {
-      throw new Error("LFS test server hasn't been started!");
-    }
-
-    process.kill(serverPid, 'SIGKILL');
+export const start = () => {
+  if (serverPid) {
+    throw new Error('LFS test server has already been started!');
   }
+
+  let stderr = '';
+  let stdout = '';
+
+  return new Promise((resolve, reject) => {
+    const cmdRunner = process.platform === 'win32'
+      ? getWin32BashCommand()
+      : './';
+    const server = spawn(`${cmdRunner}start.sh`, {
+      cwd: __dirname,
+      shell: true
+    });
+    server.stdout.on('data', (chunk) => {
+      const data = chunk.toString();
+
+      stdout += data;
+
+      // Store outputted server PID
+      const pid = data.match(/pid=(\d+)/);
+      if (pid) {
+        serverPid = parseInt(pid[1], 10);
+        return resolve();
+      }
+
+      // Handle Go errors
+      const err = data.match(/ err=(.*)/);
+      if (err) {
+        throw new Error(err[1]);
+      }
+    });
+    server.stderr.on('data', (chunk) => {
+      const data = chunk.toString();
+
+      stderr += data;
+    });
+    server.on('exit', code => (
+      code === 0
+        ? resolve()
+        : reject({ code, stderr, stdout })
+    ));
+  });
 };
+
+export const stop = () => {
+  if (!serverPid) {
+    throw new Error("LFS test server hasn't been started!");
+  }
+
+  process.kill(serverPid, 'SIGKILL');
+};
+
+export const withRemoteBranch = (branchName, fn) => {
+  let result;
+
+  return spawnOnRemote(`git checkout -b ${branchName}`)
+    .then(() => fn())
+    .then((_result) => {
+      result = _result;
+      return spawnOnRemote('git checkout master');
+    })
+    .then(() => result);
+};
+
+export const populateRemoteBranch = branchName =>
+  withRemoteBranch(branchName, populateCurrentBranch);
