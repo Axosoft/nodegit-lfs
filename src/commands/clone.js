@@ -2,13 +2,13 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_REGEX_PARSE_RESULT,
+  BAD_REGEX_PARSE_RESULT
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 import {
-  regexResult,
   errorCatchHandler,
-  verifyOutput } from '../helpers';
+  verifyOutput
+} from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -19,7 +19,7 @@ const generateCloneStats = (raw) => {
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
 
-    const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
+    const byteResults = statLine.match(regex.TOTAL_BYTES);
 
     stats.total_bytes_cloned =
       byteResults !== null ?
@@ -29,19 +29,19 @@ const generateCloneStats = (raw) => {
       byteResults !== null ?
         byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const fileResults = regexResult(statLine, regex.TOTAL_FILES);
+    const fileResults = statLine.match(regex.TOTAL_FILES);
 
     stats.total_files_cloned =
       fileResults !== null ?
         fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
+    const skippedByteResults = statLine.match(regex.SKIPPED_BYTES);
 
     stats.total_bytes_skipped =
       skippedByteResults !== null ?
         skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
+    const skippedFileResults = statLine.match(regex.SKIPPED_FILES);
 
     stats.total_files_skipped =
       skippedFileResults !== null ?
@@ -66,16 +66,16 @@ function clone(url, cwd, options) {
   const {
     branch,
     callback,
+    env = {}
   } = (options || {});
   const args = branch ? `-b ${branch}` : '';
 
-  const response = generateResponse();
-  return core.clone(`${url} ${args}`, { cwd }, callback)
-    .then(({ stdout }) => {
-      response.raw = stdout;
-      response.clone = generateCloneStats(stdout);
-      return response;
-    }, errorCatchHandler(response));
+  return core.clone(`${url} ${args}`, { cwd, env }, callback)
+    .then(({ stdout }) => ({
+      ...generateResponse(),
+      raw: stdout,
+      clone: generateCloneStats(stdout)
+    }), errorCatchHandler);
 }
 
 export default clone;

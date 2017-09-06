@@ -12,7 +12,7 @@ function register(credentialsCallback) {
     apply: buildApply(credentialsCallback),
     check,
     initialize,
-    attribute: 'filter=lfs',
+    attribute: 'filter=lfs'
   };
 
   return this.NodeGit.FilterRegistry.register(LFS_FILTER_NAME, filter, 0);

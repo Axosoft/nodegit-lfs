@@ -1,7 +1,7 @@
 import R from 'ramda';
 import { core } from './lfsCommands';
 import {
-  BAD_CORE_RESPONSE,
+  BAD_CORE_RESPONSE
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
@@ -47,18 +47,18 @@ const buildArgs = (options) => {
 };
 
 const ls = (repo, options) => {
-  const response = generateResponse();
-  const repoPath = repo.workdir();
   const args = buildArgs(options);
 
-  return core.ls(args, { cwd: repoPath })
+  return core.ls(args, { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
+      const response = generateResponse();
       response.raw = stdout;
 
-      if (stderr.length > 0) {
+      if (stderr) {
+        response.errno = BAD_CORE_RESPONSE;
         response.stderr = stderr;
         response.success = false;
-        response.errno = BAD_CORE_RESPONSE;
+        return response;
       }
 
       response.files = extractFileNames(stdout);

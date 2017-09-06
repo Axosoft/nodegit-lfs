@@ -2,14 +2,14 @@ import R from 'ramda';
 import { core } from './lfsCommands';
 import {
   regex,
-  BAD_REGEX_PARSE_RESULT,
   BAD_CORE_RESPONSE,
+  BAD_REGEX_PARSE_RESULT
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 import {
-  regexResult,
   verifyOutput,
-  errorCatchHandler } from '../helpers';
+  errorCatchHandler
+} from '../helpers';
 
 const isValidLine = str => str !== '';
 
@@ -20,7 +20,7 @@ const generatePullStats = (raw) => {
     const filteredLines = R.filter(isValidLine, outputLines);
     const statLine = filteredLines.pop();
 
-    const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
+    const byteResults = statLine.match(regex.TOTAL_BYTES);
 
     stats.total_bytes_pulled =
       byteResults !== null ?
@@ -30,19 +30,19 @@ const generatePullStats = (raw) => {
       byteResults !== null ?
         byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const fileResults = regexResult(statLine, regex.TOTAL_FILES);
+    const fileResults = statLine.match(regex.TOTAL_FILES);
 
     stats.total_files_pulled =
       fileResults !== null ?
         fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
+    const skippedByteResults = statLine.match(regex.SKIPPED_BYTES);
 
     stats.total_bytes_skipped =
       skippedByteResults !== null ?
         skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
+    const skippedFileResults = statLine.match(regex.SKIPPED_FILES);
 
     stats.total_files_skipped =
       skippedFileResults !== null ?
@@ -60,37 +60,31 @@ const generatePullStats = (raw) => {
 };
 
 function pull(repo, options) {
-  const response = generateResponse();
-  const repoPath = repo.workdir();
-
   const args = [];
   const {
     remoteName,
-    branchName,
-    callback,
+    callback
   } = (options || {});
 
   if (remoteName) {
     args.push(remoteName);
   }
-  if (branchName) {
-    args.push(branchName);
-  }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.pull(argsString, { cwd: repo.workdir(), shell: true }, callback)
     .then(({ stdout }) => {
+      const response = generateResponse();
       response.raw = stdout;
       response.pull = generatePullStats(stdout);
 
       if (response.pull.pull_error) {
-        response.success = false;
-        response.stderr = response.pull.pull_error;
         response.errno = BAD_CORE_RESPONSE;
+        response.stderr = response.pull.pull_error;
+        response.success = false;
       }
 
       return response;
-    }, errorCatchHandler(response));
+    }, errorCatchHandler);
 }
 
 export default pull;

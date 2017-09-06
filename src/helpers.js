@@ -3,11 +3,12 @@ import path from 'path';
 import R from 'ramda';
 
 import {
-  LFS_ATTRIBUTE,
   BAD_CORE_RESPONSE,
   BAD_REGEX_PARSE_RESULT,
-  regex,
+  LFS_ATTRIBUTE,
+  regex
 } from './constants';
+import generateResponse from './utils/generateResponse';
 
 export const getGitattributesPathFromRepo = repo => path.join(repo.workdir(), '.gitattributes');
 
@@ -49,8 +50,6 @@ export const repoHasLfsObjectBin = repo =>
 export const repoHasLfs = repo => repoHasLfsFilters(repo)
     .then(hasFilters => hasFilters || repoHasLfsObjectBin(repo));
 
-export const regexResult = (input, regularExpression) => input.match(regularExpression);
-
 export const verifyOutput = (stats, raw) => {
   // Check to see if it was a permissions error
   const wasPermissionDenied = raw.trim().toLowerCase().match(regex.PERMISSION_DENIED);
@@ -76,14 +75,16 @@ export const verifyOutput = (stats, raw) => {
   }
 };
 
-export const errorCatchHandler = response => (err) => {
+export const errorCatchHandler = (code) => {
   // This is a manually detected error we get from LFS
-  if (err.errno === BAD_CORE_RESPONSE) {
-    response.stderr = response.raw;
-    response.errno = BAD_CORE_RESPONSE;
-    response.success = false;
-    return response;
+  if (code === BAD_CORE_RESPONSE) {
+    return {
+      ...generateResponse(),
+      errno: BAD_CORE_RESPONSE,
+      stderr: '',
+      success: false
+    };
   }
 
-  throw err;
+  throw code;
 };

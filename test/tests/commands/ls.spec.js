@@ -1,16 +1,13 @@
-import NodeGit from 'nodegit';
-import path from 'path';
-import { todo } from '../../utils';
-import LFS from '../../../build/src';
-import ls from '../../../build/src/commands/ls';
+import {
+  todo
+} from '../../utils';
 
-describe('ls-files', () => {
-  it('does generate ls response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
+describe('ls', () => {
+  describe('the default export', () => {
+    it('builds args from the provided options', todo);
 
-    return NodeGitLFS.Repository.open(workdirPath)
-      .then(repo => ls(repo, { long: true }))
-      .then(() => todo());
+    it('lists LFS-tracked files in the provided repo', todo);
+
+    it('handles errors', todo);
   });
 });

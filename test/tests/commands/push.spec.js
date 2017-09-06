@@ -1,19 +1,21 @@
-import path from 'path';
-import NodeGit from 'nodegit';
-import { todo } from '../../utils';
-import LFS from '../../../build/src';
-import exec from '../../../build/src/utils/execHelper';
+import {
+  todo
+} from '../../utils';
 
-describe('Push', () => {
-  it('should generate push response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
+describe('push', () => {
+  describe('the default export', () => {
+    describe('when not provided a remote', () => {
+      it('defaults to the current branch and its upstream', todo);
+    });
 
-    return exec('base64 /dev/urandom | head -c 20 > test_file.txt', { cwd: workdirPath })
-      .then(() => exec('git add test_file.txt', { cwd: workdirPath }))
-      .then(() => exec('git commit -m "LFS: push unit test"', { cwd: workdirPath }))
-      .then(() => NodeGitLFS.Repository.open(workdirPath))
-      .then(repo => NodeGitLFS.LFS.push(repo, 'origin', 'test'))
-      .then(() => todo());
+    describe('when provided a remote', () => {
+      describe('when provided a branch', () => {
+        it('pushes', todo);
+      });
+
+      describe('when not provided a branch', () => {
+        it('pushes', todo);
+      });
+    });
   });
-}).timeout(5000);
+});

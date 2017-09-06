@@ -24,10 +24,27 @@ const buildSocketPath = () => tmp.dir()
     return path.join(prefix, cleanedPath, 'echo.sock');
   });
 
+/**
+ * Flow type definition:
+ *
+ * type BuildCredentialsCallbackProcess =
+ *   (
+ *     spawnedProcess: ChildProcess,
+ *     callback: (
+ *       output: string,
+ *       callback: (promptType: string) =>
+ *                 (username: string, password: ?string, cancel: boolean) =>
+ *                 void
+ *       ) => void
+ *     ),
+ *     reject: Error => Promise<void>
+ *   ) =>
+ *   (chunk: Buffer) =>
+ *   string;
+ */
 const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
   const credentialsCallback = promptType => (username, password, cancel) => {
     if (cancel) {
-      // we are done here
       spawnedProcess.destroy();
       return reject(new Error('LFS action cancelled'));
     }
@@ -49,6 +66,7 @@ const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
     } else if (output.match(regex.PASSPHRASE)) {
       callback(output, credentialsCallback(promptTypes.PASSPHRASE));
     }
+
     return output;
   };
 };
@@ -89,6 +107,7 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
       });
       socket.on('error', handleErrorWith(mainReject));
     });
+
     socketServer.listen(socketName);
     socketServer.on('listening', () => {
       resolve(socketName);
@@ -97,14 +116,17 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
     socketServer.on('close', closed);
   });
 
-export const spawnShell = (command, opts, size, callback) => new Promise(
+export const spawnShell = (command, opts = {}, size, callback) => new Promise(
   (resolve, reject) => {
     let spawnedProcess;
     const destroyProcess = () => spawnedProcess.destroy();
     return buildSocketPath()
       .then(socket => buildSocket(size, destroyProcess, socket, resolve, reject))
       .then((socketName) => {
-        const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
+        const options = R.mergeDeepRight(
+          { env: process.env },
+          R.mergeDeepRight(opts, { encoding: null })
+        );
 
         spawnedProcess = pty.spawn(defaultShell, [], options);
 
@@ -128,9 +150,12 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
       .catch(reject);
   });
 
-export const winSpawn = (command, input, opts) => new Promise(
+export const winSpawn = (command, input, opts = {}) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
+    const options = R.mergeDeepRight(
+      { env: process.env },
+      R.mergeDeepRight(opts, { shell: true })
+    );
 
     const argList = command.trim().split(' ');
     const cmd = argList.shift();
@@ -145,7 +170,7 @@ export const winSpawn = (command, input, opts) => new Promise(
 
     const closeOrExit = (code = 0) => resolve({
       code,
-      stdout: Buffer.concat(bufferList),
+      stdout: Buffer.concat(bufferList)
     });
 
     spawnedProcess.on('close', closeOrExit);
@@ -159,9 +184,9 @@ export const winSpawn = (command, input, opts) => new Promise(
   }
 );
 
-const spawn = (command, opts, callback) => new Promise(
+const spawn = (command, opts = {}, callback) => new Promise(
   (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env });
+    const options = R.mergeDeepRight({ env: process.env }, opts);
 
     const argList = command.trim().split(' ');
     const cmd = argList.shift() + (IS_WINDOWS ? '.exe' : '');
@@ -195,9 +220,15 @@ const spawn = (command, opts, callback) => new Promise(
 
       resolve({
         code,
-        stdout,
+        stdout
       });
     });
   });
 
 export default spawn;
+
+export const __TESTING__ = { // eslint-disable-line no-underscore-dangle
+  buildCredentialsCallbackProcess,
+  buildSocket,
+  buildSocketPath
+};

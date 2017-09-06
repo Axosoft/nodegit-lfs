@@ -3,7 +3,7 @@ import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
 import {
   regex as Regex,
-  BAD_CORE_RESPONSE,
+  BAD_CORE_RESPONSE
 } from '../constants';
 
 const isString = str => typeof str === 'string';
@@ -22,17 +22,16 @@ const untrack = (repo, globs) => {
     R.filter(isString),
     R.map(g => `${ticks}${g}${ticks}`)
   )(globs);
-  const response = generateResponse();
-  const repoPath = repo.workdir();
 
-  return core.untrack(R.join(' ', filteredGlobs), { cwd: repoPath })
+  return core.untrack(R.join(' ', filteredGlobs), { cwd: repo.workdir() })
     .then(({ stdout, stderr }) => {
+      const response = generateResponse();
       response.raw = stdout;
 
       if (stderr) {
-        response.success = false;
         response.errno = BAD_CORE_RESPONSE;
         response.stderr = stderr;
+        response.success = false;
         return response;
       }
 

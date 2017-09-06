@@ -1,18 +1,13 @@
-import NodeGit from 'nodegit';
-import path from 'path';
-import { todo } from '../../utils';
-import LFS from '../../../build/src';
-import pointer from '../../../build/src/commands/pointer';
+import {
+  todo
+} from '../../utils';
 
-describe('Pointer', () => {
-  it('does generate pointer response', () => {
-    const workdirPath = path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository');
-    const NodeGitLFS = LFS(NodeGit);
+describe('pointer', () => {
+  describe('the default export', () => {
+    it('creates args from the provided file and pointer paths', todo);
 
-    const packageJson = path.join(workdirPath, 'package.json');
+    it('builds a pointer', todo);
 
-    return NodeGitLFS.Repository.open(workdirPath)
-      .then(repo => pointer(repo, packageJson))
-      .then(() => todo());
+    it('handles errors', todo);
   });
 });
