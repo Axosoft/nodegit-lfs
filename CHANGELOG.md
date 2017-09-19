@@ -1,3 +1,7 @@
+# Changelog for v0.0.12
+
+- Updated the install routine to no longer create a `.gitattributes` for the repo.
+
 # Changelog for v0.0.11
 
 - Updated the `spawnHelper` to successfully kill processes. It was leaving rogue processes around before.
