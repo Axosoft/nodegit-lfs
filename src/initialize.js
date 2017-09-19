@@ -3,11 +3,6 @@ import path from 'path';
 import R from 'ramda';
 import { core } from './commands/lfsCommands';
 
-const createGitattributes = (workdir) => {
-  const gitattrpath = path.join(workdir, '.gitattributes');
-  return fse.ensureFile(gitattrpath);
-};
-
 const builldArgs = (options) => {
   const opts = (options || {});
   const args = [];
@@ -27,8 +22,7 @@ const initialize = (repo, options) => {
         return Promise.resolve();
       }
       return core.install(builldArgs(options), { cwd: workdir });
-    })
-    .then(() => createGitattributes(workdir));
+    });
 };
 
 export default initialize;
