@@ -1,5 +1,5 @@
 import buildApply from './callbacks/apply';
-import check from './callbacks/check';
+import buildCheck from './callbacks/check';
 import initialize from './callbacks/initialize';
 import { LFS_FILTER_NAME } from './constants';
 
@@ -10,7 +10,7 @@ import { LFS_FILTER_NAME } from './constants';
 function register(credentialsCallback) {
   const filter = {
     apply: buildApply(credentialsCallback),
-    check,
+    check: buildCheck(this.NodeGit),
     initialize,
     attribute: 'filter=lfs',
   };
