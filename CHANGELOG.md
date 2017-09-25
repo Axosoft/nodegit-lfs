@@ -1,3 +1,7 @@
+# Changelog for v0.0.13
+
+- Updated the `check` callback for filters to use the NodeGit api to find the `gitattributes` associated with a file
+
 # Changelog for v0.0.12
 
 - Updated the install routine to no longer create a `.gitattributes` for the repo.
