@@ -16,7 +16,7 @@ export const loadGitattributeFiltersFromRepo = (repo) => {
   return fse.pathExists(gitattrPath)
     .then((exists) => {
       if (!exists) {
-        throw new Error('No .gitattributes found');
+        return '';
       }
 
       return fse.readFile(gitattrPath, 'utf8');
