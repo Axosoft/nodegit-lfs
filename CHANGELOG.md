@@ -1,3 +1,8 @@
+# Changelog for v0.0.14
+
+- Updated the `check` callback for filters to use the filter api properly to find the `gitattributes` associated with a file
+- Updated the `commands/ls` command to sort by files and not sha to avoid sha conflicts
+
 # Changelog for v0.0.13
 
 - Updated the `check` callback for filters to use the NodeGit api to find the `gitattributes` associated with a file
