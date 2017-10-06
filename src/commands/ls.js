@@ -15,7 +15,7 @@ const reduceResults = (acc, value) => {
   }
 
   const shaAndFileName = value.split(match[0]);
-  acc[shaAndFileName[0].trim()] = shaAndFileName[1].trim();
+  acc[shaAndFileName[1].trim()] = shaAndFileName[0].trim();
 
   return acc;
 };
