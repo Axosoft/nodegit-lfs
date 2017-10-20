@@ -1,3 +1,7 @@
+# Changelog for v0.0.16
+
+- `dependencyCheck` now checks git and lfs even if one of them fails, and returns the parsed version number as well.
+
 # Changelog for v0.0.15
 
 - Linter errors...
