@@ -6,7 +6,7 @@ export const core = {
   clone: (args = '', options, callback) => spawn(`git lfs clone ${args}`, options, callback),
   fetch: (args = '', options, callback) => spawn(`git lfs fetch ${args}`, options, callback),
   fsck: options => exec('git lfs fsck', null, options),
-  git: (args = '', options) => spawn(`git ${args}`, options),
+  git: (args = '', options) => exec(`git ${args}`, null, options),
   install: (args = '', options) => exec(`git lfs install ${args}`, null, options),
   logs: (args = '', options) => exec(`git lfs logs ${args}`, null, options),
   ls: (args = '', options) => exec(`git lfs ls-files ${args}`, null, options),

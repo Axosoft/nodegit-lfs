@@ -1,5 +1,4 @@
 import R from 'ramda';
-import LFSVersion from '../commands/version';
 import generateResponse from './generateResponse';
 import { core } from '../commands/lfsCommands';
 
@@ -44,36 +43,55 @@ export const isAtleastGitVersion = gitInput =>
 export const isAtleastLfsVersion = lfsInput =>
   parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
 
+const setLfsFailed = (response) => {
+  response.success = false;
+  response.errno = BAD_VERSION;
+  response.lfs_meets_version = false;
+  response.lfs_exists = false;
+  response.lfs_raw = null;
+  response.lfs_version = null;
+};
+
+const setGitFailed = (response) => {
+  response.success = false;
+  response.errno = BAD_VERSION;
+  response.git_meets_version = false;
+  response.git_exists = false;
+  response.git_raw = null;
+  response.git_version = null;
+};
+
 export const dependencyCheck = () => {
   const response = generateResponse();
-  return LFSVersion().then((responseObject) => {
-    if (!responseObject.success) {
-      throw new Error(responseObject.stderr);
-    }
+  return core.git('--version')
+    .then(({ stdout, stderr }) => {
+      if (stderr) {
+        setGitFailed(response);
+      } else {
+        response.git_version = parseVersion(stdout, versionRegexes.GIT);
+        response.git_meets_version = isAtleastGitVersion(stdout);
+        response.git_exists = response.git_version !== BAD_VERSION;
+        response.git_raw = stdout;
+      }
+    })
+    .catch(() => {
+      setGitFailed(response);
+    })
+    .then(() => core.git('lfs version'))
+    .then(({ stdout, stderr }) => {
+      if (stderr) {
+        setLfsFailed(response);
+      } else {
+        response.lfs_version = parseVersion(stdout, versionRegexes.LFS);
+        response.lfs_meets_version = isAtleastLfsVersion(stdout);
+        response.lfs_exists = response.lfs_version !== BAD_VERSION;
+        response.lfs_raw = stdout;
+      }
 
-    response.lfs_meets_version = isAtleastLfsVersion(responseObject.version);
-    response.lfs_exists = parseVersion(
-      responseObject.version,
-      versionRegexes.VERSION,
-    ) !== BAD_VERSION;
-    response.lfs_raw = responseObject.raw;
-
-    return core.git('--version');
-  })
-  .then(({ stdout }) => {
-    response.git_meets_version = isAtleastGitVersion(stdout);
-    response.git_exists = parseVersion(
-      stdout,
-      versionRegexes.VERSION,
-    ) !== BAD_VERSION;
-    response.git_raw = stdout;
-    return response;
-  })
-  .catch((err) => {
-    response.success = false;
-    response.errno = BAD_VERSION;
-    response.stderr = 'Git LFS does not exist';
-    response.raw = err.message;
-    return response;
-  });
+      return response;
+    })
+    .catch(() => {
+      setLfsFailed(response);
+      return response;
+    });
 };
