@@ -1,3 +1,7 @@
+# Changelog for v0.0.18
+
+- `spawnHelper` now destroys sockets manually
+
 # Changelog for v0.0.17
 
 - `spawnHelper` now uses the `-i` flag with `node-pty` to allow for ssh agents to be recognized.
