@@ -120,10 +120,22 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
         spawnedProcess.write(EOL);
 
         spawnedProcess.on('data', (data) => {
+          if (data.code === 'EIO') {
+            // Do nothing, this is a node-pty error
+            return;
+          }
+
           processChunk(data);
         });
 
-        spawnedProcess.on('error', reject);
+        spawnedProcess.on('error', (err) => {
+          if (err.code === 'EIO') {
+            // Do nothing, this is a node-pty issue
+            return;
+          }
+
+          return reject(err);
+        });
       })
       .catch(reject);
   });
@@ -140,6 +152,11 @@ export const winSpawn = (command, input, opts) => new Promise(
 
     const bufferList = [];
     spawnedProcess.stdout.on('data', (data) => {
+      if (data.code === 'EIO') {
+        // Do nothing, this is a node-pty error
+        return;
+      }
+
       bufferList.push(data);
     });
 
@@ -175,12 +192,22 @@ const spawn = (command, opts, callback) => new Promise(
       : chunk => chunk.toString();
 
     spawnedProcess.on('data', (data) => {
+      if (data.code === 'EIO') {
+        // Do nothing, this is a node-pty error
+        return;
+      }
+
       stdout += processChunk(data);
     });
 
     let shouldReject = false; // in case an error is thrown but it is null or undefined
     let error;
     spawnedProcess.on('error', (_error) => {
+      if (_error.code === 'EIO') {
+        // Do nothing, this is a node-pty error
+        return;
+      }
+
       error = _error;
       shouldReject = true;
     });
