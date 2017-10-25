@@ -61,10 +61,14 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
     let error;
     let rejectionHandler;
 
-    const handleErrorWith = _rejectionHandler => (_error) => {
+    const handleErrorWith = (_rejectionHandler, socket) => (_error) => {
       error = _error;
       rejectionHandler = _rejectionHandler;
       shouldReject = true;
+
+      if (socket) {
+        socket.destroy();
+      }
     };
 
     const closed = () => {
@@ -84,10 +88,11 @@ const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) =>
         currentSize += data.length;
         bufferList.push(data);
         if (currentSize === size) {
+          socket.destroy();
           socketServer.close(() => {});
         }
       });
-      socket.on('error', handleErrorWith(mainReject));
+      socket.on('error', handleErrorWith(mainReject, socket));
     });
     socketServer.listen(socketName);
     socketServer.on('listening', () => {
