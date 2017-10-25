@@ -106,7 +106,7 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
       .then((socketName) => {
         const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
 
-        spawnedProcess = pty.spawn(defaultShell, [], options);
+        spawnedProcess = pty.spawn(defaultShell, ['-i'], options);
 
         const processChunk = callback && typeof callback === 'function'
           ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
