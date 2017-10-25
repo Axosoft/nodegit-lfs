@@ -112,11 +112,7 @@ export const spawnShell = (command, opts, size, callback) => new Promise(
           ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
           : chunk => chunk.toString();
 
-        const commandSuffix = IS_WINDOWS
-          ? ` >${socketName}`
-          : ` | nc -U ${socketName}`;
-
-        spawnedProcess.write(`${command}${commandSuffix}`);
+        spawnedProcess.write(`${command} | nc -U ${socketName}`);
         spawnedProcess.write(EOL);
 
         spawnedProcess.on('data', (data) => {
