@@ -1,3 +1,7 @@
+# Changelog for v0.0.19
+
+- Update `node-pty` to fix the high sierra issue
+
 # Changelog for v0.0.18
 
 - `spawnHelper` now destroys sockets manually
