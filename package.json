@@ -1,6 +1,6 @@
 {
   "name": "nodegit-lfs",
-  "version": "0.0.19",
+  "version": "0.1.0",
   "description": "A wrapper for NodeGit to facilitate LFS Support",
   "main": "build/src/index.js",
   "scripts": {
