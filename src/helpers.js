@@ -43,11 +43,7 @@ export const repoHasLfsFilters = repo => loadGitattributeFiltersFromRepo(repo)
   .then(filters => filters.length > 0)
   .catch(() => false);
 
-export const repoHasLfsObjectBin = repo =>
-  fse.pathExists(path.join(repo.workdir(), '.git', 'lfs'));
-
-export const repoHasLfs = repo => repoHasLfsFilters(repo)
-    .then(hasFilters => hasFilters || repoHasLfsObjectBin(repo));
+export const repoHasLfs = repoHasLfsFilters;
 
 export const regexResult = (input, regularExpression) => input.match(regularExpression);
 

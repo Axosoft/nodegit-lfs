@@ -1,3 +1,7 @@
+# Changelog for v0.1.0
+
+- Removed the `repoHasLfsBin` helper
+
 # Changelog for v0.0.19
 
 - Update `node-pty` to fix the high sierra issue
