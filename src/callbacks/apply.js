@@ -12,7 +12,7 @@ const parseSize = (ptr) => {
   return Number(ptr.substring(idx).trim());
 };
 
-export default (crednetialsCallback) => {
+export default (credentialsCallback) => {
   const clean = (to, from, source) => {
     const workdir = source.repo().workdir();
     const filePath = path.join(workdir, source.path());
@@ -22,8 +22,9 @@ export default (crednetialsCallback) => {
       .then(buf => exec(command, buf, { cwd: workdir }))
       .then(({ stdout }) => {
         const sha = new Buffer(stdout);
-        return to.set(sha, sha.length).then(() => Error.CODE.OK);
-      });
+        return to.set(sha, sha.length);
+      })
+      .then(() => Error.CODE.OK);
   };
 
   const smudge = (to, from, source) => {
@@ -40,12 +41,12 @@ export default (crednetialsCallback) => {
         `${echo} | git lfs smudge ${ticks}${filepath}${ticks}`,
         { cwd: workdir },
         size,
-        crednetialsCallback
+        credentialsCallback
       );
 
     return promise
-      .then(({ stdout }) => to.set(stdout, stdout.length)
-        .then(() => Error.CODE.OK));
+      .then(({ stdout }) => to.set(stdout, stdout.length))
+      .then(() => Error.CODE.OK);
   };
 
   let previousFilterPromise = Promise.resolve();
