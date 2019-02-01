@@ -1,6 +1,6 @@
 {
-  "name": "nodegit-lfs",
-  "version": "0.1.0",
+  "name": "nodegit-large-file-storage",
+  "version": "0.1.1",
   "description": "A wrapper for NodeGit to facilitate LFS Support",
   "main": "build/src/index.js",
   "scripts": {
