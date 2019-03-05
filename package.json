@@ -1,6 +1,6 @@
 {
   "name": "nodegit-large-file-storage",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A wrapper for NodeGit to facilitate LFS Support",
   "main": "build/src/index.js",
   "scripts": {
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/Axosoft/nodegit-lfs#readme",
   "peerDependencies": {
-    "nodegit": ">=0.20.1"
+    "nodegit": ">=0.25.0-alpha.9"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

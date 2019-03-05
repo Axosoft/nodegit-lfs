@@ -1,3 +1,6 @@
+# Changelog for v0.2.0
+- Requires nodegit v0.25.0-alpha.9 and later because of change in NodeGit API
+
 # Changelog for v0.1.0
 
 - Removed the `repoHasLfsBin` helper
