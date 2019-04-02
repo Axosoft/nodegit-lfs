@@ -4,7 +4,7 @@ import { EOL } from 'os';
 import net from 'net';
 import R from 'ramda';
 import path from 'path';
-import * as pty from 'node-pty';
+import * as pty from '@axosoft/node-pty';
 import _tmp from 'tmp';
 import promisify from 'promisify-node';
 
