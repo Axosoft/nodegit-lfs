@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@axosoft/node-pty@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.npmjs.org/@axosoft/node-pty/-/node-pty-0.8.1.tgz#53559fa196640ceec03d782c9ae59e54bb226669"
-  integrity sha512-IE+HM3XT8DazLJIV7lIEFnnKdW2F61RJiK9v3rjI3WGDwda8kN9AdefaUGiETjbLoC3Dl8gwicREPfYC08OsJQ==
+"@axosoft/node-pty@0.7.8":
+  version "0.7.8"
+  resolved "https://registry.npmjs.org/@axosoft/node-pty/-/node-pty-0.7.8.tgz#a9ae1f6fe5dea32ece8bedbc4d9f2cbc8845d5cf"
+  integrity sha512-px/92VrDQ7WNLrPQmAgQtBNuiarF4AAReob/yah3UOLIzfs4vP2Sxqz/zgMo+eCNaqhj3LGW7B7k9AyDVk9Jzw==
   dependencies:
-    nan "2.12.1"
+    nan "2.10.0"
 
 abbrev@1:
   version "1.1.0"
@@ -2317,10 +2317,10 @@ mute-stream@~0.0.4:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@2.12.1:
-  version "2.12.1"
-  resolved "https://registry.npmjs.org/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
-  integrity sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
+nan@2.10.0:
+  version "2.10.0"
+  resolved "https://registry.npmjs.org/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
+  integrity sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
 
 nan@^2.3.0:
   version "2.7.0"
