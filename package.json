@@ -1,6 +1,6 @@
 {
   "name": "@axosoft/nodegit-large-file-storage",
-  "version": "0.2.0",
+  "version": "0.2.0-fixed",
   "description": "A wrapper for NodeGit to facilitate LFS Support",
   "main": "build/src/index.js",
   "scripts": {
