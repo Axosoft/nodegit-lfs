@@ -1,0 +1,3 @@
+#!/bin/bash
+
+"$NODEGIT_LFS_NODE_PATH" "$NODEGIT_LFS_ASKPASS_PATH" $@
