@@ -1,231 +1,111 @@
 import { spawn as nodeSpawn } from 'child_process';
-import defaultShell from 'default-shell';
-import { EOL } from 'os';
-import net from 'net';
-import R from 'ramda';
 import path from 'path';
-import * as pty from 'node-pty';
-import _tmp from 'tmp';
-import promisify from 'promisify-node';
+import R from 'ramda';
+import {
+  createCredRequestId,
+  clearUsernameAndPassword,
+  ensureAuthServer,
+  getAuthServerPort,
+  getNodeBinaryPath,
+  storeUsernameAndPassword
+} from './authService';
 
-import { regex, promptTypes } from '../constants';
+const spawnCommand = (command, opts, stdin) => new Promise((resolve, reject) => {
+  const [cmd, ...args] = command.trim().split(' ');
+  const childProcess = nodeSpawn(cmd, args, R.mergeDeepRight(opts, { stdio: 'pipe' }));
 
-const tmp = promisify(_tmp);
-// Cleanup even when there are errors
-tmp.setGracefulCleanup();
+  const stdoutData = [];
+  const stderrData = [];
 
-const IS_WINDOWS = process.platform === 'win32';
+  const makeDataAccumulator = accumulator => (data) => {
+    accumulator.push(data);
+  };
 
-const buildSocketPath = () => tmp.dir()
-  .then((tmpPath) => {
-    const prefix = IS_WINDOWS ? '\\\\.\\pipe' : '';
-    let cleanedPath = IS_WINDOWS ? tmpPath.replace('C:\\', '') : tmpPath;
-    cleanedPath = cleanedPath.replace('.tmp', '');
-    return path.join(prefix, cleanedPath, 'echo.sock');
+  childProcess.stdout.on('data', makeDataAccumulator(stdoutData));
+  childProcess.stderr.on('data', makeDataAccumulator(stderrData));
+  childProcess.on('error', () => {
+    reject({ status: null, stdout: '', stderr: '' });
+  });
+  childProcess.on('close', (status) => {
+    const stdout = Buffer.concat(stdoutData);
+    const stderr = Buffer.concat(stderrData);
+    resolve({ status, stdout, stderr });
   });
 
-const buildCredentialsCallbackProcess = (spawnedProcess, callback, reject) => {
-  const credentialsCallback = promptType => (username, password, cancel) => {
-    if (cancel) {
-      // we are done here
-      spawnedProcess.destroy();
-      return reject(new Error('LFS action cancelled'));
-    }
+  childProcess.stdin.write(stdin);
+  childProcess.stdin.end();
+});
 
-    spawnedProcess.write(
-      promptType === promptTypes.USERNAME
-        ? username
-        : password);
-    spawnedProcess.write(EOL);
-  };
-
-  return (chunk) => {
-    const output = chunk.toString().trim().toLowerCase();
-
-    if (output.match(regex.USERNAME)) {
-      callback(output, credentialsCallback(promptTypes.USERNAME));
-    } else if (output.match(regex.PASSWORD)) {
-      callback(output, credentialsCallback(promptTypes.PASSWORD));
-    } else if (output.match(regex.PASSPHRASE)) {
-      callback(output, credentialsCallback(promptTypes.PASSPHRASE));
-    }
-    return output;
-  };
-};
-
-const buildSocket = (size, closeProcess, socketName, mainResolve, mainReject) => new Promise(
-  (resolve, reject) => {
-    const bufferList = [];
-    let currentSize = 0;
-    let shouldReject = false; // in case an error is thrown but it is null or undefined
-    let error;
-    let rejectionHandler;
-
-    const handleErrorWith = (_rejectionHandler, socket) => (_error) => {
-      error = _error;
-      rejectionHandler = _rejectionHandler;
-      shouldReject = true;
-
-      if (socket) {
-        socket.destroy();
-      }
-    };
-
-    const closed = () => {
-      closeProcess();
-
-      if (shouldReject) {
-        rejectionHandler(error);
-        return;
-      }
-
-      mainResolve({ stdout: Buffer.concat(bufferList) });
-    };
-
-    const socketServer = net.createServer((socket) => {
-      socket.on('close', closed);
-      socket.on('data', (data) => {
-        currentSize += data.length;
-        bufferList.push(data);
-        if (currentSize === size) {
-          socket.destroy();
-          socketServer.close(() => {});
+const spawn = async (command, opts, repoPath, callback, stdin = '') => {
+  const noAuthResult = await spawnCommand(
+    command,
+    R.mergeDeepRight(
+      opts,
+      {
+        env: {
+          GIT_TERMINAL_PROMPT: 0
         }
-      });
-      socket.on('error', handleErrorWith(mainReject, socket));
-    });
-    socketServer.listen(socketName);
-    socketServer.on('listening', () => {
-      resolve(socketName);
-    });
-    socketServer.on('error', handleErrorWith(reject));
-    socketServer.on('close', closed);
-  });
-
-export const spawnShell = (command, opts, size, callback) => new Promise(
-  (resolve, reject) => {
-    let spawnedProcess;
-    const destroyProcess = () => spawnedProcess.destroy();
-    return buildSocketPath()
-      .then(socket => buildSocket(size, destroyProcess, socket, resolve, reject))
-      .then((socketName) => {
-        const options = R.mergeDeepRight(opts, { env: process.env, encoding: null });
-
-        spawnedProcess = pty.spawn(defaultShell, ['-i'], options);
-
-        const processChunk = callback && typeof callback === 'function'
-          ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
-          : chunk => chunk.toString();
-
-        spawnedProcess.write(`${command} | nc -U ${socketName}`);
-        spawnedProcess.write(EOL);
-
-        spawnedProcess.on('data', (data) => {
-          if (data.code === 'EIO') {
-            // Do nothing, this is a node-pty error
-            return;
-          }
-
-          processChunk(data);
-        });
-
-        spawnedProcess.on('error', (err) => {
-          if (err.code === 'EIO') {
-            // Do nothing, this is a node-pty issue
-            return;
-          }
-
-          return reject(err);
-        });
-      })
-      .catch(reject);
-  });
-
-export const winSpawn = (command, input, opts) => new Promise(
-  (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env, shell: true });
-
-    const argList = command.trim().split(' ');
-    const cmd = argList.shift();
-    const args = argList;
-
-    const spawnedProcess = nodeSpawn(cmd, args, options);
-
-    const bufferList = [];
-    spawnedProcess.stdout.on('data', (data) => {
-      if (data.code === 'EIO') {
-        // Do nothing, this is a node-pty error
-        return;
       }
-
-      bufferList.push(data);
-    });
-
-    const closeOrExit = (code = 0) => resolve({
-      code,
-      stdout: Buffer.concat(bufferList),
-    });
-
-    spawnedProcess.on('close', closeOrExit);
-    spawnedProcess.on('exit', closeOrExit);
-    spawnedProcess.stderr.on('data', (data) => {
-      reject(new Error(data.toString()));
-    });
-
-    spawnedProcess.stdin.write(input);
-    spawnedProcess.stdin.write(EOL);
+    ),
+    stdin
+  );
+  if (noAuthResult.status === 0) {
+    // then we're done, return the data
+    return { stdout: noAuthResult.stdout };
   }
-);
 
-const spawn = (command, opts, callback) => new Promise(
-  (resolve, reject) => {
-    const options = R.mergeDeepRight(opts, { env: process.env });
-
-    const argList = command.trim().split(' ');
-    const cmd = argList.shift() + (IS_WINDOWS ? '.exe' : '');
-    const args = argList;
-
-    let stdout = '';
-    const spawnedProcess = pty.spawn(cmd, args, options);
-
-    const processChunk = callback && typeof callback === 'function'
-      ? buildCredentialsCallbackProcess(spawnedProcess, callback, reject)
-      : chunk => chunk.toString();
-
-    spawnedProcess.on('data', (data) => {
-      if (data.code === 'EIO') {
-        // Do nothing, this is a node-pty error
-        return;
+  await ensureAuthServer();
+  const credRequestId = createCredRequestId(repoPath);
+  const tryCredentialsUntilCanceled = async () => {
+    const { username, password } = await callback({ type: 'CREDS_REQUESTED', credRequestId, repoPath });
+    storeUsernameAndPassword(credRequestId, username, password);
+    try {
+      const authResult = await spawnCommand(
+        command,
+        R.mergeDeepRight(
+          opts,
+          {
+            env: {
+              GIT_TERMINAL_PROMPT: 0,
+              GIT_ASKPASS: `${path.join(__dirname, '..', '..', '..', 'askpass.sh')}`,
+              NODEGIT_LFS_ASKPASS_STATE: credRequestId,
+              NODEGIT_LFS_ASKPASS_PORT: getAuthServerPort(),
+              NODEGIT_LFS_ASKPASS_PATH: path.join(__dirname, 'GitAskPass.js'),
+              NODEGIT_LFS_NODE_PATH: getNodeBinaryPath()
+            }
+          }
+        ),
+        stdin
+      );
+      if (authResult.status === 0) {
+        await callback({ type: 'CREDS_SUCCEEDED', credRequestId, repoPath, verifiedCredentials: { username, password } });
+        clearUsernameAndPassword(credRequestId);
+        return { stdout: noAuthResult.stdout };
       }
 
-      stdout += processChunk(data);
-    });
-
-    let shouldReject = false; // in case an error is thrown but it is null or undefined
-    let error;
-    spawnedProcess.on('error', (_error) => {
-      if (_error.code === 'EIO') {
-        // Do nothing, this is a node-pty error
-        return;
+      if (authResult.stderr.includes('Git credentials')) {
+        const authError = new Error('Auth error');
+        authError.isAuthError = true;
+        throw authError;
       }
 
-      error = _error;
-      shouldReject = true;
-    });
-    spawnedProcess.on('exit', (code = 0) => {
-      // without this call, we will leave winpty-agents around.
-      spawnedProcess.destroy();
-
-      if (shouldReject) {
-        reject(error);
-        return;
+      throw new Error('A problem occurred');
+    } catch (e) {
+      if (e.isAuthError) {
+        clearUsernameAndPassword(credRequestId);
+        await callback({ type: 'CREDS_FAILED', credRequestId, repoPath });
+        return tryCredentialsUntilCanceled();
       }
 
-      resolve({
-        code,
-        stdout,
-      });
-    });
-  });
+      throw e;
+    }
+  };
+
+  try {
+    return await tryCredentialsUntilCanceled();
+  } catch (e) {
+    throw e;
+  }
+};
 
 export default spawn;
