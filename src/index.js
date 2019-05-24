@@ -14,6 +14,7 @@ import list from './commands/ls';
 import testPointer from './commands/pointer';
 import pull from './commands/pull';
 import clone from './commands/clone';
+import { setNodeBinaryPath } from './utils/authService';
 import { dependencyCheck } from './utils/checkDependencies';
 
 function LFS(nodegit) {
@@ -41,11 +42,16 @@ LFS.prototype = {
   untrack,
 };
 
-module.exports = (nodegit) => {
+module.exports = (nodegit, nodeBinaryPath) => {
   const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
 
   Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
 
   module.exports = _NodeGit;
+
+  if (nodeBinaryPath) {
+    setNodeBinaryPath(nodeBinaryPath);
+  }
+
   return _NodeGit;
 };
