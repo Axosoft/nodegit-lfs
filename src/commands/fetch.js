@@ -80,7 +80,12 @@ function fetch(repo, options) {
   }
 
   const argsString = R.join(' ', args);
-  return core.fetch(argsString, R.merge({ cwd: repoPath, shell: true }, shellOpts), callback)
+  return core.fetch(
+    argsString,
+    R.merge({ cwd: repoPath, shell: true }, shellOpts),
+    repoPath,
+    callback
+  )
     .then(({ stdout }) => {
       response.raw = stdout;
       response.fetch = generateFetchStats(stdout);

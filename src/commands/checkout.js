@@ -70,7 +70,7 @@ function checkout(repo, options) {
     shellOpts
   } = (options || {});
 
-  return core.checkout('', R.merge({ cwd: repoPath }, shellOpts), callback)
+  return core.checkout('', R.merge({ cwd: repoPath }, shellOpts), repoPath, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.checkout = generateCheckoutStats(stdout);

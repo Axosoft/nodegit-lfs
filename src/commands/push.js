@@ -104,7 +104,7 @@ function push(repo, options) {
   }
 
   return getRemoteAndBranchPromise
-    .then(() => core.push(`${remote} ${branch}`, R.merge({ cwd: repoPath, shellOpts }), callback))
+    .then(() => core.push(`${remote} ${branch}`, R.merge({ cwd: repoPath, shellOpts }), repoPath, callback))
     .then(({ stdout }) => {
       response.raw = stdout;
       response.push = generatePushStats(stdout);

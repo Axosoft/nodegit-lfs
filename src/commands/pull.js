@@ -79,7 +79,12 @@ function pull(repo, options) {
   }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, R.merge({ cwd: repoPath, shell: true, shellOpts }), callback)
+  return core.pull(
+    argsString,
+    R.merge({ cwd: repoPath, shell: true, shellOpts }),
+    repoPath,
+    callback
+  )
     .then(({ stdout }) => {
       response.raw = stdout;
       response.pull = generatePullStats(stdout);

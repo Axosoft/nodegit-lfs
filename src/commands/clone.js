@@ -71,7 +71,7 @@ function clone(url, cwd, options) {
   const args = branch ? `-b ${branch}` : '';
 
   const response = generateResponse();
-  return core.clone(`${url} ${args}`, R.merge({ cwd }, shellOpts), callback)
+  return core.clone(`${url} ${args}`, R.merge({ cwd }, shellOpts), url, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.clone = generateCloneStats(stdout);
