@@ -26,7 +26,8 @@
     "nodegit"
   ],
   "files": [
-    "build/src"
+    "build/src",
+    "askpass.sh"
   ],
   "bugs": {
     "url": "https://github.com/Axosoft/nodegit-lfs/issues"
