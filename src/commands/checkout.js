@@ -61,11 +61,16 @@ const generateCheckoutStats = (raw) => {
   return {};
 };
 
-function checkout(repo, callback) {
+function checkout(repo, options) {
   const response = generateResponse();
   const repoPath = repo.workdir();
 
-  return core.checkout('', { cwd: repoPath }, callback)
+  const {
+    callback,
+    shellOpts
+  } = (options || {});
+
+  return core.checkout('', R.merge({ cwd: repoPath }, shellOpts), callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.checkout = generateCheckoutStats(stdout);

@@ -68,6 +68,7 @@ function fetch(repo, options) {
     remoteName,
     branchName,
     callback,
+    shellOpts
   } = (options || {});
 
   if (remoteName) {
@@ -79,7 +80,7 @@ function fetch(repo, options) {
   }
 
   const argsString = R.join(' ', args);
-  return core.fetch(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.fetch(argsString, R.merge({ cwd: repoPath, shell: true }, shellOpts), callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.fetch = generateFetchStats(stdout);
