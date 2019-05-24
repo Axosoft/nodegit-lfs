@@ -97,13 +97,14 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
         return { stdout: noAuthResult.stdout };
       }
 
-      if (authResult.stderr.includes('Git credentials')) {
+      const stderr = authResult.stderr.toString();
+      if (stderr.includes('Git credentials')) {
         const authError = new Error('Auth error');
         authError.isAuthError = true;
         throw authError;
       }
 
-      throw new Error('A problem occurred');
+      throw new Error(stderr);
     } catch (e) {
       if (e.isAuthError) {
         clearUsernameAndPassword(credRequestId);
