@@ -9,6 +9,18 @@ import {
   getNodeBinaryPath,
   storeUsernameAndPassword
 } from './authService';
+import {
+  regex
+} from '../constants';
+
+const parseUrlFromErrorMessage = (errorMessage) => {
+  let url = null;
+  const matches = regex.CREDENTIALS_NOT_FOUND.exec(errorMessage);
+  if (matches && matches.length > 1) {
+    url = matches[1];
+  }
+  return url;
+};
 
 const spawnCommand = (command, opts, stdin) => new Promise((resolve, reject) => {
   const [cmd, ...args] = command.trim().split(' ');
@@ -55,9 +67,11 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
   }
 
   await ensureAuthServer();
+  const errorMessage = noAuthResult.stderr.toString();
+  const url = parseUrlFromErrorMessage(errorMessage);
   const credRequestId = createCredRequestId(repoPath);
   const tryCredentialsUntilCanceled = async () => {
-    const { username, password } = await callback({ type: 'CREDS_REQUESTED', credRequestId, repoPath });
+    const { username, password } = await callback({ type: 'CREDS_REQUESTED', credRequestId, repoPath, url });
     storeUsernameAndPassword(credRequestId, username, password);
     try {
       const authResult = await spawnCommand(
@@ -78,7 +92,7 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
         stdin
       );
       if (authResult.status === 0) {
-        await callback({ type: 'CREDS_SUCCEEDED', credRequestId, repoPath, verifiedCredentials: { username, password } });
+        await callback({ type: 'CREDS_SUCCEEDED', credRequestId, repoPath, verifiedCredentials: { username, password }, url });
         clearUsernameAndPassword(credRequestId);
         return { stdout: noAuthResult.stdout };
       }
@@ -93,7 +107,7 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
     } catch (e) {
       if (e.isAuthError) {
         clearUsernameAndPassword(credRequestId);
-        await callback({ type: 'CREDS_FAILED', credRequestId, repoPath });
+        await callback({ type: 'CREDS_FAILED', credRequestId, repoPath, url });
         return tryCredentialsUntilCanceled();
       }
 
