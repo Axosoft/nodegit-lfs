@@ -42,7 +42,7 @@ LFS.prototype = {
   untrack,
 };
 
-module.exports = (nodegit, nodeBinaryPath) => {
+module.exports = (nodegit, nodeBinaryPath = process.execPath) => {
   const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
 
   Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
