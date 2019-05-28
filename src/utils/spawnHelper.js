@@ -66,8 +66,12 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
     return { stdout: noAuthResult.stdout };
   }
 
-  await ensureAuthServer();
   const errorMessage = noAuthResult.stderr.toString();
+  if (!errorMessage.includes('Git credentials')) {
+    throw new Error(errorMessage);
+  }
+
+  await ensureAuthServer();
   const url = parseUrlFromErrorMessage(errorMessage);
   const credRequestId = createCredRequestId(repoPath);
   const tryCredentialsUntilCanceled = async () => {
