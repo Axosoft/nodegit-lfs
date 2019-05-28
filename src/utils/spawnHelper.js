@@ -22,7 +22,7 @@ const parseUrlFromErrorMessage = (errorMessage) => {
   return url;
 };
 
-const spawnCommand = (command, opts, stdin) => new Promise((resolve, reject) => {
+const spawnCommand = (command, opts, stdin = '') => new Promise((resolve, reject) => {
   const [cmd, ...args] = command.trim().split(' ');
   const childProcess = nodeSpawn(cmd, args, R.mergeDeepRight(opts, { stdio: 'pipe' }));
 
@@ -48,7 +48,8 @@ const spawnCommand = (command, opts, stdin) => new Promise((resolve, reject) => 
   childProcess.stdin.end();
 });
 
-const spawn = async (command, stdin, opts, credentialsCallback, repoPath = null) => {
+const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = null) => {
+  const resolvedStdin = stdin || '';
   const resolvedRepoPath = repoPath || R.path('cwd', opts);
   const noAuthResult = await spawnCommand(
     command,
@@ -60,7 +61,7 @@ const spawn = async (command, stdin, opts, credentialsCallback, repoPath = null)
         }
       }
     ),
-    stdin
+    resolvedStdin
   );
   if (noAuthResult.status === 0) {
     // then we're done, return the data
@@ -99,7 +100,7 @@ const spawn = async (command, stdin, opts, credentialsCallback, repoPath = null)
             }
           }
         ),
-        stdin
+        resolvedStdin
       );
       if (authResult.status === 0) {
         await credentialsCallback({

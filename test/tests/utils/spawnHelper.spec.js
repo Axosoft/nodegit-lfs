@@ -1,27 +1,28 @@
+import {
+  expect
+} from 'chai';
 import path from 'path';
+import R from 'ramda';
 
 import { todo } from '../../utils';
 import spawn from '../../../build/src/utils/spawnHelper';
 
 describe('spawn', () => {
-  it('mimics child_process.spawn when no arguments are provided', () => {
-    spawn('git lfs version')
-      .then(() => todo());
-  });
-
-  it('mimics child_process.spawn when arguments are provided', () => {
-    spawn('ls', ['-lart'])
-      .then(() => todo());
-  });
-
-  it('mimics child_process.spawn when options are provided', () => {
-    spawn('ls -lart', { cwd: path.resolve(__dirname, '..', '..', 'repos', 'lfs-test-repository') })
-      .then(() => todo());
-  });
+  it('mimics child_process.spawn when no process credentials needed', () =>
+    spawn('ls')
+      .then(() => todo())
+  );
 
   it('can take a callback', () => {
-    const callback = innerCb => innerCb('John Doe', 'password');
-    return spawn('./mock-creds', { cwd: path.resolve(__dirname, '..', '..') }, callback)
-      .then(() => todo());
+    const callback = message => R.cond([
+      [R.propEq('type', 'CREDS_REQUESTED'), () => ({ username: 'foo', password: 'bar' })],
+      [R.propEq('type', 'CREDS_SUCCEEDED'), () => {}],
+      [R.propEq('type', 'CREDS_FAILED'), () => {}]
+    ])(message);
+
+    return spawn('./mock-creds', null, { cwd: path.resolve(__dirname, '..', '..') }, callback)
+      .then((output) => {
+        expect(output.stdout).eq(new Buffer('Great success!'));
+      });
   });
 });
