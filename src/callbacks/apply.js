@@ -32,10 +32,10 @@ export default (credentialsCallback) => {
 
       const promise = spawn(
         `git lfs smudge ${ticks}${filepath}${ticks}`,
+        ptr,
         { cwd: workdir },
-        workdir,
         credentialsCallback,
-        ptr
+        workdir
       );
 
       return promise;

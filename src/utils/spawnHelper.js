@@ -48,7 +48,8 @@ const spawnCommand = (command, opts, stdin) => new Promise((resolve, reject) => 
   childProcess.stdin.end();
 });
 
-const spawn = async (command, opts, repoPath, callback, stdin = '') => {
+const spawn = async (command, stdin, opts, credentialsCallback, repoPath = null) => {
+  const resolvedRepoPath = repoPath || R.path('cwd', opts);
   const noAuthResult = await spawnCommand(
     command,
     R.mergeDeepRight(
@@ -73,9 +74,14 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
 
   await ensureAuthServer();
   const url = parseUrlFromErrorMessage(errorMessage);
-  const credRequestId = createCredRequestId(repoPath);
+  const credRequestId = createCredRequestId(resolvedRepoPath);
   const tryCredentialsUntilCanceled = async () => {
-    const { username, password } = await callback({ type: 'CREDS_REQUESTED', credRequestId, repoPath, url });
+    const { username, password } = await credentialsCallback({
+      type: 'CREDS_REQUESTED',
+      credRequestId,
+      repoPath: resolvedRepoPath,
+      url
+    });
     storeUsernameAndPassword(credRequestId, username, password);
     try {
       const authResult = await spawnCommand(
@@ -96,7 +102,13 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
         stdin
       );
       if (authResult.status === 0) {
-        await callback({ type: 'CREDS_SUCCEEDED', credRequestId, repoPath, verifiedCredentials: { username, password }, url });
+        await credentialsCallback({
+          type: 'CREDS_SUCCEEDED',
+          credRequestId,
+          repoPath: resolvedRepoPath,
+          verifiedCredentials: { username, password },
+          url
+        });
         clearUsernameAndPassword(credRequestId);
         return { stdout: noAuthResult.stdout };
       }
@@ -112,7 +124,12 @@ const spawn = async (command, opts, repoPath, callback, stdin = '') => {
     } catch (e) {
       if (e.isAuthError) {
         clearUsernameAndPassword(credRequestId);
-        await callback({ type: 'CREDS_FAILED', credRequestId, repoPath, url });
+        await credentialsCallback({
+          type: 'CREDS_FAILED',
+          credRequestId,
+          repoPath: resolvedRepoPath,
+          url
+        });
         return tryCredentialsUntilCanceled();
       }
 
