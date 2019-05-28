@@ -111,7 +111,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
           url
         });
         clearUsernameAndPassword(credRequestId);
-        return { stdout: noAuthResult.stdout };
+        return { stdout: authResult.stdout };
       }
 
       const stderr = authResult.stderr.toString();
