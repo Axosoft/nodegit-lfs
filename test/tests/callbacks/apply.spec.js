@@ -48,7 +48,7 @@ describe('Apply', () => {
         return track(repo, ['*.md']);
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', { cwd: workdirPath }))
+      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.md', null, { cwd: workdirPath }))
       .then(() => commitFile(repository, 'big_file_test.md', 'LFS Clean Test'))
       .then(() => todo());
   });
@@ -64,7 +64,7 @@ describe('Apply', () => {
         return repo;
       })
       .then(() => NodeGitLFS.LFS.register())
-      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', { cwd: workdirPath }))
+      .then(() => exec('base64 /dev/urandom | head -c 20 > big_file_test.txt', null, { cwd: workdirPath }))
       .then(() => {
         const opts = {
           checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,

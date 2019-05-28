@@ -36,8 +36,8 @@ before(function () { // eslint-disable-line prefer-arrow-callback
 });
 
 beforeEach(() => {
-  return exec('git clean -xdf && git reset --hard', { cwd: lfsRepoPath })
-    .then(() => exec('git clean -xdff', { cwd: emptyRepoPath }));
+  return exec('git clean -xdf && git reset --hard', null, { cwd: lfsRepoPath })
+    .then(() => exec('git clean -xdff', null, { cwd: emptyRepoPath }));
 });
 
 after(() => {
