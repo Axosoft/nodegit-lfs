@@ -3,6 +3,7 @@ import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 
 const pointer = (repo, filePath, pointerPath) => {
   let args = '';
@@ -16,7 +17,7 @@ const pointer = (repo, filePath, pointerPath) => {
   const response = generateResponse();
   const repoPath = repo.workdir();
 
-  return core.pointer(args, { cwd: repoPath })
+  return core.pointer(args, combineShellOptions({}, { cwd: repoPath }))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

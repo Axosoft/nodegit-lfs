@@ -4,6 +4,7 @@ import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 
 const isValidFileOutput = str => str.includes('*') || str.includes('-');
 
@@ -50,9 +51,9 @@ const ls = (repo, options) => {
   const response = generateResponse();
   const repoPath = repo.workdir();
   const args = buildArgs(options);
-  const { shellOpts } = (options || {});
+  const { shellOptions } = (options || {});
 
-  return core.ls(args, R.merge({ cwd: repoPath }, shellOpts))
+  return core.ls(args, combineShellOptions(shellOptions, { cwd: repoPath }))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

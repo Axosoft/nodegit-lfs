@@ -7,6 +7,7 @@ import {
 } from '../constants';
 
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 import {
   regexResult,
   verifyOutput,
@@ -67,10 +68,10 @@ function checkout(repo, options) {
 
   const {
     callback,
-    shellOpts
+    shellOptions
   } = (options || {});
 
-  return core.checkout('', R.merge({ cwd: repoPath }, shellOpts), repoPath, callback)
+  return core.checkout('', combineShellOptions(shellOptions, { cwd: repoPath }), repoPath, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.checkout = generateCheckoutStats(stdout);

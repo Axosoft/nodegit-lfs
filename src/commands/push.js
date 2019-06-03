@@ -5,6 +5,7 @@ import {
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 import {
   regexResult,
   errorCatchHandler,
@@ -76,7 +77,7 @@ function push(repo, options) {
     remoteName,
     branchName,
     callback,
-    shellOpts
+    shellOptions
   } = (options || {});
 
   let branch = branchName;
@@ -104,7 +105,7 @@ function push(repo, options) {
   }
 
   return getRemoteAndBranchPromise
-    .then(() => core.push(`${remote} ${branch}`, R.merge({ cwd: repoPath, shellOpts }), repoPath, callback))
+    .then(() => core.push(`${remote} ${branch}`, combineShellOptions({ cwd: repoPath }, shellOptions), repoPath, callback))
     .then(({ stdout }) => {
       response.raw = stdout;
       response.push = generatePushStats(stdout);

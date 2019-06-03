@@ -6,6 +6,7 @@ import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 import {
   regexResult,
   errorCatchHandler,
@@ -68,7 +69,7 @@ function fetch(repo, options) {
     remoteName,
     branchName,
     callback,
-    shellOpts
+    shellOptions
   } = (options || {});
 
   if (remoteName) {
@@ -82,7 +83,7 @@ function fetch(repo, options) {
   const argsString = R.join(' ', args);
   return core.fetch(
     argsString,
-    R.merge({ cwd: repoPath, shell: true }, shellOpts),
+    combineShellOptions(shellOptions, { cwd: repoPath, shell: true }),
     repoPath,
     callback
   )

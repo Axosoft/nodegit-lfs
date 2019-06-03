@@ -1,6 +1,6 @@
-import R from 'ramda';
 import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 import { BAD_CORE_RESPONSE } from '../constants';
 
 const prune = (repo, options) => {
@@ -9,10 +9,10 @@ const prune = (repo, options) => {
 
   const {
     callback,
-    shellOpts
+    shellOptions
   } = (options || {});
 
-  return core.prune('', R.merge({ cwd: repoPath }, shellOpts), callback)
+  return core.prune('', combineShellOptions(shellOptions, { cwd: repoPath }), callback)
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

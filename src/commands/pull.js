@@ -6,6 +6,7 @@ import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
+import { combineShellOptions } from '../utils/shellOptions';
 import {
   regexResult,
   verifyOutput,
@@ -68,7 +69,7 @@ function pull(repo, options) {
     remoteName,
     branchName,
     callback,
-    shellOpts
+    shellOptions
   } = (options || {});
 
   if (remoteName) {
@@ -81,7 +82,7 @@ function pull(repo, options) {
 
   return core.pull(
     argsString,
-    R.merge({ cwd: repoPath, shell: true, shellOpts }),
+    combineShellOptions(shellOptions, { cwd: repoPath, shell: true }),
     repoPath,
     callback
   )
