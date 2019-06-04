@@ -1,7 +1,6 @@
 import R from 'ramda';
 import { core } from './lfsCommands';
 import generateResponse from '../utils/generateResponse';
-import { combineShellOptions } from '../utils/shellOptions';
 import {
   regex as Regex,
   BAD_CORE_RESPONSE,
@@ -26,7 +25,7 @@ const untrack = (repo, globs) => {
   const response = generateResponse();
   const repoPath = repo.workdir();
 
-  return core.untrack(R.join(' ', filteredGlobs), combineShellOptions({}, { cwd: repoPath }))
+  return core.untrack(R.join(' ', filteredGlobs), { cwd: repoPath })
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

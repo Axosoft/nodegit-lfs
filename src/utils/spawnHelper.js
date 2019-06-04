@@ -12,6 +12,7 @@ import {
 import {
   regex
 } from '../constants';
+import { combineShellOptions } from '../utils/shellOptions';
 
 const parseUrlFromErrorMessage = (errorMessage) => {
   let url = null;
@@ -53,7 +54,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
   const resolvedRepoPath = repoPath || R.path('cwd', opts);
   const noAuthResult = await spawnCommand(
     command,
-    R.mergeDeepRight(
+    combineShellOptions(
       opts,
       {
         env: {
@@ -87,7 +88,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
     try {
       const authResult = await spawnCommand(
         command,
-        R.mergeDeepRight(
+        combineShellOptions(
           opts,
           {
             env: {

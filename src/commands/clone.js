@@ -5,7 +5,6 @@ import {
   BAD_REGEX_PARSE_RESULT,
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
-import { combineShellOptions } from '../utils/shellOptions';
 import {
   regexResult,
   errorCatchHandler,
@@ -72,7 +71,7 @@ function clone(url, cwd, options) {
   const args = branch ? `-b ${branch}` : '';
 
   const response = generateResponse();
-  return core.clone(`${url} ${args}`, combineShellOptions(shellOptions, { cwd }), url, callback)
+  return core.clone(`${url} ${args}`, R.mergeDeepRight(shellOptions, { cwd }), url, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.clone = generateCloneStats(stdout);
