@@ -42,6 +42,7 @@ const socketListener = (socket) => {
 export const ensureAuthServer = () => new Promise((resolve, reject) => {
   if (tcpServer) {
     resolve();
+    return;
   }
 
   tcpServer = net.createServer(socketListener);
