@@ -142,6 +142,12 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
   try {
     return await tryCredentialsUntilCanceled();
   } catch (e) {
+    await credentialsCallback({
+      type: 'CREDS_SPAWN_FAILED',
+      error: e,
+      credRequestId,
+      repoPath
+    });
     throw e;
   }
 };
