@@ -68,6 +68,7 @@ function pull(repo, options) {
     remoteName,
     branchName,
     callback,
+    shellOptions
   } = (options || {});
 
   if (remoteName) {
@@ -78,7 +79,12 @@ function pull(repo, options) {
   }
   const argsString = R.join(' ', args);
 
-  return core.pull(argsString, { cwd: repoPath, shell: true }, callback)
+  return core.pull(
+    argsString,
+    R.mergeDeepRight(shellOptions, { cwd: repoPath, shell: true }),
+    repoPath,
+    callback
+  )
     .then(({ stdout }) => {
       response.raw = stdout;
       response.pull = generatePullStats(stdout);

@@ -50,8 +50,9 @@ const ls = (repo, options) => {
   const response = generateResponse();
   const repoPath = repo.workdir();
   const args = buildArgs(options);
+  const { shellOptions } = (options || {});
 
-  return core.ls(args, { cwd: repoPath })
+  return core.ls(args, R.mergeDeepRight(shellOptions, { cwd: repoPath }))
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 

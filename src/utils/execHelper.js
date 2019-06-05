@@ -1,10 +1,11 @@
 import child from 'child_process';
 import R from 'ramda';
 
-const exec = (command, input, opts) => new Promise(
-  (resolve, reject) => {
-    const options = R.mergeDeepRight((opts || {}), { env: process.env });
+import { combineShellOptions } from '../utils/shellOptions';
 
+const exec = (command, input, opts = {}) => new Promise(
+  (resolve, reject) => {
+    const options = combineShellOptions(opts);
     if (process.platform !== 'win32' && !R.contains('/usr/local/bin', options.env.PATH)) {
       options.env.PATH = `${options.env.PATH}${':/usr/local/bin'}`;
     }

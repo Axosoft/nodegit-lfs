@@ -1,13 +1,29 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S-P/usr/local/bin:/usr/bin:${PATH} node
+const { exec: nodeExec } = require('child_process');
 
-const prompt = require('prompt');
+const exec = (...args) => new Promise((resolve, reject) => {
+  nodeExec(...args, (err, stdout) => {
+    if (err) {
+      reject(err);
+    }
 
-prompt.start();
-
-prompt.get(['username', 'password'], (error, result) => {
-  console.log('Entered user: ', result.username);
-  console.log('Entered pass: ', result.password);
-
-  console.log('this stuff is done');
-  process.exit();
+    resolve(stdout);
+  });
 });
+
+const askpassProgram = process.env.GIT_ASKPASS;
+if (!askpassProgram) {
+  process.stderr.write('Git credentials for \'github.smashmouth.com/All-Star.git\' not found');
+  process.exit(1);
+}
+
+(async () => {
+  const username = await exec(`${askpassProgram} Username for 'github.smashmouth.com':`);
+  const password = await exec(`${askpassProgram} Password for 'github.smashmouth.com':`);
+  if (username !== 'foo' || password !== 'bar') {
+    process.exit(1);
+  }
+
+  process.stdout.write('Great success!');
+})();
+

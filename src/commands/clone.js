@@ -66,11 +66,12 @@ function clone(url, cwd, options) {
   const {
     branch,
     callback,
+    shellOptions
   } = (options || {});
   const args = branch ? `-b ${branch}` : '';
 
   const response = generateResponse();
-  return core.clone(`${url} ${args}`, { cwd }, callback)
+  return core.clone(`${url} ${args}`, R.mergeDeepRight(shellOptions, { cwd }), url, callback)
     .then(({ stdout }) => {
       response.raw = stdout;
       response.clone = generateCloneStats(stdout);

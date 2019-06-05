@@ -15,6 +15,8 @@ export const regex = {
   PASSWORD: /password/g,
   PASSPHRASE: /passphrase/g,
   PERMISSION_DENIED: /permission\s+denied\s+\(.+\)\./g,
+  CREDENTIALS_NOT_FOUND: /could not read Username for '(.+)': terminal prompts disabled/,
+  CREDENTIALS_ERROR: /(Git credentials)|(Bad credentials)/
 };
 
 export const promptTypes = {
