@@ -1,3 +1,13 @@
+# Changelog for v1.0.0-alpha.1
+- Changed credentials system for LFS to use GIT_ASKPASS
+- major change to credentials callback, now implemented as a channel.
+  - Messages (all messages are of { type, credsRequestId } format):
+    - CREDS_REQUESTED
+    - CREDS_SUCCEEDED
+      - Expects { username, password } as reply
+    - CREDS_FAILED
+    - CREDS_SPAWN_FAILED
+
 # Changelog for v0.2.0
 - Requires nodegit v0.25.0-alpha.9 and later because of change in NodeGit API
 
