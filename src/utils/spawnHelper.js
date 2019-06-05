@@ -70,7 +70,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
   }
 
   const errorMessage = noAuthResult.stderr.toString();
-  if (!errorMessage.includes('Git credentials')) {
+  if (!regex.CREDENTIALS_ERROR.test(errorMessage)) {
     throw new Error(errorMessage);
   }
 
@@ -116,7 +116,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
       }
 
       const stderr = authResult.stderr.toString();
-      if (stderr.includes('Git credentials')) {
+      if (regex.CREDENTIALS_ERROR.test(stderr)) {
         const authError = new Error('Auth error');
         authError.isAuthError = true;
         throw authError;
