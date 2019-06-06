@@ -1,5 +1,4 @@
 import { spawn as nodeSpawn } from 'child_process';
-import path from 'path';
 import R from 'ramda';
 import {
   createCredRequestId,
@@ -7,7 +6,9 @@ import {
   ensureAuthServer,
   getAuthServerPort,
   getNodeBinaryPath,
-  storeUsernameAndPassword
+  storeUsernameAndPassword,
+  getGitAskPassPath,
+  getGitAskPassClientPath
 } from './authService';
 import {
   regex
@@ -93,10 +94,10 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
           {
             env: {
               GIT_TERMINAL_PROMPT: 0,
-              GIT_ASKPASS: `${path.join(__dirname, '..', '..', '..', 'askpass.sh')}`,
+              GIT_ASKPASS: getGitAskPassPath(),
               NODEGIT_LFS_ASKPASS_STATE: credRequestId,
               NODEGIT_LFS_ASKPASS_PORT: getAuthServerPort(),
-              NODEGIT_LFS_ASKPASS_PATH: path.join(__dirname, 'GitAskPass.js'),
+              NODEGIT_LFS_ASKPASS_PATH: getGitAskPassClientPath(),
               NODEGIT_LFS_NODE_PATH: getNodeBinaryPath()
             }
           }

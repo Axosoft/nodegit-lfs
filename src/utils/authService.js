@@ -63,3 +63,18 @@ export const setNodeBinaryPath = (binaryPath) => {
 };
 
 export const getNodeBinaryPath = () => nodeBinaryPath;
+
+let gitAskPassPath = null;
+let gitAskPassClientPath = null;
+
+export const getGitAskPassPath = () => gitAskPassPath;
+
+export const setGitAskPassPath = (path) => {
+  gitAskPassPath = path;
+};
+
+export const getGitAskPassClientPath = () => gitAskPassClientPath;
+
+export const setGitAskPassClientPath = (path) => {
+  gitAskPassClientPath = path;
+};
