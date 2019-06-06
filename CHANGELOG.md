@@ -1,3 +1,6 @@
+# Changelog for v1.0.0-alpha.3
+- init function now takes override paths for askpass.sh and GitAskPass.js for those in an asar
+
 # Changelog for v1.0.0-alpha.1
 - Changed credentials system for LFS to use GIT_ASKPASS
 - major change to credentials callback, now implemented as a channel.
