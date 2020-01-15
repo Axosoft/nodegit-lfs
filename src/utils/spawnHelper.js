@@ -13,13 +13,13 @@ import {
 import {
   regex
 } from '../constants';
-import { combineShellOptions } from '../utils/shellOptions';
+import { combineShellOptions } from './shellOptions';
 
 const parseUrlFromErrorMessage = (errorMessage) => {
   let url = null;
   const matches = regex.CREDENTIALS_NOT_FOUND.exec(errorMessage);
   if (matches && matches.length > 1) {
-    url = matches[1];
+    ([url] = matches);
   }
   return url;
 };
@@ -31,7 +31,7 @@ const spawnCommand = (command, opts, stdin = '') => new Promise((resolve, reject
   const stdoutData = [];
   const stderrData = [];
 
-  const makeDataAccumulator = accumulator => (data) => {
+  const makeDataAccumulator = (accumulator) => (data) => {
     accumulator.push(data);
   };
 

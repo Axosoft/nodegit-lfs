@@ -8,8 +8,8 @@ const usernameAndPasswordByRequestId = {};
 
 export const createCredRequestId = () => uuid.v4();
 
-export const getUsernameAndPassword =
-  credsRequestId => usernameAndPasswordByRequestId[credsRequestId];
+export const getUsernameAndPassword = (credsRequestId) =>
+  usernameAndPasswordByRequestId[credsRequestId];
 
 export const storeUsernameAndPassword = (credsRequestId, username, password) => {
   usernameAndPasswordByRequestId[credsRequestId] = { username, password };

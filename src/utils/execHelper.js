@@ -1,7 +1,7 @@
 import child from 'child_process';
 import R from 'ramda';
 
-import { combineShellOptions } from '../utils/shellOptions';
+import { combineShellOptions } from './shellOptions';
 
 const exec = (command, input, opts = {}) => new Promise(
   (resolve, reject) => {
@@ -22,6 +22,7 @@ const exec = (command, input, opts = {}) => new Promise(
       proc.stdin.write(input);
       proc.stdin.end();
     }
-  });
+  }
+);
 
 export default exec;

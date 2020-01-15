@@ -8,7 +8,8 @@ import generateResponse from '../utils/generateResponse';
 import {
   regexResult,
   errorCatchHandler,
-  verifyOutput } from '../helpers';
+  verifyOutput
+} from '../helpers';
 
 /**
  * Note to future maintainers, I do not like this; at all. But at the moment this is the
@@ -17,7 +18,7 @@ import {
  * git core dependency, we will have to regex the output. Godspeed.
  */
 
-const isValidLine = str => str !== '';
+const isValidLine = (str) => str !== '';
 
 const generatePushStats = (raw) => {
   if (!raw || typeof raw !== 'string') {
@@ -93,7 +94,7 @@ function push(repo, options) {
         return Promise.all(promises);
       })
       .then((results) => {
-        remoteRef = results[0];
+        ([remoteRef] = results);
         branch = branch || results[1];
         return this.NodeGit.Branch.remoteName(repo, remoteRef.name());
       })

@@ -1,5 +1,5 @@
 import path from 'path';
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import { todo } from '../../utils';
 import LFS from '../../../build/src';
 import exec from '../../../build/src/utils/execHelper';
@@ -21,19 +21,20 @@ const commitFile = (repo, fileName, commitMessage) => {
       treeOid = oidResult;
       return NodeGit.Reference.nameToId(repo, 'HEAD');
     })
-    .then(head => repo.getCommit(head))
+    .then((head) => repo.getCommit(head))
     .then((parentResult) => {
       parent = parentResult;
       return NodeGit.Signature.default(repo);
     })
-    .then(signatures =>
+    .then((signatures) =>
       repo.createCommit(
         'HEAD',
         signatures,
         signatures,
         commitMessage,
         treeOid,
-        [parent]));
+        [parent]
+      ));
 };
 
 describe('Apply', () => {

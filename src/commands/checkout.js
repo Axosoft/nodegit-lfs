@@ -13,7 +13,7 @@ import {
   errorCatchHandler
 } from '../helpers';
 
-const isValidLine = str => str !== '';
+const isValidLine = (str) => str !== '';
 
 const generateCheckoutStats = (raw) => {
   if (raw && typeof raw === 'string') {
@@ -24,31 +24,26 @@ const generateCheckoutStats = (raw) => {
 
     const byteResults = regexResult(statLine, regex.TOTAL_BYTES);
 
-    stats.total_bytes_checked_out =
-      byteResults !== null ?
-        byteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+    stats.total_bytes_checked_out = byteResults !== null
+      ? byteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
-    stats.total_bytes =
-      byteResults !== null ?
-        byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
+    stats.total_bytes = byteResults !== null
+      ? byteResults[1].trim() : BAD_REGEX_PARSE_RESULT;
 
     const fileResults = regexResult(statLine, regex.TOTAL_FILES);
 
-    stats.total_files_checked_out =
-      fileResults !== null ?
-        fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+    stats.total_files_checked_out = fileResults !== null
+      ? fileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
     const skippedByteResults = regexResult(statLine, regex.SKIPPED_BYTES);
 
-    stats.total_bytes_skipped =
-      skippedByteResults !== null ?
-        skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+    stats.total_bytes_skipped = skippedByteResults !== null
+      ? skippedByteResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
     const skippedFileResults = regexResult(statLine, regex.SKIPPED_FILES);
 
-    stats.total_files_skipped =
-      skippedFileResults !== null ?
-        skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
+    stats.total_files_skipped = skippedFileResults !== null
+      ? skippedFileResults[0].trim() : BAD_REGEX_PARSE_RESULT;
 
     verifyOutput(stats, raw);
 

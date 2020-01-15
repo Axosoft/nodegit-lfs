@@ -5,7 +5,7 @@ import {
 } from '../constants';
 import generateResponse from '../utils/generateResponse';
 
-const isValidFileOutput = str => str.includes('*') || str.includes('-');
+const isValidFileOutput = (str) => str.includes('*') || str.includes('-');
 
 const reduceResults = (acc, value) => {
   const separatorRegex = /[*-]/;

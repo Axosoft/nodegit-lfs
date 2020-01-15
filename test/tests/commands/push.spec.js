@@ -1,5 +1,5 @@
 import path from 'path';
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import { todo } from '../../utils';
 import LFS from '../../../build/src';
 import exec from '../../../build/src/utils/execHelper';
@@ -13,7 +13,7 @@ describe('Push', () => {
       .then(() => exec('git add test_file.txt', null, { cwd: workdirPath }))
       .then(() => exec('git commit -m "LFS: push unit test"', null, { cwd: workdirPath }))
       .then(() => NodeGitLFS.Repository.open(workdirPath))
-      .then(repo => NodeGitLFS.LFS.push(repo, 'origin', 'test'))
+      .then((repo) => NodeGitLFS.LFS.push(repo, 'origin', 'test'))
       .then(() => todo());
   });
 }).timeout(5000);

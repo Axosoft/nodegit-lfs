@@ -15,10 +15,10 @@ export default (credentialsCallback) => {
       const command = `git lfs clean ${ticks}${source.path()}${ticks}`;
 
       return fse.readFile(filePath)
-        .then(buf => exec(command, buf, { cwd: workdir }));
+        .then((buf) => exec(command, buf, { cwd: workdir }));
     })
     .then(({ stdout }) => {
-      const sha = new Buffer(stdout);
+      const sha = Buffer.from(stdout);
       return to.set(sha, sha.length);
     })
     .then(() => Error.CODE.OK);

@@ -55,10 +55,10 @@ module.exports = (
   {
     nodeBinaryPath = process.execPath,
     defaultShellOptions = null,
-     // when built, askpass.sh will be two directories above index.js
+    // when built, askpass.sh will be two directories above index.js
     gitAskPassPath = require.resolve('../../askpass.sh'),
     gitAskPassClientPath = require.resolve('./utils/GitAskPass')
-  }
+  } = {}
 ) => {
   const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
 

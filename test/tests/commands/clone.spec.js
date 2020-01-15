@@ -1,5 +1,5 @@
 import path from 'path';
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import { todo } from '../../utils';
 import LFS from '../../../build/src';
 

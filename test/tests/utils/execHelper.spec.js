@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import exec from '../../../src/utils/execHelper';
+import exec from '../../../build/src/utils/execHelper';
 
 describe('exec', () => {
   it('returns a promise', () => {

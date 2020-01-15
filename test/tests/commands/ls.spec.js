@@ -1,4 +1,4 @@
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import path from 'path';
 import { todo } from '../../utils';
 import LFS from '../../../build/src';
@@ -10,7 +10,7 @@ describe('ls-files', () => {
     const NodeGitLFS = LFS(NodeGit);
 
     return NodeGitLFS.Repository.open(workdirPath)
-      .then(repo => ls(repo, { long: true }))
+      .then((repo) => ls(repo, { long: true }))
       .then(() => todo());
   });
 });

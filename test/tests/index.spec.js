@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import LFS from '../../build/src';
 
 describe('LFS', () => {

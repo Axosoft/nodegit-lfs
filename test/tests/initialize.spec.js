@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import NodeGit from 'nodegit';
+import NodeGit from 'nodegit'; // eslint-disable-line import/no-unresolved
 import { expect } from 'chai';
 import LFS from '../../build/src';
 
@@ -22,7 +22,7 @@ describe('Initialize', () => {
     expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.false;
 
     return NodeGitLFS.Repository.open(emptydirPath)
-      .then(repo => NodeGitLFS.LFS.initialize(repo))
+      .then((repo) => NodeGitLFS.LFS.initialize(repo))
       .then(() => {
         expect(fs.existsSync(path.join(emptydirPath, '.gitattributes'))).to.be.true;
       });

@@ -9,7 +9,7 @@ import {
   regex,
 } from './constants';
 
-export const getGitattributesPathFromRepo = repo => path.join(repo.workdir(), '.gitattributes');
+export const getGitattributesPathFromRepo = (repo) => path.join(repo.workdir(), '.gitattributes');
 
 export const loadGitattributeFiltersFromRepo = (repo) => {
   const gitattrPath = getGitattributesPathFromRepo(repo);
@@ -39,8 +39,8 @@ export const loadGitattributeFiltersFromRepo = (repo) => {
     });
 };
 
-export const repoHasLfsFilters = repo => loadGitattributeFiltersFromRepo(repo)
-  .then(filters => filters.length > 0)
+export const repoHasLfsFilters = (repo) => loadGitattributeFiltersFromRepo(repo)
+  .then((filters) => filters.length > 0)
   .catch(() => false);
 
 export const repoHasLfs = repoHasLfsFilters;
@@ -72,7 +72,7 @@ export const verifyOutput = (stats, raw) => {
   }
 };
 
-export const errorCatchHandler = response => (err) => {
+export const errorCatchHandler = (response) => (err) => {
   // This is a manually detected error we get from LFS
   if (err.errno === BAD_CORE_RESPONSE) {
     response.stderr = response.raw;

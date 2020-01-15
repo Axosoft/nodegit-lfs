@@ -5,7 +5,7 @@ export const core = {
   checkout: (args = '', options, repoPath, callback) => spawn(`git lfs checkout ${args}`, null, options, callback, repoPath),
   clone: (args = '', options, repoUrl, callback) => spawn(`git lfs clone ${args}`, null, options, callback, repoUrl),
   fetch: (args = '', options, repoPath, callback) => spawn(`git lfs fetch ${args}`, null, options, callback, repoPath),
-  fsck: options => exec('git lfs fsck', null, options),
+  fsck: (options) => exec('git lfs fsck', null, options),
   git: (args = '', options) => exec(`git ${args}`, null, options),
   install: (args = '', options) => exec(`git lfs install ${args}`, null, options),
   logs: (args = '', options) => exec(`git lfs logs ${args}`, null, options),
@@ -18,5 +18,5 @@ export const core = {
   track: (args = '', options) => exec(`git lfs track ${args}`, null, options),
   untrack: (args = '', options) => exec(`git lfs untrack ${args}`, null, options),
   update: (args = '', options) => exec(`git lfs update ${args}`, null, options),
-  version: options => exec('git lfs version', null, options),
+  version: (options) => exec('git lfs version', null, options),
 };

@@ -6,7 +6,7 @@ import {
   BAD_CORE_RESPONSE,
 } from '../constants';
 
-const isString = str => typeof str === 'string';
+const isString = (str) => typeof str === 'string';
 const ticks = process.platform === 'win32' ? '"' : "'";
 
 const extractGlobs = (input, regex) => {
@@ -20,7 +20,7 @@ const track = (repo, globs) => {
 
   const filteredGlobs = R.pipe(
     R.filter(isString),
-    R.map(g => `${ticks}${g}${ticks}`)
+    R.map((g) => `${ticks}${g}${ticks}`)
   )(globs);
   const response = generateResponse();
   const repoPath = repo.workdir();

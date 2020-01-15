@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { todo } from '../../utils';
-import * as checker from '../../../src/utils/checkDependencies';
-import { regex, BAD_VERSION } from '../../../src/constants';
-import { core } from '../../../src/commands/lfsCommands';
+import * as checker from '../../../build/src/utils/checkDependencies';
+import { regex, BAD_VERSION } from '../../../build/src/constants';
+import { core } from '../../../build/src/commands/lfsCommands';
 
 describe('Depenendency Helpers', () => {
   describe('parseVersion', () => {
@@ -55,13 +55,13 @@ describe('Depenendency Helpers', () => {
     it('check git version number is at least the minimum version', () =>
       core.git('--version')
         .then(({ stdout }) => checker.isAtleastGitVersion(stdout))
-        .then(result => expect(result).to.equal(true))
+        .then((result) => expect(result).to.equal(true))
         .catch(() => expect.fail('sould not have done this')));
 
     it('check LFS version number is at least the minimum version', () =>
       core.git('lfs version')
         .then(({ stdout }) => checker.isAtleastLfsVersion(stdout))
-        .then(result => expect(result).to.equal(true))
+        .then((result) => expect(result).to.equal(true))
         .catch(() => expect.fail('sould not have done this')));
   });
 

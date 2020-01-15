@@ -30,17 +30,17 @@ export const parseVersion = (input, regex) => {
     return BAD_VERSION;
   }
 
-  const numericVersionNumbers = R.filter(match => !isNaN(match), matches);
+  const numericVersionNumbers = R.filter((match) => !Number.isNaN(match), matches);
   if (numericVersionNumbers.length > 0) {
     return normalizeVersion(numericVersionNumbers);
   }
   return matches[1];
 };
 
-export const isAtleastGitVersion = gitInput =>
+export const isAtleastGitVersion = (gitInput) =>
   parseVersion(gitInput, versionRegexes.GIT) >= minimumVersions.GIT;
 
-export const isAtleastLfsVersion = lfsInput =>
+export const isAtleastLfsVersion = (lfsInput) =>
   parseVersion(lfsInput, versionRegexes.LFS) >= minimumVersions.LFS;
 
 const setLfsFailed = (response) => {
