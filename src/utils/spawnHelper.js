@@ -51,6 +51,7 @@ const spawnCommand = (command, opts, stdin = '') => new Promise((resolve, reject
 });
 
 const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = null) => {
+  console.log('spawning 2: ', command);
   const resolvedStdin = stdin || '';
   const resolvedRepoPath = repoPath || R.path('cwd', opts);
   const noAuthResult = await spawnCommand(

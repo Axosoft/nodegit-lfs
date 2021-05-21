@@ -7,6 +7,27 @@ import exec from '../utils/execHelper';
 const IS_WINDOWS = process.platform === 'win32';
 const ticks = IS_WINDOWS ? '"' : '\'';
 
+export const LFS_DEBUG = (() => {
+  let shouldRecordEvents = false;
+  let events = [];
+  return {
+    clearEvents: () => { events = []; },
+    dumpEvents: (dumpPath) => fse.writeJsonSync(dumpPath, events, { spaces: 2 }),
+    recordEvent: (event, eventData) => {
+      if (shouldRecordEvents) {
+        events.push({
+          event,
+          data: eventData
+        });
+      }
+    },
+    retrieveEvents: () => [...events],
+    toggle: () => {
+      shouldRecordEvents = !shouldRecordEvents;
+    }
+  };
+})();
+
 export default (credentialsCallback) => {
   const clean = (to, from, source) => source.repo()
     .then((repo) => {
@@ -46,17 +67,31 @@ export default (credentialsCallback) => {
   return (to, from, source) => {
     const mode = source.mode();
 
-    const runNextFilter = () => Promise.resolve()
-      .then(() => {
-        if (mode === 1) {
-          return clean(to, from, source);
-        }
-        return smudge(to, from, source);
-      })
-      .then(
-        () => Error.CODE.OK,
-        () => Error.CODE.PASSTHROUGH
-      );
+    const runNextFilter = () => {
+      const event = mode === 1 ? 'clean' : 'smudge';
+      const startTime = Date.now();
+      return Promise.resolve()
+        .then(() => {
+          if (mode === 1) {
+            return clean(to, from, source);
+          }
+          return smudge(to, from, source);
+        })
+        .then(
+          () => {
+            const endTime = Date.now();
+            const deltaTime = endTime - startTime;
+            LFS_DEBUG.recordEvent(event, {
+              to,
+              from,
+              source,
+              duration: deltaTime
+            });
+          },
+          () => Error.CODE.OK,
+          () => Error.CODE.PASSTHROUGH
+        );
+    };
 
     return runNextFilter();
   };
