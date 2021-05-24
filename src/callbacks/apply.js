@@ -82,9 +82,7 @@ export default (credentialsCallback) => {
             const endTime = Date.now();
             const deltaTime = endTime - startTime;
             LFS_DEBUG.recordEvent(event, {
-              to,
-              from,
-              source,
+              source: source.path(),
               duration: deltaTime
             });
           },
