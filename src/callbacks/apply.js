@@ -78,17 +78,16 @@ export default (credentialsCallback) => {
           return smudge(to, from, source);
         })
         .then(
-          () => {
-            const endTime = Date.now();
-            const deltaTime = endTime - startTime;
-            LFS_DEBUG.recordEvent(event, {
-              source: source.path(),
-              duration: deltaTime
-            });
-          },
           () => Error.CODE.OK,
           () => Error.CODE.PASSTHROUGH
-        );
+        ).finally(() => {
+          const endTime = Date.now();
+          const deltaTime = endTime - startTime;
+          LFS_DEBUG.recordEvent(event, {
+            source: source.path(),
+            duration: deltaTime
+          });
+        });
     };
 
     return runNextFilter();

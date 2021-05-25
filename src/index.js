@@ -24,7 +24,6 @@ import {
 } from './utils/authService';
 import { dependencyCheck } from './utils/checkDependencies';
 import { setDefaultShellOptions } from './utils/shellOptions';
-import { LFS_DEBUG } from './callbacks/apply';
 
 function LFS(nodegit) {
   this.NodeGit = nodegit;
@@ -51,40 +50,37 @@ LFS.prototype = {
   untrack,
 };
 
-module.exports = {
-  initLfs: (
-    nodegit,
-    {
-      nodeBinaryPath = process.execPath,
-      defaultShellOptions = null,
-      // when built, askpass.sh will be two directories above index.js
-      gitAskPassPath = require.resolve('../../askpass.sh'),
-      gitAskPassClientPath = require.resolve('./utils/GitAskPass')
-    } = {}
-  ) => {
-    const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
+module.exports = (
+  nodegit,
+  {
+    nodeBinaryPath = process.execPath,
+    defaultShellOptions = null,
+    // when built, askpass.sh will be two directories above index.js
+    gitAskPassPath = require.resolve('../../askpass.sh'),
+    gitAskPassClientPath = require.resolve('./utils/GitAskPass')
+  } = {}
+) => {
+  const _NodeGit = nodegit; // eslint-disable-line no-underscore-dangle
 
-    Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
+  Object.getPrototypeOf(_NodeGit).LFS = new LFS(_NodeGit);
 
-    module.exports = _NodeGit;
+  module.exports = _NodeGit;
 
-    if (nodeBinaryPath) {
-      setNodeBinaryPath(nodeBinaryPath);
-    }
+  if (nodeBinaryPath) {
+    setNodeBinaryPath(nodeBinaryPath);
+  }
 
-    if (gitAskPassPath) {
-      setGitAskPassPath(gitAskPassPath);
-    }
+  if (gitAskPassPath) {
+    setGitAskPassPath(gitAskPassPath);
+  }
 
-    if (gitAskPassClientPath) {
-      setGitAskPassClientPath(gitAskPassClientPath);
-    }
+  if (gitAskPassClientPath) {
+    setGitAskPassClientPath(gitAskPassClientPath);
+  }
 
-    if (defaultShellOptions) {
-      setDefaultShellOptions(defaultShellOptions);
-    }
+  if (defaultShellOptions) {
+    setDefaultShellOptions(defaultShellOptions);
+  }
 
-    return _NodeGit;
-  },
-  lfsDebug: LFS_DEBUG
+  return _NodeGit;
 };
