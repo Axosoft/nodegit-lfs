@@ -1,3 +1,6 @@
+# Changelog for v1.0.0-alpha.4
+- Added debug functionality to track performance of calls to filter.
+
 # Changelog for v1.0.0-alpha.3
 - init function now takes override paths for askpass.sh and GitAskPass.js for those in an asar
 
