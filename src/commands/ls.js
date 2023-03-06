@@ -52,7 +52,10 @@ const ls = (repo, options) => {
   const args = buildArgs(options);
   const { shellOptions } = (options || {});
 
-  return core.ls(args, R.mergeDeepRight(shellOptions, { cwd: repoPath }))
+  return core.ls(
+    args,
+    R.mergeDeepRight(shellOptions, { cwd: repoPath, maxBuffer: 4194304 })
+  )
     .then(({ stdout, stderr }) => {
       response.raw = stdout;
 
