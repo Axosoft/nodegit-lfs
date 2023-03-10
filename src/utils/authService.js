@@ -47,7 +47,7 @@ export const ensureAuthServer = () => new Promise((resolve, reject) => {
 
   tcpServer = net.createServer(socketListener);
   tcpServer.on('error', reject);
-  tcpServer.listen({ port: 0, host: 'localhost' }, resolve);
+  tcpServer.listen({ port: 0, host: '127.0.0.1' }, resolve);
 });
 
 export const getAuthServerPort = () => (
