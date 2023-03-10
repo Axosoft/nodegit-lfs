@@ -19,7 +19,7 @@ const parseUrlFromErrorMessage = (errorMessage) => {
   let url = null;
   const matches = regex.CREDENTIALS_NOT_FOUND.exec(errorMessage);
   if (matches && matches.length > 1) {
-    ([url] = matches);
+    ([, url] = matches);
   }
   return url;
 };
