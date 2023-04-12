@@ -1,3 +1,6 @@
+# Changelog for v1.0.0-alpha.6
+- No changes
+
 # Changelog for v1.0.0-alpha.5
 - Increase child_process exec's `maxBuffer` when executing `git lfs ls-files`
 
