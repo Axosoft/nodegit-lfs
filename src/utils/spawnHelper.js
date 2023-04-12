@@ -19,7 +19,7 @@ const parseUrlFromErrorMessage = (errorMessage) => {
   let url = null;
   const matches = regex.CREDENTIALS_NOT_FOUND.exec(errorMessage);
   if (matches && matches.length > 1) {
-    ([url] = matches);
+    ([, url] = matches);
   }
   return url;
 };
@@ -93,6 +93,7 @@ const spawn = async (command, stdin, opts = {}, credentialsCallback, repoPath = 
           opts,
           {
             env: {
+              ELECTRON_RUN_AS_NODE: 1,
               GIT_TERMINAL_PROMPT: 0,
               GIT_ASKPASS: getGitAskPassPath(),
               NODEGIT_LFS_ASKPASS_STATE: credRequestId,
