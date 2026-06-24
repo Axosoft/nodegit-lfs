@@ -23,7 +23,7 @@ if (!request.property) {
 const client = net.createConnection(
   {
     port: NODEGIT_LFS_ASKPASS_PORT,
-    host: 'localhost'
+    host: '127.0.0.1'
   },
   () => {
     client.pipe(process.stdout);
